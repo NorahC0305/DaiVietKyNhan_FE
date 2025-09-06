@@ -10,4 +10,17 @@ declare namespace ICOMPONENTS {
         transition?: { duration: number; ease: EasingFunction[] };
         mode?: TransitionMode;
     }
+    interface IconProps {
+        icon?: keyof typeof import('lucide-react');
+        iconSize?: number;
+        iconColor?: string;
+    }
+
+    interface LucideIconProps extends IconProps {
+        name: keyof typeof import('lucide-react');
+        className?: string;
+        spin?: boolean;
+        fill?: string;
+    }
+
 }

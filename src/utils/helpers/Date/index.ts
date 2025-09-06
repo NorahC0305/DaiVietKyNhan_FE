@@ -1,4 +1,4 @@
-import { ILocationSchedule } from '@models/locationAvailability/common.model'
+
 
 export const MonthYear = (date: any) => {
     const month = new Date(date).toLocaleString('default', { month: 'numeric' })
@@ -18,8 +18,6 @@ export const formatDate = (dateStr: string) => {
     const day = String(date.getUTCDate()).padStart(2, "0");
     const month = date.toLocaleString("en-US", { month: "long" });
     const year = date.getUTCFullYear();
-    const hours = String(date.getUTCHours()).padStart(2, "0");
-    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
     return `${day} ${month} ${year} `;
 };
 
@@ -100,46 +98,3 @@ export const getWeekdayLabel = (date: string) => {
     const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
     return weekdays[d.getDay()]
 }
-
-export const getAllYears = (workingHoursList: ILocationSchedule[]) => {
-    const years = new Set<number>()
-    workingHoursList?.forEach(wh => {
-        wh.workingDates?.forEach((wd: { date: string }) => {
-            const year = parseInt(wd.date.split('/')[2])
-            years.add(year)
-        })
-    })
-    return Array.from(years).sort((a, b) => a - b)
-}
-
-export const groupWorkingHoursByMonthAndWeek = (workingHoursList: ILocationSchedule[], selectedYear: number) => {
-    const grouped: { [month: number]: { [week: number]: ILocationSchedule[] } } = {}
-
-    workingHoursList?.forEach((workingHours) => {
-        if (workingHours.workingDates?.length > 0) {
-            workingHours.workingDates.forEach((workingDate: { date: string }) => {
-                const [, month, year] = workingDate.date.split('/')
-                // Only include dates from the selected year
-                if (parseInt(year) === selectedYear) {
-                    const monthNum = parseInt(month)
-                    const week = getWeekFromDate(workingDate.date)
-
-                    if (!grouped[monthNum]) {
-                        grouped[monthNum] = {}
-                    }
-                    if (!grouped[monthNum][week]) {
-                        grouped[monthNum][week] = []
-                    }
-
-                    // Check if this working hours is already in this week
-                    const existingIndex = grouped[monthNum][week].findIndex(item => item.id === workingHours.id)
-                    if (existingIndex === -1) {
-                        grouped[monthNum][week].push(workingHours)
-                    }
-                }
-            })
-        }
-    })
-
-    return grouped
-} 
