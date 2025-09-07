@@ -17,33 +17,6 @@ import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
 
 const UserInfoPage = () => {
-  const topStats = [
-    {
-      title: "Tổng người dùng",
-      value: "2,847",
-      delta: "+12% từ tháng trước",
-      icon: "Users",
-    },
-    {
-      title: "Lượt truy cập Web",
-      value: "156",
-      delta: "+8% từ tuần trước",
-      icon: "FileText",
-    },
-    {
-      title: "Câu hỏi",
-      value: "89",
-      delta: "+3 câu hỏi mới",
-      icon: "HelpCircle",
-    },
-    {
-      title: "Tương tác",
-      value: "94.2%",
-      delta: "Tỷ lệ tham gia",
-      icon: "BarChart3",
-    },
-  ];
-
   const users = [
     {
       name: "Nguyễn Văn A",
@@ -77,30 +50,6 @@ const UserInfoPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {topStats.map((s, i) => (
-          <Card
-            key={i}
-            className="hover:shadow-md transition-shadow bg-admin-primary border-gray-300"
-          >
-            <CardContent className="p-4 md:p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{s.title}</p>
-                  <p className="mt-1 text-2xl md:text-3xl font-bold text-gray-900">
-                    {s.value}
-                  </p>
-                  <p className="mt-1 text-xs text-gray-500">{s.delta}</p>
-                </div>
-                <div className={`p-3 rounded-lg`}>
-                  <LucideIcon name={s.icon as any} iconSize={20} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
       <Card className="border-gray-300 bg-admin-primary">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg md:text-xl font-semibold text-gray-900">
