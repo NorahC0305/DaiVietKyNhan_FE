@@ -8,7 +8,7 @@ import { Input } from "@components/Atoms/ui/input";
 
 const AdminHeader = () => {
   return (
-    <div className="flex items-center justify-between w-full p-5 border-b bg-admin-primary">
+    <div className="flex items-center justify-between w-full p-5 border-b border-gray-300 bg-admin-primary">
       {/* Left side - Mobile menu button will be handled by sidebar */}
       <div className="flex items-center gap-3">
         <h2 className="text-lg md:text-xl font-semibold text-gray-800 hidden sm:block">

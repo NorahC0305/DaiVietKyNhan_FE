@@ -361,13 +361,13 @@ const AdminSideBar = () => {
           ${isCollapsed ? SIDEBAR_CLASSES.collapsed : SIDEBAR_CLASSES.expanded}
           ${isMobileMenuOpen ? SIDEBAR_CLASSES.mobile : ""}
           ${SIDEBAR_CLASSES.desktop}
-          bg-admin-primary  border-r
+          bg-admin-primary  border-r border-gray-300
         `}
       >
         {/* Header */}
         <header className={`${isCollapsed ? "mb-4" : "mb-4"}`}>
           <div
-            className={`border-b ${
+            className={`border-b border-gray-300 ${
               isCollapsed ? "pt-2 -mx-2 pb-5" : "-mx-6 pb-3"
             }`}
           >

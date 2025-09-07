@@ -23,32 +23,24 @@ const UserInfoPage = () => {
       value: "2,847",
       delta: "+12% từ tháng trước",
       icon: "Users",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
     },
     {
       title: "Lượt truy cập Web",
       value: "156",
       delta: "+8% từ tuần trước",
       icon: "FileText",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
     },
     {
       title: "Câu hỏi",
       value: "89",
       delta: "+3 câu hỏi mới",
       icon: "HelpCircle",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
     },
     {
       title: "Tương tác",
       value: "94.2%",
       delta: "Tỷ lệ tham gia",
       icon: "BarChart3",
-      color: "text-orange-600",
-      bg: "bg-orange-50",
     },
   ];
 
@@ -87,7 +79,10 @@ const UserInfoPage = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {topStats.map((s, i) => (
-          <Card key={i} className="hover:shadow-md transition-shadow bg-admin-primary border-gray-50/50">
+          <Card
+            key={i}
+            className="hover:shadow-md transition-shadow bg-admin-primary border-gray-300"
+          >
             <CardContent className="p-4 md:p-6">
               <div className="flex items-start justify-between">
                 <div>
@@ -97,12 +92,8 @@ const UserInfoPage = () => {
                   </p>
                   <p className="mt-1 text-xs text-gray-500">{s.delta}</p>
                 </div>
-                <div className={`p-3 rounded-lg ${s.bg}`}>
-                  <LucideIcon
-                    name={s.icon as any}
-                    iconSize={20}
-                    iconColor={s.color}
-                  />
+                <div className={`p-3 rounded-lg`}>
+                  <LucideIcon name={s.icon as any} iconSize={20} />
                 </div>
               </div>
             </CardContent>
@@ -110,7 +101,7 @@ const UserInfoPage = () => {
         ))}
       </div>
 
-      <Card>
+      <Card className="border-gray-300 bg-admin-primary">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg md:text-xl font-semibold text-gray-900">
             Thông tin khán giả
@@ -123,14 +114,11 @@ const UserInfoPage = () => {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex-1 flex items-center gap-2">
               <div className="relative w-full max-w-sm">
-                <Input placeholder="Tìm kiếm người dùng..." className="pl-9" />
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <LucideIcon
-                    name="Search"
-                    iconSize={16}
-                    iconColor={COLORS.TEXT.DARK}
-                  />
-                </div>
+                <Input
+                  inputMode="search"
+                  placeholder="Tìm kiếm người dùng..."
+                  className="bg-transparent hover:bg-transparent "
+                />
               </div>
               <Button variant="outline" size="sm" className="gap-2">
                 <LucideIcon
@@ -155,7 +143,7 @@ const UserInfoPage = () => {
             </Button>
           </div>
 
-          <div className="rounded-md border">
+          <div className="rounded-md">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -185,20 +173,29 @@ const UserInfoPage = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-gray-600">{u.email}</TableCell>
+                      <TableCell className="text-gray-900">{u.email}</TableCell>
                       <TableCell>
-                        <Badge className="bg-orange-50 text-orange-600 border-0">
+                        <Badge
+                          variant="outline"
+                          className="bg-[#D86D38]/20 text-white border-0"
+                        >
                           {u.score}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-gray-600">{u.date}</TableCell>
+                      <TableCell className="text-gray-900">{u.date}</TableCell>
                       <TableCell>
                         {u.active ? (
-                          <Badge className="bg-green-100 text-green-700 border-0">
+                          <Badge
+                            variant="outline"
+                            className="bg-[#d16834] text-white border-0"
+                          >
                             Hoạt động
                           </Badge>
                         ) : (
-                          <Badge className="bg-gray-100 text-gray-600 border-0">
+                          <Badge
+                            variant="outline"
+                            className="bg-[#F26644] text-white border-0"
+                          >
                             Không hoạt động
                           </Badge>
                         )}
@@ -212,7 +209,8 @@ const UserInfoPage = () => {
                           >
                             <LucideIcon
                               name="Eye"
-                              iconSize={16}
+                              spin
+                              iconSize={20}
                               iconColor={COLORS.TEXT.DARK}
                             />
                           </Button>
@@ -223,7 +221,7 @@ const UserInfoPage = () => {
                           >
                             <LucideIcon
                               name="Pencil"
-                              iconSize={16}
+                              iconSize={20}
                               iconColor={COLORS.TEXT.DARK}
                             />
                           </Button>
@@ -234,7 +232,7 @@ const UserInfoPage = () => {
                           >
                             <LucideIcon
                               name="MoreHorizontal"
-                              iconSize={16}
+                              iconSize={20}
                               iconColor={COLORS.TEXT.DARK}
                             />
                           </Button>
