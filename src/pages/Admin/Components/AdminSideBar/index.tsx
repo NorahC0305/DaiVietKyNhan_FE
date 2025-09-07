@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { Button } from "@atoms/ui/button";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
+import { ROUTES } from "@routes";
+import { useRouter, usePathname } from "next/navigation";
 
 // Types are now defined in @types/IPages/index.d.ts
 
@@ -87,6 +89,75 @@ const STYLES = {
 } as const;
 
 const AdminSideBar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  // Route maps
+  const SUBITEM_ROUTE_MAP: Record<string, string> = useMemo(
+    () => ({
+      "audience-info": ROUTES.ADMIN_DASHBOARD.USER.INFO,
+      "scores-edit": ROUTES.ADMIN_DASHBOARD.USER.POINTS,
+      "photo-submission": ROUTES.ADMIN_DASHBOARD.USER.SUBMITTED_IMAGE,
+      "received-letters": ROUTES.ADMIN_DASHBOARD.USER.SENT_MAIL,
+    }),
+    []
+  );
+
+  const MAINITEM_ROUTE_MAP: Record<string, string> = useMemo(
+    () => ({
+      "content-management": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
+      "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.INFO,
+      "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.INFO,
+    }),
+    []
+  );
+
+  // Reverse map from route -> active state
+  const ROUTE_TO_ACTIVE_STATE: Record<
+    string,
+    { parentId: string; subId?: string }
+  > = useMemo(
+    () => ({
+      [ROUTES.ADMIN_DASHBOARD.USER.INFO]: {
+        parentId: "user-management",
+        subId: "audience-info",
+      },
+      [ROUTES.ADMIN_DASHBOARD.USER.POINTS]: {
+        parentId: "user-management",
+        subId: "scores-edit",
+      },
+      [ROUTES.ADMIN_DASHBOARD.USER.SUBMITTED_IMAGE]: {
+        parentId: "user-management",
+        subId: "photo-submission",
+      },
+      [ROUTES.ADMIN_DASHBOARD.USER.SENT_MAIL]: {
+        parentId: "user-management",
+        subId: "received-letters",
+      },
+      [ROUTES.ADMIN_DASHBOARD.CONTENT.INFO]: { parentId: "content-management" },
+      [ROUTES.ADMIN_DASHBOARD.QUESTION.INFO]: {
+        parentId: "question-game-management",
+      },
+      [ROUTES.ADMIN_DASHBOARD.STATISTICS.INFO]: {
+        parentId: "statistics-reports",
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (!pathname) return;
+    const match = ROUTE_TO_ACTIVE_STATE[pathname];
+    if (!match) return;
+
+    setActiveItem(match.parentId);
+    setActiveSubItem(match.subId ?? "");
+    setExpandedMenus((prev) => {
+      const next = new Set(prev);
+      next.add(match.parentId);
+      return next;
+    });
+  }, [pathname, ROUTE_TO_ACTIVE_STATE]);
+
   const [activeItem, setActiveItem] = useState<string>(INITIAL_ACTIVE_ITEM);
   const [activeSubItem, setActiveSubItem] = useState<string>("");
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(
@@ -120,17 +191,25 @@ const AdminSideBar = () => {
         // Nếu không có sub-items, set active item và clear sub-item
         setActiveItem(item.id);
         setActiveSubItem("");
+        const target = MAINITEM_ROUTE_MAP[item.id];
+        if (target) {
+          router.push(target);
+        }
       }
     },
-    [toggleMenu]
+    [toggleMenu, MAINITEM_ROUTE_MAP, router]
   );
 
   const handleSubItemClick = useCallback(
     (subItemId: string, parentItemId: string) => {
       setActiveSubItem(subItemId);
       setActiveItem(parentItemId);
+      const target = SUBITEM_ROUTE_MAP[subItemId];
+      if (target) {
+        router.push(target);
+      }
     },
-    []
+    [SUBITEM_ROUTE_MAP, router]
   );
 
   const toggleCollapse = useCallback(() => {
@@ -282,37 +361,43 @@ const AdminSideBar = () => {
           ${isCollapsed ? SIDEBAR_CLASSES.collapsed : SIDEBAR_CLASSES.expanded}
           ${isMobileMenuOpen ? SIDEBAR_CLASSES.mobile : ""}
           ${SIDEBAR_CLASSES.desktop}
+          bg-admin-primary  border-r
         `}
-        style={{ backgroundColor: "#FEF7ED" }}
       >
         {/* Header */}
-        <header className={`mb-8 ${isCollapsed ? "mb-4" : ""}`}>
+        <header className={`${isCollapsed ? "mb-4" : "mb-4"}`}>
           <div
-            className={`flex items-center ${
-              isCollapsed ? "justify-center" : "justify-between"
+            className={`border-b ${
+              isCollapsed ? "pt-2 -mx-2 pb-5" : "-mx-6 pb-3"
             }`}
           >
-            {(!isCollapsed || isMobileMenuOpen) && !isTransitioning && (
-              <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
-                Admin Dashboard
-              </h1>
-            )}
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={BUTTON_CLASSES.collapse}
-                onClick={toggleCollapse}
-                title={isCollapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
-              >
-                <MenuIcon name="Menu" size={18} color={COLORS.TEXT.DARK} />
-              </Button>
+            <div
+              className={`flex items-center ${
+                isCollapsed ? "justify-center px-2" : "justify-between px-6"
+              }`}
+            >
+              {(!isCollapsed || isMobileMenuOpen) && !isTransitioning && (
+                <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+                  Admin Dashboard
+                </h1>
+              )}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={BUTTON_CLASSES.collapse}
+                  onClick={toggleCollapse}
+                  title={isCollapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+                >
+                  <MenuIcon name="Menu" size={18} color={COLORS.TEXT.DARK} />
+                </Button>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Menu Items */}
-        <nav className="flex flex-col space-y-3 flex-1">
+        <nav className="flex flex-col space-y-3 flex-1 pt-2">
           {MENU_ITEMS.map((item) => (
             <div key={item.id} className="flex flex-col">
               <MainMenuItem item={item} />
