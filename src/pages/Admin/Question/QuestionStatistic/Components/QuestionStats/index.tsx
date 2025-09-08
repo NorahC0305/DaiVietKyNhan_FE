@@ -40,18 +40,19 @@ const QuestionStats: React.FC<QuestionStatsProps> = ({ questions }) => {
                   {question.question}
                 </h3>
                 <div className="flex items-center gap-4 mb-3">
-                  <span className="border border-gray-300 rounded-full px-3 py-1 text-sm text-gray-600">
+                  <span className="border border-gray-300 rounded-full px-3 py-1 text-sm text-black">
                     {question.category}
                   </span>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-black">
                     Tổng: {question.totalAnswers.toLocaleString()} lượt trả lời
                   </span>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-orange-500">
+                <div className="text-2xl font-bold text-orange-500 mb-1">
                   {question.overallCorrectRate}%
                 </div>
+                <span className="text-sm text-black">Tỷ lệ đúng</span>
               </div>
             </div>
 

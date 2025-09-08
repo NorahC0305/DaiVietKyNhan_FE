@@ -4,7 +4,7 @@ const BASE_PATHS = {
     ADMIN: '/admin',
     MANAGE_USER: '/admin/manage-user',
     MANAGE_QUESTION: '/admin/manage-question',
-    MANAGE_STATISTICS: '/admin/manage-statistics',
+    MANAGE_STATISTICS: '/admin/manage-statistic',
 } as const;
 
 // Auth routes
@@ -44,8 +44,8 @@ const ADMIN_DASHBOARD = {
         STATISTICS: `${BASE_PATHS.MANAGE_QUESTION}/question-statistics`,
     },
     STATISTICS: {
-        OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/statistics-overview`,
-        USER: `${BASE_PATHS.MANAGE_STATISTICS}/statistics-user`,
+        OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/overview`,
+        USER: `${BASE_PATHS.MANAGE_STATISTICS}/user`,
     },
 } as const;
 

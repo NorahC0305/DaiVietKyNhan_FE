@@ -76,8 +76,16 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     label: "Thống kê & Báo cáo",
     icon: "BarChart3",
     subItems: [
-      { id: "statistics-info", label: "Thông tin thống kê", icon: "BarChart3" },
-      { id: "statistics-edit", label: "Chỉnh sửa thống kê", icon: "BarChart3" },
+      {
+        id: "statistics-user",
+        label: "Thống kê người dùng và lượt chơi",
+        icon: "Activity",
+      },
+      {
+        id: "statistics-overview",
+        label: "Báo cáo tổng hợp",
+        icon: "ChartLine",
+      },
     ],
   },
 ];
@@ -166,6 +174,7 @@ const AdminSideBar = () => {
       },
       [ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW]: {
         parentId: "statistics-reports",
+        subId: "statistics-overview",
       },
       [ROUTES.ADMIN_DASHBOARD.STATISTICS.USER]: {
         parentId: "statistics-reports",
