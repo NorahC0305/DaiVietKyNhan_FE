@@ -2,12 +2,14 @@
 
 :root {
   --primary: #DDAC40;
+  --admin-primary: #FFFBED;
   --holder: #FCFCFC;
   --faded: rgba(113, 113, 122, 0.2);
 }
 
 @theme inline {
   --color-primary: var(--primary);
+  --color-admin-primary: var(--admin-primary);
   --color-holder: var(--holder);
   --color-faded: var(--faded);
   --color-background: var(--background);

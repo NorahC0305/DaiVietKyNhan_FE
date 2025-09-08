@@ -10,7 +10,7 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-black/30 text-holder hover:bg-black/40 border-faded",
+        default: "bg-black/30 text-foreground hover:bg-black/40 border-faded",
       },
       size: {
         default: "h-14 px-4 py-2",
