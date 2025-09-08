@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Atoms/ui/card";
-import StatisticsHeader from "./Components/StatisticsHeader";
+import StatisticsHeader from "./Components/Toolbar";
 import StatisticsCards from "./Components/StatisticsCards";
 import QuestionStats from "./Components/QuestionStats";
 

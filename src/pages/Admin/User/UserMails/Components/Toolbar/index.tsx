@@ -10,10 +10,11 @@ const Toolbar = () => {
     <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
       <div className="flex flex-1 gap-3">
         <Input
+          size="sm"
           placeholder="Tìm kiếm thư..."
           className="bg-transparent hover:bg-gray-100"
         />
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 border-gray-300">
           <LucideIcon name="Filter" iconSize={16} />
           Lọc theo trạng thái
         </Button>

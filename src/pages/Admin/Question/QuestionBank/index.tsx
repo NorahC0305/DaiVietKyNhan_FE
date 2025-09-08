@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/Atoms/ui/card";
 import SummaryCards from "./Components/SummaryCards";
-import SearchFilters from "./Components/SearchFilters";
+import SearchFilters from "./Components/Toolbar";
 import AddQuestionForm from "./Components/AddQuestionForm";
 import QuestionsTable from "./Components/QuestionsTable";
 
