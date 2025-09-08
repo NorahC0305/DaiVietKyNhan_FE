@@ -2,41 +2,80 @@
 
 import Image from 'next/image'
 import TransitionWrapper from '@atoms/TransitionWrapper'
-import FloatingCard from '@atoms/FloatingCard'
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import QuangTrung from '../../../../public/QuangTrung_NguyenHue.jpg'
+import MacDinhChi from '../../../../public/MacDinhChi.jpg'
+import DaiVietKyNhan from '../../../../public/DaiVietKyNhan.jpg'
+import TrungTrac from '../../../../public/TrungTrac.jpg'
+import DinhBoLinh from '../../../../public/DinhBoLinh.jpg'
+import NguyenCongTru from '../../../../public/NguyenCongTru.jpg'
 import styles from './index.module.scss'
 
 const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
+    const [isCard1Alt, setIsCard1Alt] = useState<boolean>(false)
+    const [isCard2Alt, setIsCard2Alt] = useState<boolean>(false)
+    const [isCard1Flipping, setIsCard1Flipping] = useState<boolean>(false)
+    const [isCard2Flipping, setIsCard2Flipping] = useState<boolean>(false)
+
+    const handleCard1Iteration = useCallback(() => {
+        setIsCard1Alt(prev => !prev)
+        setIsCard1Flipping(true)
+    }, [])
+
+    const handleCard2Iteration = useCallback(() => {
+        setIsCard2Alt(prev => !prev)
+        setIsCard2Flipping(true)
+    }, [])
+
+    const handleCard1FlipEnd = useCallback(() => {
+        setIsCard1Flipping(false)
+    }, [])
+
+    const handleCard2FlipEnd = useCallback(() => {
+        setIsCard2Flipping(false)
+    }, [])
+
     return (
         <div className='relative w-full h-screen flex justify-center items-center overflow-hidden'>
             {/* Floating Cards với animation tự nhiên */}
 
             {/* Card chính - Góc phải trên */}
-            <div className={styles.card1}>
+            <div className={styles.card1} onAnimationIteration={handleCard1Iteration}>
                 <Image
-                    src={QuangTrung}
-                    alt="Tướng Sĩ"
+                    src={isCard1Alt ? DinhBoLinh : QuangTrung}
+                    alt={isCard1Alt ? 'Đinh Bộ Lĩnh' : 'Quang Trung'}
                     fill
-                    className='object-fill rounded-3xl'
+                    className={`${isCard1Flipping ? styles.flipOnce : ''} object-fill rounded-2xl`}
+                    onAnimationEnd={handleCard1FlipEnd}
                 />
             </div>
 
             {/* Card thứ 2 - Góc trái trên */}
-            <div className={styles.card2}>
+            <div className={styles.card2} onAnimationIteration={handleCard2Iteration}>
                 <Image
-                    src={QuangTrung}
-                    alt="Tướng Sĩ 2"
+                    src={isCard2Alt ? NguyenCongTru : MacDinhChi}
+                    alt={isCard2Alt ? 'Nguyễn Công Trứ' : 'Mạc Đĩnh Chi'}
                     fill
-                    className='object-fill rounded-3xl'
+                    className={`${isCard2Flipping ? styles.flipOnce : ''} object-fill rounded-3xl`}
+                    onAnimationEnd={handleCard2FlipEnd}
                 />
             </div>
 
-            {/* Card thứ 3 - Góc phải dưới */}
+            {/* Card thứ 3 - Góc trên */}
             <div className={styles.card3}>
                 <Image
-                    src={QuangTrung}
-                    alt="Tướng Sĩ 3"
+                    src={DaiVietKyNhan}
+                    alt="Dại Việt Kỳ Nhân"
+                    fill
+                    className=' rounded-3xl'
+                />
+            </div>
+
+            {/* Card thứ 4 - Góc phải dưới */}
+            <div className={styles.card4}>
+                <Image
+                    src={TrungTrac}
+                    alt="Trung Trắc"
                     fill
                     className={styles.cardImageCircle}
                 />
