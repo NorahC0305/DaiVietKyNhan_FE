@@ -53,16 +53,32 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     id: "content-management",
     label: "Quản lý Nội dung",
     icon: "FileText",
+    subItems: [
+      { id: "content-info", label: "Thông tin nội dung", icon: "FileText" },
+      { id: "content-edit", label: "Chỉnh sửa nội dung", icon: "FileText" },
+    ],
   },
   {
     id: "question-game-management",
     label: "Quản lý Câu hỏi & Trò chơi",
     icon: "HelpCircle",
+    subItems: [
+      { id: "question-bank", label: "Ngân hàng câu hỏi", icon: "Plus" },
+      {
+        id: "question-statistics",
+        label: "Thống kê tỷ lệ trả lời",
+        icon: "TrendingUp",
+      },
+    ],
   },
   {
     id: "statistics-reports",
     label: "Thống kê & Báo cáo",
     icon: "BarChart3",
+    subItems: [
+      { id: "statistics-info", label: "Thông tin thống kê", icon: "BarChart3" },
+      { id: "statistics-edit", label: "Chỉnh sửa thống kê", icon: "BarChart3" },
+    ],
   },
 ];
 
@@ -98,6 +114,12 @@ const AdminSideBar = () => {
       "scores-edit": ROUTES.ADMIN_DASHBOARD.USER.POINTS,
       "photo-submission": ROUTES.ADMIN_DASHBOARD.USER.SUBMITTED_IMAGE,
       "received-letters": ROUTES.ADMIN_DASHBOARD.USER.SENT_MAIL,
+      "content-info": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
+      "content-edit": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
+      "question-bank": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
+      "question-statistics": ROUTES.ADMIN_DASHBOARD.QUESTION.STATISTICS,
+      "statistics-overview": ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW,
+      "statistics-user": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
     }),
     []
   );
@@ -105,8 +127,8 @@ const AdminSideBar = () => {
   const MAINITEM_ROUTE_MAP: Record<string, string> = useMemo(
     () => ({
       "content-management": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
-      "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.INFO,
-      "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.INFO,
+      "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
+      "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
     }),
     []
   );
@@ -134,11 +156,20 @@ const AdminSideBar = () => {
         subId: "received-letters",
       },
       [ROUTES.ADMIN_DASHBOARD.CONTENT.INFO]: { parentId: "content-management" },
-      [ROUTES.ADMIN_DASHBOARD.QUESTION.INFO]: {
+      [ROUTES.ADMIN_DASHBOARD.QUESTION.BANK]: {
         parentId: "question-game-management",
+        subId: "question-bank",
       },
-      [ROUTES.ADMIN_DASHBOARD.STATISTICS.INFO]: {
+      [ROUTES.ADMIN_DASHBOARD.QUESTION.STATISTICS]: {
+        parentId: "question-game-management",
+        subId: "question-statistics",
+      },
+      [ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW]: {
         parentId: "statistics-reports",
+      },
+      [ROUTES.ADMIN_DASHBOARD.STATISTICS.USER]: {
+        parentId: "statistics-reports",
+        subId: "statistics-user",
       },
     }),
     []

@@ -1,4 +1,4 @@
-import UserMailPage from "@pages/Admin/UserMails";
+import UserMailPage from "@pages/Admin/User/UserMails";
 
 export default async function UserInfo() {
   return (

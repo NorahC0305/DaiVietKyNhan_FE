@@ -3,6 +3,8 @@ const BASE_PATHS = {
     AUTH: '/auth',
     ADMIN: '/admin',
     MANAGE_USER: '/admin/manage-user',
+    MANAGE_QUESTION: '/admin/manage-question',
+    MANAGE_STATISTICS: '/admin/manage-statistics',
 } as const;
 
 // Auth routes
@@ -38,16 +40,12 @@ const ADMIN_DASHBOARD = {
         LIST: `${BASE_PATHS.ADMIN}/content-list`,
     },
     QUESTION: {
-        INFO: `${BASE_PATHS.ADMIN}/question-info`,
-        CREATE: `${BASE_PATHS.ADMIN}/question-create`,
-        EDIT: `${BASE_PATHS.ADMIN}/question-edit`,
-        LIST: `${BASE_PATHS.ADMIN}/question-list`,
+        BANK: `${BASE_PATHS.MANAGE_QUESTION}/question-bank`,
+        STATISTICS: `${BASE_PATHS.MANAGE_QUESTION}/question-statistics`,
     },
     STATISTICS: {
-        INFO: `${BASE_PATHS.ADMIN}/statistics-info`,
-        OVERVIEW: `${BASE_PATHS.ADMIN}/statistics-overview`,
-        REPORTS: `${BASE_PATHS.ADMIN}/statistics-reports`,
-        ANALYTICS: `${BASE_PATHS.ADMIN}/statistics-analytics`,
+        OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/statistics-overview`,
+        USER: `${BASE_PATHS.MANAGE_STATISTICS}/statistics-user`,
     },
 } as const;
 
