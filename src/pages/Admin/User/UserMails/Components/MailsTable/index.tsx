@@ -44,7 +44,7 @@ const MailsTable = ({ rows, statusBadgeClass, statusLabel }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((m) => (
+          {rows?.map((m) => (
             <TableRow key={m.id}>
               <TableCell>
                 <div className="flex items-center gap-3">

@@ -58,7 +58,7 @@ const StatisticsHeader: React.FC<StatisticsHeaderProps> = ({
               <SelectValue placeholder="Danh mục" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <SelectItem
                   key={category}
                   value={category}

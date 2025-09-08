@@ -96,7 +96,7 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {questions.map((question) => (
+              {questions?.map((question) => (
                 <TableRow key={question.id}>
                   <TableCell className="font-medium max-w-xs">
                     <div className="truncate" title={question.question}>

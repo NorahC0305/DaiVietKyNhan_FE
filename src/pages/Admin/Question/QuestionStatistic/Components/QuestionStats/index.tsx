@@ -28,7 +28,7 @@ interface QuestionStatsProps {
 const QuestionStats: React.FC<QuestionStatsProps> = ({ questions }) => {
   return (
     <div className="space-y-6">
-      {questions.map((question) => (
+      {questions?.map((question) => (
         <Card
           key={question.id}
           className="bg-admin-primary border border-gray-200"
@@ -56,7 +56,7 @@ const QuestionStats: React.FC<QuestionStatsProps> = ({ questions }) => {
             </div>
 
             <div className="space-y-3">
-              {question.options.map((option, index) => (
+              {question.options?.map((option, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     {option.isCorrect ? (

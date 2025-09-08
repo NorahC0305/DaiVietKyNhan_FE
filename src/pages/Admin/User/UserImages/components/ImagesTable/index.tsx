@@ -43,7 +43,7 @@ const ImagesTable = ({ rows, statusBadgeClass, statusLabel }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((item) => (
+          {rows?.map((item) => (
             <TableRow key={item.id}>
               <TableCell>
                 <div className="h-9 w-9 rounded-md border border-gray-300 bg-white flex items-center justify-center text-gray-500">

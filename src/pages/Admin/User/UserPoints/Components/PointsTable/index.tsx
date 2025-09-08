@@ -33,7 +33,7 @@ const PointsTable = ({ rows }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((u) => {
+          {rows?.map((u) => {
             const initial = u.name.split(" ")[0][0];
             return (
               <TableRow key={u.id}>

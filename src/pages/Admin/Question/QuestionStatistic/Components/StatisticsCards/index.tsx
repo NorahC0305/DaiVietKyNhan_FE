@@ -24,7 +24,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
   const cards = [
     {
       title: "Tổng lượt trả lời",
-      value: totalAnswers.toLocaleString(),
+      value: totalAnswers?.toLocaleString(),
       icon: "📊",
       color: "text-orange-500",
     },
@@ -50,7 +50,7 @@ const StatisticsCards: React.FC<StatisticsCardsProps> = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {cards.map((card, index) => (
+      {cards?.map((card, index) => (
         <Card
           key={index}
           className="bg-admin-primary shadow-sm border border-gray-200"

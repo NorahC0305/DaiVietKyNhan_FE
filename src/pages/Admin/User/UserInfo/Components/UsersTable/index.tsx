@@ -38,11 +38,11 @@ const UsersTable = ({ rows }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((u) => {
+          {rows?.map((u) => {
             const initials = u.name
-              .split(" ")
-              .map((w) => w[0])
-              .join("");
+              ?.split(" ")
+              ?.map((w) => w[0])
+              ?.join("");
             return (
               <TableRow key={u.email}>
                 <TableCell>
