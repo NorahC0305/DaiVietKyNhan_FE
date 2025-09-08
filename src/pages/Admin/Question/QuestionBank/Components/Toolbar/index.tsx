@@ -47,6 +47,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="flex flex-col sm:flex-row gap-4 flex-1">
         <div className="w-full sm:w-80">
           <Input
+            size="sm"
             placeholder="Tìm kiếm câu hỏi..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
