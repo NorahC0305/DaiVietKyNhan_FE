@@ -34,7 +34,7 @@
       "@themes/*": ["./src/themes/*"],
       "@stores/*": ["./src/stores/*"],
       "@types/*": ["./src/types/*"],
-      "@helpers/*": ["./src/utils/helpers/*"],
+      "@utils/*": ["./src/utils/*"],
       "@hooks/*": ["./src/utils/hooks/*"]
     }
   },

@@ -23,4 +23,10 @@ declare namespace ICOMPONENTS {
         fill?: string;
     }
 
+    interface OTPInputProps {
+        length?: number;
+        onChange?: (otp: string) => void;
+        error?: boolean;
+    }
+
 }

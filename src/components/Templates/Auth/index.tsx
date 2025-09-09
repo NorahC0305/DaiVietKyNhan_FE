@@ -10,8 +10,16 @@ import TrungTrac from '../../../../public/TrungTrac.jpg'
 import DinhBoLinh from '../../../../public/DinhBoLinh.jpg'
 import NguyenCongTru from '../../../../public/NguyenCongTru.jpg'
 import styles from './index.module.scss'
+import { usePathname } from 'next/navigation'
+import { ROUTES } from '@routes'
 
 const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
+    /**
+     * Define variables hooks
+     */
+    const pathname = usePathname()
+    //-----------------End-----------------//
+
     const [isCard1Alt, setIsCard1Alt] = useState<boolean>(false)
     const [isCard2Alt, setIsCard2Alt] = useState<boolean>(false)
     const [isCard1Flipping, setIsCard1Flipping] = useState<boolean>(false)
@@ -36,11 +44,9 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     return (
-        <div className='relative w-full h-screen flex justify-center items-center overflow-hidden'>
-            {/* Floating Cards với animation tự nhiên */}
-
+        <div className={`relative w-full h-screen flex justify-center items-center ${pathname === ROUTES.AUTH.REGISTER ? 'my-20' : ''}`}>
             {/* Card chính - Góc phải trên */}
-            <div className={styles.card1} onAnimationIteration={handleCard1Iteration}>
+            <div className={`${styles.card1} hidden md:block`} onAnimationIteration={handleCard1Iteration}>
                 <Image
                     src={isCard1Alt ? DinhBoLinh : QuangTrung}
                     alt={isCard1Alt ? 'Đinh Bộ Lĩnh' : 'Quang Trung'}
@@ -51,7 +57,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             {/* Card thứ 2 - Góc trái trên */}
-            <div className={styles.card2} onAnimationIteration={handleCard2Iteration}>
+            <div className={`${styles.card2} hidden md:block`} onAnimationIteration={handleCard2Iteration}>
                 <Image
                     src={isCard2Alt ? NguyenCongTru : MacDinhChi}
                     alt={isCard2Alt ? 'Nguyễn Công Trứ' : 'Mạc Đĩnh Chi'}
@@ -62,17 +68,17 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             {/* Card thứ 3 - Góc trên */}
-            <div className={styles.card3}>
+            <div className={`${styles.card3} hidden md:block`}>
                 <Image
                     src={DaiVietKyNhan}
                     alt="Dại Việt Kỳ Nhân"
                     fill
-                    className=' rounded-3xl'
+                    className='rounded-3xl'
                 />
             </div>
 
             {/* Card thứ 4 - Góc phải dưới */}
-            <div className={styles.card4}>
+            <div className={`${styles.card4} hidden md:block`}>
                 <Image
                     src={TrungTrac}
                     alt="Trung Trắc"
@@ -83,7 +89,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
             {/* 
 
             {/* Main content */}
-            <TransitionWrapper className='w-full max-w-xl bg-white/30 rounded-md overflow-hidden shadow-xl flex justify-center items-center'>
+            <TransitionWrapper className='w-full max-w-xl bg-white/20 lg:bg-white/30 rounded-md overflow-hidden shadow-xl flex justify-center items-center'>
                 {children}
             </TransitionWrapper>
         </div>
