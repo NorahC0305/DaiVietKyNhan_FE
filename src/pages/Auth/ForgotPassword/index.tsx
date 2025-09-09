@@ -12,6 +12,7 @@ import authService from "@services/auth"
 import { useState } from "react"
 import { Button } from "@components/Atoms/ui/button"
 import { Input } from "@components/Atoms/ui/input"
+import H1 from "@components/Atoms/H1"
 
 const ForgotPasswordPageClient = () => {
     const router = useRouter();
@@ -71,8 +72,8 @@ const ForgotPasswordPageClient = () => {
                 </div>
 
                 <div className="flex flex-col items-center">
-                    <h1 className="text-2xl font-bold mb-2">Quên mật khẩu</h1>
-                    <p className="text-description text-center mb-8 whitespace-pre-line">Nhập thông tin liên hệ của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu</p>
+                    <H1 className="text-2xl font-bold mb-2">Quên mật khẩu</H1>
+                    <p className="text-description text-center text-holder  mb-8 whitespace-pre-line">Nhập thông tin liên hệ của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu</p>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -86,22 +87,18 @@ const ForgotPasswordPageClient = () => {
                         {/* {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>} */}
                     </div>
 
-                    <Button type="submit" style={{ width: "100%" }} isLoading={isLoading} disabled={isLoading}>
+                    <Button type="submit" size="full" isLoading={isLoading} disabled={isLoading}>
                         Tiếp tục
                     </Button>
                 </form>
 
-                <p className="flex mt-5 justify-center items-center text-description-title">
+                <p className="flex mt-5 justify-center items-center text-holder">
                     <ArrowLeft size={20} className="text-dark mr-2" />
                     <Link href={ROUTES.AUTH.LOGIN} className="font-sm text-dark hover:underline">
                         Quay lại trang đăng nhập
                     </Link>
                 </p>
                 {/* --- End --- */}
-            </div>
-            <div className="flex justify-center items-center mt-8">
-                <span className="text-description">Bạn cần trợ giúp? <Link href='https://www.facebook.com/DaiVietKyNhan' target="_blank" className="text-primary font-bold">Liên hệ với chúng tôi</Link>
-                </span>
             </div>
         </>
     )

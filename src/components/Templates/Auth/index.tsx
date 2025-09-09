@@ -10,8 +10,16 @@ import TrungTrac from '../../../../public/TrungTrac.jpg'
 import DinhBoLinh from '../../../../public/DinhBoLinh.jpg'
 import NguyenCongTru from '../../../../public/NguyenCongTru.jpg'
 import styles from './index.module.scss'
+import { usePathname } from 'next/navigation'
+import { ROUTES } from '@routes'
 
 const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
+    /**
+     * Define variables hooks
+     */
+    const pathname = usePathname()
+    //-----------------End-----------------//
+
     const [isCard1Alt, setIsCard1Alt] = useState<boolean>(false)
     const [isCard2Alt, setIsCard2Alt] = useState<boolean>(false)
     const [isCard1Flipping, setIsCard1Flipping] = useState<boolean>(false)
@@ -36,9 +44,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
     }, [])
 
     return (
-        <div className='relative w-full h-screen mt-10 mb-24 flex justify-center items-center'>
-            {/* Floating Cards với animation tự nhiên */}
-
+        <div className={`relative w-full h-screen flex justify-center items-center ${pathname === ROUTES.AUTH.REGISTER ? 'my-20' : ''}`}>
             {/* Card chính - Góc phải trên */}
             <div className={`${styles.card1} hidden md:block`} onAnimationIteration={handleCard1Iteration}>
                 <Image

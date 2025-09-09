@@ -41,7 +41,7 @@ const RegisterPageClient = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-8 md:px-16">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col  px-8 md:px-16">
             <section className="py-6 flex justify-center">
             </section>
 
