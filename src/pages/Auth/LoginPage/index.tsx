@@ -64,6 +64,7 @@ const LoginPageClient = () => {
                     {...register("password")}
                     placeholder="Nhập mật khẩu"
                     type="password"
+                    togglePassword={true}
                     className={errors.password ? "input-error" : ""}
                 />
                 {errors.password && (

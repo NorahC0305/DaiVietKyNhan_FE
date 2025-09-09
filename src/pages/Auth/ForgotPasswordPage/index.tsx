@@ -66,7 +66,7 @@ const ForgotPasswordPageClient = () => {
             <div className="w-full p-8 md:p-12">
                 {/* Center logo */}
                 <div className="flex justify-center items-center mb-4">
-                    <div className="rounded-full flex justify-center items-center w-16 h-16 bg-grey">
+                    <div className="rounded-full flex justify-center items-center w-16 h-16 bg-gray-300">
                         <Mail className="w-8 h-8 text-primary font-bold" />
                     </div>
                 </div>
