@@ -10,32 +10,78 @@ import { ROUTES } from "@routes";
 import styles from './index.module.scss';
 import GoogleIcon from "@components/Atoms/GoogleIcon";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormDataRequest, loginFormDataRequest } from "@models/user/request";
+import authService from "@services/auth";
 
 const LoginPageClient = () => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<LoginFormDataRequest>({
+        resolver: zodResolver(loginFormDataRequest),
+        defaultValues: {
+            email: "",
+            password: "",
+        }
+    });
+
+    const onSubmit = async (data: LoginFormDataRequest) => {
+        try {
+            console.log("Form data:", data);
+            // TODO: Implement login logic here
+            const res = await authService.login(data);
+            console.log("Login response:", res);
+        } catch (error) {
+            console.error("Login error:", error);
+        }
+    };
     return (
-        <div className="w-xl flex flex-col px-16">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-16">
             <section className="py-6 flex justify-center">
                 <Image src={logo} alt='logo' width={100} height={100} />
             </section>
 
-
             <H1 className="pb-6">Đăng nhập</H1>
+
             <section className="flex flex-col gap-2 mb-6">
                 <label className="text-md text-holder">Email</label>
-                <Input placeholder="Nhập email" />
+                <Input
+                    {...register("email")}
+                    placeholder="Nhập email"
+                    type="email"
+                />
+                {errors.email && (
+                    <span className="text-red-500 text-sm">{errors.email.message}</span>
+                )}
             </section>
 
             <section className="flex flex-col gap-2 mb-3">
                 <label className="text-md text-holder">Mật khẩu</label>
-                <Input placeholder="Nhập mật khẩu" />
+                <Input
+                    {...register("password")}
+                    placeholder="Nhập mật khẩu"
+                    type="password"
+                />
+                {errors.password && (
+                    <span className="text-red-500 text-sm">{errors.password.message}</span>
+                )}
             </section>
 
             <section className="flex justify-end mb-3">
-                <p className="text-sm text-primary">Quên mật khẩu?</p>
+                <Link href={ROUTES.AUTH.FORGOT_PASSWORD} className="text-sm text-primary">Quên mật khẩu?</Link>
             </section>
 
             <section>
-                <Button size="full">Đăng nhập <MoveRight /></Button>
+                <Button
+                    type="submit"
+                    size="full"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"} <MoveRight />
+                </Button>
             </section>
 
             <div className="mt-6">
@@ -67,7 +113,7 @@ const LoginPageClient = () => {
                     Đăng ký ngay
                 </Link>
             </p>
-        </div >
+        </form>
     )
 }
 
