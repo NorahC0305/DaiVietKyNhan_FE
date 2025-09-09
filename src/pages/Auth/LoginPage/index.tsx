@@ -79,7 +79,7 @@ const LoginPageClient = () => {
                 <Button
                     type="submit"
                     size="full"
-                    disabled={isSubmitting}
+                    isLoading={isSubmitting}
                 >
                     {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"} <MoveRight />
                 </Button>
