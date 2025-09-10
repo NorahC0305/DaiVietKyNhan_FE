@@ -6,9 +6,9 @@ import CommunitySupport from "./Components/CommunitySupport";
 
 const ContacPage = () => {
   return (
-    <div className="min-h-screen w-full bg-center bg-fixed">
+    <div className="min-h-screen w-full bg-center bg-fixed relative">
       {/* translucent gray overlay */}
-      <div className="min-h-screen w-full ">
+      <div className="min-h-screen w-full">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
           <ContactHeader />
 
