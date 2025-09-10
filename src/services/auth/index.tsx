@@ -6,7 +6,7 @@ const authService = {
         return await http.post("/auth/login", data);
     },
     register: async (data: IRegisterFormDataRequest) => {
-        return await http.post("/auth/register", data, { baseUrl: '/api' });
+        return await http.post("/auth/register", data);
     },
 }
 
