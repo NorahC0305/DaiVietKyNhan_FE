@@ -6,18 +6,18 @@ import CommunitySupport from "./Components/CommunitySupport";
 
 const ContacPage = () => {
   return (
-    <div
-      className="min-h-screen w-full bg-center bg-fixed"
-    >
+    <div className="min-h-screen w-full bg-center bg-fixed">
       {/* translucent gray overlay */}
-      <div className="min-h-screen w-full bg-gray-900/60">
+      <div className="min-h-screen w-full ">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
           <ContactHeader />
 
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ContactForm />
-            <ContactInfo />
-            <div className="lg:col-start-2">
+          <div className="mt-8 flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-1/2">
+              <ContactForm />
+            </div>
+            <div className="lg:w-1/2 space-y-8">
+              <ContactInfo />
               <CommunitySupport />
             </div>
           </div>
