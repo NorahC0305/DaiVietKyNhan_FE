@@ -13,8 +13,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ILoginFormDataRequest, loginFormDataRequest } from "@models/user/request";
 import authService from "@services/auth";
+import { useState } from "react";
+import { getSession, signIn } from "next-auth/react";
+import { ROLE } from "@constants/common";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { AuthError } from "@constants/errors";
 
 const LoginPageClient = () => {
+    /**
+     * Define variables hooks
+     */
+    const router = useRouter();
+    //----------------------End----------------------//
+
     const {
         register,
         handleSubmit,
@@ -27,15 +39,69 @@ const LoginPageClient = () => {
         }
     });
 
+    const [loading, setLoading] = useState<boolean>(false);
     const onSubmit = async (data: ILoginFormDataRequest) => {
         try {
-            console.log("Form data:", data);
-            const res = await authService.login(data);
-            console.log("Login response:", res);
-        } catch (error) {
-            console.error("Login error:", error);
+            setLoading(true);
+
+            const res = await signIn("credentials", {
+                redirect: false,
+                ...data,
+            });
+            console.log('res', res);
+            
+
+            //#region Handle response
+            const status = res?.status;
+            const error = res?.error;
+            const delay = 3;
+
+            //#region Handle success
+            if (status === 200) {
+                const session = await getSession() as unknown as UTILS.ISession;
+                // switch (session?.user?.role) {
+                //     case ROLE.CUSTOMER:
+                //         router.push(ROUTES.PUBLIC.HOME);
+                //         break;
+                //     case ROLE.ADMIN:
+                //         router.push(ROUTES.ADMIN_DASHBOARD.USER.INFO);
+                //         break;
+                //     default:
+                //         break;
+                // }
+                router.refresh();
+                return;
+            }
+            //#endregion
+
+            //#region Handle error
+            if (error === AuthError.INACTIVE) {
+                toast.error("Email chưa được xác thực. Vui lòng kiểm tra email để kích hoạt tài khoản. Chuyển hướng đến trang xác thực trong " + delay + " giây.");
+                // const resSendOtp = await authService.sendOtp(data.email) as IBackendResponse<any>;
+                // if (resSendOtp.statusCode !== 201) {
+                //     toast.error(resSendOtp.message || "Gửi mã OTP thất bại");
+                //     return;
+                // }
+
+                // setEmailToRedirect(data.email)
+                // setCountdown(delay)
+                return;
+            } else {
+                toast.error(res?.error || "Đăng nhập thất bại");
+                return;
+            }
+            //#endregion
+            //#endregion
+
+        } catch (err) {
+            toast.error("Đã xảy ra lỗi, vui lòng thử lại");
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
     };
+
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-8 md:px-16">
             <section className="py-6 flex justify-center">

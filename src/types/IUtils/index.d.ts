@@ -4,4 +4,14 @@ declare namespace UTILS {
         href: string;
         children: React.ReactNode;
     }
+
+    export interface ISession {
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        };
+        accessToken: string;
+        refreshToken: string;
+    }
 }

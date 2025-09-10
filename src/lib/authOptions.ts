@@ -34,11 +34,12 @@ export const authOptions: NextAuthOptions = {
                     email: credentials.email,
                     password: credentials.password,
                 }) as { statusCode: number; data: any; message: string };
+                console.log('res', res);
 
                 switch (res.statusCode) {
                     case 404:
                         throw new Error(res.message || AuthError.USER_NOT_FOUND);
-                    case 400:
+                    case 422:
                         throw new Error(res.message || AuthError.WRONG_CREDENTIALS);
                     case 401:
                         throw new Error(res.message || AuthError.INACTIVE);
@@ -50,12 +51,11 @@ export const authOptions: NextAuthOptions = {
                         throw new Error(res.message || "Đăng nhập thất bại");
                 }
                 const user = {
-                    id: res.data.user.id,
-                    email: res.data.user.email,
-                    role: res.data.user.role,
-                    accessToken: res.data.access_token,
-                    cartId: res.data.user.cartId,
-                    wishlistId: res.data.user.wishlistId,
+                    id: res.data.id,
+                    email: res.data.email,
+                    role: res.data.role.id,
+                    accessToken: res.data.accessToken,
+                    refreshToken: res.data.refreshToken,
                 }
 
                 return user;
@@ -68,16 +68,15 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.role = user.role;
                 token.accessToken = user.accessToken;
-                token.cartId = user.cartId;
-                token.wishlistId = user.wishlistId;
+                token.refreshToken = user.refreshToken;
             }
             return token;
         },
         async session({ session, token }: any) {
             session.user.id = token.id;
             session.user.role = token.role;
-            session.user.cartId = token.cartId;
-            session.user.wishlistId = token.wishlistId;
+            session.user.accessToken = token.accessToken;
+            session.user.refreshToken = token.refreshToken;
             (session as any).accessToken = token.accessToken;
             return session;
         },

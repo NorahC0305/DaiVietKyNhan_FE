@@ -1,5 +1,6 @@
 // Base paths
 const BASE_PATHS = {
+    ROOT: '/',
     AUTH: '/auth',
     ADMIN: '/admin',
     MANAGE_USER: '/admin/manage-user',
@@ -49,12 +50,15 @@ const ADMIN_DASHBOARD = {
     },
 } as const;
 
-
+const PUBLIC = {
+    HOME: `${BASE_PATHS.ROOT}`,
+} as const;
 
 
 export const ROUTES = {
     AUTH,
     ADMIN_DASHBOARD,
+    PUBLIC,
     BASE_PATHS,
 } as const;
 
@@ -62,3 +66,4 @@ export const ROUTES = {
 export type RouteKeys = keyof typeof ROUTES;
 export type AuthRoutes = keyof typeof AUTH;
 export type AdminRoutes = keyof typeof ADMIN_DASHBOARD;
+export type PublicRoutes = keyof typeof PUBLIC;
