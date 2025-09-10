@@ -14,8 +14,17 @@ import { signIn } from "next-auth/react"
 import { Input } from "@components/Atoms/ui/input"
 import { Button } from "@components/Atoms/ui/button"
 import H1 from "@components/Atoms/H1"
+import { useGetLocalStorage } from "@hooks/useLocalStorage"
 
 const ResetPassswordPage = () => {
+    /**
+     * Get email and otp from local storage
+     */
+    const { value, isReady } = useGetLocalStorage('email')
+    const { value: otp } = useGetLocalStorage('otp')
+    //-----------------------------End-----------------------------//
+
+
     //#region Handle form submit
     const {
         register,
