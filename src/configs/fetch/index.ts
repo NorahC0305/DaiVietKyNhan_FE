@@ -33,7 +33,12 @@ const request = async <Response>(
     ...options.headers,
   };
 
-  const baseUrl = options.baseUrl || envConfig?.NEXT_PUBLIC_API_URL;
+  console.log('options.baseUrl', options.baseUrl);
+  const baseUrl = options.baseUrl === undefined
+    ? (options.baseUrl === '/api' ? '' : envConfig?.BACKEND_API_URL) 
+    : options.baseUrl;
+  console.log('baseUrl', baseUrl);
+
   const fullUrl = `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
 
   const res = await fetch(fullUrl, {

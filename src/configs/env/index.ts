@@ -1,11 +1,11 @@
 import { z } from 'zod'
 
 const configShema = z.object({
-    NEXT_PUBLIC_API_URL: z.string(),
+    BACKEND_API_URL: z.string(),
 })
 
 const configProject = configShema.safeParse({
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    BACKEND_API_URL: process.env.BACKEND_API_URL,
 })
 
 // if (!configProject.success) {

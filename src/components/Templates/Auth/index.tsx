@@ -50,7 +50,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
                 <Image
                     src={isCard1Alt ? DinhBoLinh : QuangTrung}
                     alt={isCard1Alt ? 'Đinh Bộ Lĩnh' : 'Quang Trung'}
-                    fill
+                    sizes='100vw'
                     className={`${isCard1Flipping ? styles.flipOnce : ''} object-fill rounded-2xl`}
                     onAnimationEnd={handleCard1FlipEnd}
                 />
@@ -61,7 +61,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
                 <Image
                     src={isCard2Alt ? NguyenCongTru : MacDinhChi}
                     alt={isCard2Alt ? 'Nguyễn Công Trứ' : 'Mạc Đĩnh Chi'}
-                    fill
+                    sizes='100vw'
                     className={`${isCard2Flipping ? styles.flipOnce : ''} object-fill rounded-3xl`}
                     onAnimationEnd={handleCard2FlipEnd}
                 />
@@ -72,7 +72,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
                 <Image
                     src={DaiVietKyNhan}
                     alt="Dại Việt Kỳ Nhân"
-                    fill
+                    sizes='100vw'
                     className='rounded-3xl'
                 />
             </div>
@@ -82,7 +82,7 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
                 <Image
                     src={TrungTrac}
                     alt="Trung Trắc"
-                    fill
+                    sizes='100vw'
                     className={styles.cardImageCircle}
                 />
             </div>

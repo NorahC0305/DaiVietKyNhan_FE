@@ -30,7 +30,6 @@ const LoginPageClient = () => {
     const onSubmit = async (data: ILoginFormDataRequest) => {
         try {
             console.log("Form data:", data);
-            // TODO: Implement login logic here
             const res = await authService.login(data);
             console.log("Login response:", res);
         } catch (error) {
