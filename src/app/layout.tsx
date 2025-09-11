@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SocialMediaIcons from "@/components/Atoms/SocialMediaIcons";
+import Header from "@components/Molecules/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="relative min-h-screen">
+        <div className="fixed top-0 z-50 w-full transform pointer-events-auto">
+          <Header />
+        </div>
+        <div className="relative min-h-screen pt-20">
           {children}
           {/* Social Media Icons positioned on the right side */}
           <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
