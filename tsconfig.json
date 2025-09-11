@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,25 +23,72 @@
       }
     ],
     "paths": {
-     "@*": ["./src/*"],
-      "@atoms/*": ["./src/components/Atoms/*"],
-      "@molecules/*": ["./src/components/Molecules/*"],
-      "@organisms/*": ["./src/components/Organisms/*"],
-      "@configs/*": ["./src/configs/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@libs/*": ["./src/libs/*"],
-      "@middlewares/*": ["./src/middlewares/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@redux/*": ["./src/redux/*"],
-      "@routes/*": ["./src/routes/*"],
-      "@services/*": ["./src/services/*"],
-      "@themes/*": ["./src/themes/*"],
-      "@stores/*": ["./src/stores/*"],
-      "@types/*": ["./src/types/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@hooks/*": ["./src/hooks/*"]
+      "@*": [
+        "./src/*"
+      ],
+      "@atoms/*": [
+        "./src/components/Atoms/*"
+      ],
+      "@molecules/*": [
+        "./src/components/Molecules/*"
+      ],
+      "@organisms/*": [
+        "./src/components/Organisms/*"
+      ],
+      "@configs/*": [
+        "./src/configs/*"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@libs/*": [
+        "./src/libs/*"
+      ],
+      "@middlewares/*": [
+        "./src/middlewares/*"
+      ],
+      "@pages/*": [
+        "./src/pages/*"
+      ],
+      "@redux/*": [
+        "./src/redux/*"
+      ],
+      "@routes/*": [
+        "./src/routes/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@templates/*": [
+        "./src/components/Templates/*"
+      ],
+      "@SiteLayout": [
+        "./src/components/Templates/SiteLayout/index.tsx"
+      ],
+      "@themes/*": [
+        "./src/themes/*"
+      ],
+      "@stores/*": [
+        "./src/stores/*"
+      ],
+      "@types/*": [
+        "./src/types/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
