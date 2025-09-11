@@ -7,16 +7,37 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerFormDataRequest, IRegisterFormDataRequest } from '@models/user/request';
 import authService from '@services/auth';
 import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@components/Atoms/ui/button';
 import { MoveRight } from 'lucide-react';
 import GoogleIcon from '@components/Atoms/GoogleIcon';
 import { ROUTES } from '@routes';
 import logo from '../../../../public/logo_dvkn.svg'
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { IBackendResponse } from '@models/backend';
+import { useUserSetEmail } from '@stores/user/selectors';
 
 const RegisterPageClient = () => {
+    /**
+     * Define variables hooks
+     */
+    const router = useRouter();
+    //-----------------------------End-----------------------------//
 
+
+    /**
+     * Define variables zustand
+     */
+    const setEmail = useUserSetEmail();
+    //-----------------------------End-----------------------------//
+
+
+    /**
+     * Handle form submit
+     * @returns 
+     */
     const {
         register,
         handleSubmit,
@@ -29,16 +50,27 @@ const RegisterPageClient = () => {
         }
     });
 
+    const [loading, setLoading] = useState<boolean>(false);
     const onSubmit = async (data: IRegisterFormDataRequest) => {
         try {
-            console.log("Form data:", data);
-            // TODO: Implement login logic here
-            const res = await authService.register(data);
-            console.log("Login response:", res);
-        } catch (error) {
+            setLoading(true);
+
+            const res = await authService.register(data) as IBackendResponse<any>;
+            if (res.statusCode === 201) {
+                toast.success(res.message || "Đăng ký thành công");
+                router.push(ROUTES.AUTH.LOGIN);
+                setEmail(data.email);
+                console.log('res', res);
+            }
+
+        } catch (error: any) {
+            toast.error(error.message || "Đăng ký thất bại");
             console.error("Login error:", error);
+        } finally {
+            setLoading(false);
         }
     };
+    //-----------------------------End-----------------------------//
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col  px-8 md:px-16">
@@ -106,9 +138,10 @@ const RegisterPageClient = () => {
                 <Button
                     type="submit"
                     size="full"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loading}
+                    isLoading={isSubmitting || loading}
                 >
-                    {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"} <MoveRight />
+                    {isSubmitting || loading ? "Đang đăng ký..." : "Đăng ký"} <MoveRight />
                 </Button>
             </section>
 
