@@ -10,7 +10,7 @@ const BASE_PATHS = {
 
 // Public routes
 const PUBLIC = {
-    HOME: '/',
+    HOME: BASE_PATHS.ROOT,
     LIBRARY: '/library',
     MAP: '/map',
     ABOUT: '/about',
@@ -59,17 +59,11 @@ const ADMIN_DASHBOARD = {
     },
 } as const;
 
-const PUBLIC = {
-    HOME: `${BASE_PATHS.ROOT}`,
-} as const;
-
-
 export const ROUTES = {
     AUTH,
     ADMIN_DASHBOARD,
     PUBLIC,
     BASE_PATHS,
-    PUBLIC,
 } as const;
 
 // Type exports for better TypeScript support
