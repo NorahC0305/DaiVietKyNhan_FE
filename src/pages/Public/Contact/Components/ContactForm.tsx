@@ -1,3 +1,5 @@
+'use client'
+
 import { ArrowRightIcon } from "lucide-react";
 import React from "react";
 import { Button } from "@/components/Atoms/ui/button";

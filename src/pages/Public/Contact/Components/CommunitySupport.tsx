@@ -1,3 +1,5 @@
+'use client'
+
 import React from "react";
 import { Button } from "@/components/Atoms/ui/button";
 
@@ -10,7 +12,6 @@ const CommunitySupport = () => {
       </p>
       <div className="mt-5 flex flex-col gap-3">
         <Button
-          asChild
           size="full"
           className="bg-amber-500 hover:bg-amber-600 text-black font-medium"
         >
@@ -19,7 +20,6 @@ const CommunitySupport = () => {
           </a>
         </Button>
         <Button
-          asChild
           size="full"
           className="bg-amber-500 hover:bg-amber-600 text-black font-medium"
         >

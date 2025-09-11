@@ -7,6 +7,15 @@ const BASE_PATHS = {
     MANAGE_STATISTICS: '/admin/manage-statistic',
 } as const;
 
+// Public routes
+const PUBLIC = {
+    HOME: '/',
+    LIBRARY: '/library',
+    MAP: '/map',
+    ABOUT: '/about',
+    CONTACT: '/contact',
+} as const;
+
 // Auth routes
 const AUTH = {
     LOGIN: `${BASE_PATHS.AUTH}/login`,
@@ -56,6 +65,7 @@ export const ROUTES = {
     AUTH,
     ADMIN_DASHBOARD,
     BASE_PATHS,
+    PUBLIC,
 } as const;
 
 // Type exports for better TypeScript support
