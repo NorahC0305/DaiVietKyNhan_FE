@@ -13,12 +13,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ILoginFormDataRequest, loginFormDataRequest } from "@models/user/request";
 import authService from "@services/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getSession, signIn } from "next-auth/react";
 import { ROLE } from "@constants/common";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { AuthError } from "@constants/errors";
+import { Alert, AlertDescription, AlertTitle } from "@components/Atoms/ui/alert";
 
 const LoginPageClient = () => {
     /**
@@ -40,6 +41,7 @@ const LoginPageClient = () => {
     });
 
     const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>("");
     const onSubmit = async (data: ILoginFormDataRequest) => {
         try {
             setLoading(true);
@@ -49,7 +51,7 @@ const LoginPageClient = () => {
                 ...data,
             });
             console.log('res', res);
-            
+
 
             //#region Handle response
             const status = res?.status;
@@ -101,6 +103,24 @@ const LoginPageClient = () => {
         }
     };
 
+    /**
+     * Handle resent verify account
+     * @returns 
+     */
+    const [countdown, setCountdown] = useState<number>(0);
+    const handleResentVerifyAccount = () => {
+        setCountdown(60);
+    }
+
+    useEffect(() => {
+        if (countdown <= 0) return;
+        const interval = setInterval(() => {
+            setCountdown((prev) => prev - 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [countdown]);
+    //--------------------End--------------------//
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-8 md:px-16">
@@ -109,6 +129,18 @@ const LoginPageClient = () => {
             </section>
 
             <H1 className="pb-6">Đăng nhập</H1>
+
+            {error && (
+                <Alert variant="error" className="mb-6">
+                    <AlertDescription>{error}</AlertDescription>
+
+                    {countdown > 0 ? (
+                        <AlertDescription>Gửi lại sau {countdown}s</AlertDescription>
+                    ) : (
+                        <AlertDescription onClick={handleResentVerifyAccount} className="cursor-pointer font-bold">Gửi lại</AlertDescription>
+                    )}
+                </Alert>
+            )}
 
             <section className="flex flex-col gap-2 mb-6">
                 <label className="text-md text-holder">Email</label>
