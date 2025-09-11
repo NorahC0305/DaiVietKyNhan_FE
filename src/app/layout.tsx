@@ -6,6 +6,7 @@ import QueryProviderWrapper from "@components/providers/QueryProviderWrapper";
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseLoading from "@components/Molecules/Loading";
+import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export default function RootLayout({
       >
         <ToastContainer />
         <QueryProviderWrapper>
-          <Suspense fallback={<VietnameseLoading />}>{children}</Suspense>
+          <Suspense fallback={<VietnameseHistoryLoading />}>{children}</Suspense>
           <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
             <SocialMediaIcons />
           </div>
