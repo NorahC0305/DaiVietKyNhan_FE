@@ -8,6 +8,7 @@ import underscoreImage from "../../../../public/underscore.png";
 import logoImage from "../../../../public/logo_dvkn.svg";
 import { ROUTES } from "@routes";
 import styles from "./index.module.scss";
+import effectGif from "../../../../public/effect-1.gif";
 
 interface HeaderProps {
   className?: string;
@@ -27,20 +28,36 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
   const NavLink = ({ href, label }: { href: string; label: string }) => {
     const isActive = pathname === href;
+    const EffectOverlay = ({ show }: { show: boolean }) => {
+      if (!show) return null;
 
+      return (
+        <div className="absolute inset-3 pointer-events-none opacity-0 group-hover:opacity-60 transition-all duration-300 transform scale-90 group-hover:scale-100 origin-center rounded-md overflow-hidden">
+          <Image
+            src={effectGif}
+            alt="Hover effect"
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        </div>
+      );
+    };
     return (
       <Link
         href={href}
-        className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden transition-colors duration-300 hover:bg-white/10 ${
+        className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden group transition-colors duration-300 ${
           isActive ? "text-yellow-400 font-semibold" : "hover:text-yellow-400"
         }`}
-        onClick={() => setMenuOpen(false)}
       >
         <span className="relative z-10">{label}</span>
 
+        {/* GIF Effect on hover */}
+        <EffectOverlay show={!isActive} />
+
         {/* Active state indicator */}
         {isActive && (
-          <div className="hidden md:flex absolute bottom-8 left-1/2 transform -translate-x-1/2 justify-center items-center w-full h-0 overflow-visible">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex justify-center items-center w-full h-0 overflow-visible">
             <Image
               src={underscoreImage}
               alt="Active indicator"
@@ -55,9 +72,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   };
 
   return (
-    <header
-    className="relative z-50 py-6"
-    >
+    <header className="p-3 backdrop-blur-lg bg-gray-100/10 rounded-xl">
       <div className="max-w-6xl mx-auto px-5 flex flex-row flex-wrap justify-between items-center relative z-10 gap-3 lg:gap-0">
         {/* Logo */}
         <div className="flex items-center order-1 lg:order-1 ml-0 lg:-ml-12 shrink-0">
@@ -80,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         <button
           type="button"
           aria-label="Mở/đóng menu"
-          className="z-20 lg:hidden order-2 ml-auto inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/30 text-white hover:bg-white/10 relative pointer-events-auto"
+          className="lg:hidden order-2 ml-auto inline-flex items-center justify-center w-10 h-10 rounded-md border border-white/30 text-white hover:bg-white/10 relative z-20"
           onClick={() => setMenuOpen((v) => !v)}
         >
           <svg
