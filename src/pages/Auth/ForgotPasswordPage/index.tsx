@@ -22,12 +22,12 @@ const ForgotPasswordPageClient = () => {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<any>({
+    } = useForm<{ email: string }>({
         // resolver: zodResolver(),
     })
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const onSubmit = async (data: any) => {
+    const onSubmit = async (data: { email: string }) => {
         try {
             setIsLoading(true);
 
