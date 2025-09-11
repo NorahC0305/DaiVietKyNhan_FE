@@ -17,12 +17,20 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { IBackendResponse } from '@models/backend';
+import { useUserSetEmail } from '@stores/user/selectors';
 
 const RegisterPageClient = () => {
     /**
      * Define variables hooks
      */
     const router = useRouter();
+    //-----------------------------End-----------------------------//
+
+
+    /**
+     * Define variables zustand
+     */
+    const setEmail = useUserSetEmail();
     //-----------------------------End-----------------------------//
 
 
@@ -50,9 +58,9 @@ const RegisterPageClient = () => {
             const res = await authService.register(data) as IBackendResponse<any>;
             if (res.statusCode === 201) {
                 toast.success(res.message || "Đăng ký thành công");
-                // router.push(ROUTES.AUTH.LOGIN);
+                router.push(ROUTES.AUTH.LOGIN);
+                setEmail(data.email);
                 console.log('res', res);
-
             }
 
         } catch (error: any) {

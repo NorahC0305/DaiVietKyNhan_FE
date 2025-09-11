@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { AuthError } from "@constants/errors";
 import { Alert, AlertDescription, AlertTitle } from "@components/Atoms/ui/alert";
+import { useEmailSelector, useUserSetEmail } from "@stores/user/selectors";
 
 const LoginPageClient = () => {
     /**
@@ -40,6 +41,14 @@ const LoginPageClient = () => {
         }
     });
 
+    /**
+     * Define variables zustand
+     */
+    const email = useEmailSelector();
+
+    const setEmail = useUserSetEmail();
+    //-----------------------------End-----------------------------//
+
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const onSubmit = async (data: ILoginFormDataRequest) => {
@@ -57,6 +66,10 @@ const LoginPageClient = () => {
             const status = res?.status;
             const error = res?.error;
             const delay = 3;
+
+            //TODO: remove this when intergate API
+            setError("Chưa verify nè");
+            setEmail(data.email);
 
             //#region Handle success
             if (status === 200) {
@@ -122,6 +135,16 @@ const LoginPageClient = () => {
     //--------------------End--------------------//
 
 
+    /**
+     * Clear stores when unmount
+     */
+    useEffect(() => {
+        return () => {
+            setEmail("");
+        };
+    }, []);
+    //--------------------End--------------------//
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-8 md:px-16">
             <section className="py-6 flex justify-center">
@@ -130,14 +153,21 @@ const LoginPageClient = () => {
 
             <H1 className="pb-6">Đăng nhập</H1>
 
-            {error && (
+            {(error || email) && (
                 <Alert variant="error" className="mb-6">
-                    <AlertDescription>{error}</AlertDescription>
-
-                    {countdown > 0 ? (
-                        <AlertDescription>Gửi lại sau {countdown}s</AlertDescription>
+                    {email && error ? (
+                        <>
+                            <AlertDescription>{error}</AlertDescription>
+                            {countdown > 0 ? (
+                                <AlertDescription>Gửi lại sau {countdown}s</AlertDescription>
+                            ) : (
+                                <AlertDescription onClick={handleResentVerifyAccount} className="cursor-pointer font-bold">Gửi lại</AlertDescription>
+                            )}
+                        </>
+                    ) : email ? (
+                        <AlertDescription>Vui lòng kiểm tra mail <span className="font-bold">{email}</span> để xác thực tài khoản </AlertDescription>
                     ) : (
-                        <AlertDescription onClick={handleResentVerifyAccount} className="cursor-pointer font-bold">Gửi lại</AlertDescription>
+                        <AlertDescription>{error}</AlertDescription>
                     )}
                 </Alert>
             )}
