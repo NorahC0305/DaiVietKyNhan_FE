@@ -24,7 +24,7 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       name: "Facebook",
       icon: facebookIcon,
       alt: "Facebook",
-      url: "https://facebook.com",
+      url: "https://www.facebook.com/DaiVietKyNhan",
     },
     {
       id: "community",
@@ -38,7 +38,7 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       name: "YouTube",
       icon: youtubeIcon,
       alt: "YouTube",
-      url: "https://youtube.com",
+      url: "https://www.youtube.com/@SuKyToanThu-vk3wi/featured",
     },
     {
       id: "discord",
@@ -52,7 +52,7 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       name: "TikTok",
       icon: tiktokIcon,
       alt: "TikTok",
-      url: "https://tiktok.com",
+      url: "https://www.tiktok.com/@daivietkynhan",
     },
   ];
 
