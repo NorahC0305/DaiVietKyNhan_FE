@@ -66,14 +66,14 @@ const VerifyOtpPageClient = () => {
 
 
     //#region Check email in localStorage and redirect if not found
-    useEffect(() => {
-        if (!isReady) return
-        if (!value) {
-            router.replace(ROUTES.AUTH.FORGOT_PASSWORD)
-        } else {
-            setValue('email', value || '')
-        }
-    }, [value, isReady, router])
+    // useEffect(() => {
+    //     if (!isReady) return
+    //     if (!value) {
+    //         router.replace(ROUTES.AUTH.FORGOT_PASSWORD)
+    //     } else {
+    //         setValue('email', value || '')
+    //     }
+    // }, [value, isReady, router])
     //#endregion
 
 
