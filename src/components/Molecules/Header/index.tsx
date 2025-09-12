@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import underscoreImage from "../../../../public/underscore.png";
 import logoImage from "../../../../public/logo_dvkn.svg";
 import { ROUTES } from "@routes";
-import styles from "./index.module.scss";
 import effectGif from "../../../../public/effect-1.gif";
 
 interface HeaderProps {
@@ -72,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   };
 
   return (
-    <header className="p-3 backdrop-blur-lg bg-gray-100/10 rounded-xl">
+    <header className="p-3 rounded-xl">
       <div className="max-w-6xl mx-auto px-5 flex flex-wrap justify-between items-center relative z-10 gap-3 lg:gap-0">
         {/* Logo */}
         <div className="flex items-center order-1 lg:order-1 ml-0 lg:-ml-12 shrink-0">
