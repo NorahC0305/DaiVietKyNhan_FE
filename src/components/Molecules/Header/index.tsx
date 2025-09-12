@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         >
           <Link
             href={ROUTES.AUTH.LOGIN}
-            className="group relative bg-white text-black px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            className="group relative bg-primary text-black px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
             onClick={() => setMenuOpen(false)}
           >
             <span className="relative z-10">Đăng Nhập</span>
