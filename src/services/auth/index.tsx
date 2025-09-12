@@ -8,6 +8,9 @@ const authService = {
     register: async (data: IRegisterFormDataRequest) => {
         return await http.post("/auth/register", data);
     },
+    resendVerifiedEmail: async (email: string) => {
+        return await http.post(`/auth/resend-verified-email/${email}`, {});
+    }
 }
 
 

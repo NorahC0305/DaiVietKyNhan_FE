@@ -13,20 +13,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ILoginFormDataRequest, loginFormDataRequest } from "@models/user/request";
 import authService from "@services/auth";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getSession, signIn } from "next-auth/react";
 import { ROLE } from "@constants/common";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
-import { AuthError } from "@constants/errors";
 import { Alert, AlertDescription, AlertTitle } from "@components/Atoms/ui/alert";
 import { useEmailSelector, useUserSetEmail } from "@stores/user/selectors";
+import { IBackendResponse } from "@models/backend";
 
 const LoginPageClient = () => {
     /**
      * Define variables hooks
      */
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const message = searchParams?.get('message');
     //----------------------End----------------------//
 
     const {
@@ -45,6 +47,7 @@ const LoginPageClient = () => {
      * Define variables zustand
      */
     const email = useEmailSelector();
+    console.log('email', email);
 
     const setEmail = useUserSetEmail();
     //-----------------------------End-----------------------------//
@@ -65,11 +68,6 @@ const LoginPageClient = () => {
             //#region Handle response
             const status = res?.status;
             const error = res?.error;
-            const delay = 3;
-
-            //TODO: remove this when intergate API
-            setError("Chưa verify nè");
-            setEmail(data.email);
 
             //#region Handle success
             if (status === 200) {
@@ -90,8 +88,8 @@ const LoginPageClient = () => {
             //#endregion
 
             //#region Handle error
-            if (error === AuthError.INACTIVE) {
-                toast.error("Email chưa được xác thực. Vui lòng kiểm tra email để kích hoạt tài khoản. Chuyển hướng đến trang xác thực trong " + delay + " giây.");
+            if (status === 401) {
+                setError(error || "Đăng nhập thất bại");
                 // const resSendOtp = await authService.sendOtp(data.email) as IBackendResponse<any>;
                 // if (resSendOtp.statusCode !== 201) {
                 //     toast.error(resSendOtp.message || "Gửi mã OTP thất bại");
@@ -121,7 +119,13 @@ const LoginPageClient = () => {
      * @returns 
      */
     const [countdown, setCountdown] = useState<number>(0);
-    const handleResentVerifyAccount = () => {
+    const handleResentVerifyAccount = async () => {
+        const res = await authService.resendVerifiedEmail(email) as IBackendResponse<any>;
+        if (res.statusCode !== 201) {
+            setError(res.message || "Gửi lại email xác thực thất bại");
+            return;
+        }
+        toast.success(res.message || "Gửi lại email xác thực thành công");
         setCountdown(60);
     }
 
@@ -132,17 +136,6 @@ const LoginPageClient = () => {
         }, 1000);
         return () => clearInterval(interval);
     }, [countdown]);
-    //--------------------End--------------------//
-
-
-    /**
-     * Clear stores when unmount
-     */
-    useEffect(() => {
-        return () => {
-            setEmail("");
-        };
-    }, []);
     //--------------------End--------------------//
 
     return (
@@ -169,6 +162,12 @@ const LoginPageClient = () => {
                     ) : (
                         <AlertDescription>{error}</AlertDescription>
                     )}
+                </Alert>
+            )}
+
+            {(message && !error) && (
+                <Alert variant="success" className="mb-6">
+                    <AlertDescription>{message}</AlertDescription>
                 </Alert>
             )}
 

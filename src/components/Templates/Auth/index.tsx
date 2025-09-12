@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import TransitionWrapper from '@atoms/TransitionWrapper'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import QuangTrung from '../../../../public/QuangTrung_NguyenHue.jpg'
 import MacDinhChi from '../../../../public/MacDinhChi.jpg'
 import DaiVietKyNhan from '../../../../public/DaiVietKyNhan.jpg'
@@ -12,6 +12,7 @@ import NguyenCongTru from '../../../../public/NguyenCongTru.jpg'
 import styles from './index.module.scss'
 import { usePathname } from 'next/navigation'
 import { ROUTES } from '@routes'
+import { useUserSetEmail } from '@stores/user/selectors'
 
 const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
     /**
@@ -42,6 +43,17 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
     const handleCard2FlipEnd = useCallback(() => {
         setIsCard2Flipping(false)
     }, [])
+
+    /**
+     * Clear stores when unmount
+     */
+    const setEmail = useUserSetEmail();
+    // useEffect(() => {
+    //     return () => {
+    //         setEmail("");
+    //     };
+    // }, []);
+    //--------------------End--------------------//
 
     return (
         <div className={`relative w-full h-screen flex justify-center items-center ${pathname === ROUTES.AUTH.REGISTER ? 'my-20' : ''}`}>

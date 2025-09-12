@@ -34,7 +34,6 @@ export const authOptions: NextAuthOptions = {
                     email: credentials.email,
                     password: credentials.password,
                 }) as { statusCode: number; data: any; message: string };
-                console.log('res', res);
 
                 switch (res.statusCode) {
                     case 404:
