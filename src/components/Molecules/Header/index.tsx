@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import underscoreImage from "../../../../public/underscore.png";
 import logoImage from "../../../../public/logo_dvkn.svg";
 import { ROUTES } from "@routes";
-import styles from "./index.module.scss";
 import effectGif from "../../../../public/effect-1.gif";
 
 interface HeaderProps {
