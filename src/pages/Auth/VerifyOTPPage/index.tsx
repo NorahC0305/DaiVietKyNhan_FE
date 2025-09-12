@@ -13,6 +13,10 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useGetLocalStorage } from "@hooks/useLocalStorage"
 import H1 from "@components/Atoms/H1"
+import authService from "@services/auth"
+import { IBackendResponse } from "@models/backend"
+import { toast } from "react-toastify"
+import { IVerifyOtpFormDataRequest, verifyOtpFormDataRequest } from "@models/user/request"
 // import authService from "@services/auth"
 
 const VerifyOtpPageClient = () => {
@@ -29,51 +33,52 @@ const VerifyOtpPageClient = () => {
         setValue,
         trigger,
         formState: { errors },
-    } = useForm<any>({
-        // resolver: zodResolver(any),
+    } = useForm<IVerifyOtpFormDataRequest>({
+        resolver: zodResolver(verifyOtpFormDataRequest),
     })
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const onSubmit = async (data: any) => {
-        // try {
-        //     setIsLoading(true)
-        //     const { email, otp } = data
+    const onSubmit = async (data: IVerifyOtpFormDataRequest) => {
+        try {
+            setIsLoading(true)
 
-        //     const res = await authService.verifyOtp(email, otp) as IBackendResponse<any>
-        //     if (res.statusCode !== 201) {
-        //         toast.error(res.message || 'Xác thực OTP thất bại')
-        //         setIsLoading(false)
-        //         return
-        //     }
-        //     localStorage.setItem('otp', otp)
-        //     toast.success(res.message || 'Xác thực OTP thành công')
-        //     router.push(ROUTES.AUTH.RESET_PASSWORD)
-        // } catch (error) {
-        //     toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.")
-        //     console.error(error)
-        // } finally {
-        //     setIsLoading(false)
-        // }
+            const res = await authService.verifyOtp(data) as IBackendResponse<any>
+            console.log(res);
+
+            if (res.statusCode !== 201) {
+                toast.error(res.message || 'Xác thực OTP thất bại')
+                setIsLoading(false)
+                return
+            }
+            localStorage.setItem('code', data.code)
+            toast.success(res.message || 'Xác thực OTP thành công')
+            router.push(ROUTES.AUTH.RESET_PASSWORD)
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.")
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
     }
     //#endregion
 
 
     //#region Handle OTP input change
-    const handleOTPChange = (otp: string) => {
-        setValue('otp', otp)
-        trigger('otp')
+    const handleOTPChange = (code: string) => {
+        setValue('code', code)
+        trigger('code')
     }
     //#endregion
 
 
     //#region Check email in localStorage and redirect if not found
-    // useEffect(() => {
-    //     if (!isReady) return
-    //     if (!value) {
-    //         router.replace(ROUTES.AUTH.FORGOT_PASSWORD)
-    //     } else {
-    //         setValue('email', value || '')
-    //     }
-    // }, [value, isReady, router])
+    useEffect(() => {
+        if (!isReady) return
+        if (!value) {
+            router.replace(ROUTES.AUTH.FORGOT_PASSWORD)
+        } else {
+            setValue('email', value || '')
+        }
+    }, [value, isReady, router])
     //#endregion
 
 
@@ -88,7 +93,7 @@ const VerifyOtpPageClient = () => {
     }, [countdown])
 
     const handleResendOTP = async () => {
-        // setCountdown(60)
+        setCountdown(60)
         // const res = await authService.sendOtp(value || '') as IBackendResponse<any>
 
         // if (res.statusCode !== 201) {
@@ -124,12 +129,12 @@ const VerifyOtpPageClient = () => {
                 <Input type="hidden" defaultValue={value || ''} {...register('email')} />
 
                 {/* OTP */}
-                <label htmlFor="otp" className="text-holder text-sm font-medium">
+                <label htmlFor="otp" className="text-holder text-md mt-3">
                     Mã OTP
                 </label>
                 <div className="flex flex-col mt-2">
-                    <input type="hidden" {...register('otp')} />
-                    <OTPInput length={6} error={!!errors.otp} onChange={handleOTPChange} />
+                    <input type="hidden" {...register('code')} />
+                    <OTPInput length={6} error={!!errors.code} onChange={handleOTPChange} />
                 </div>
 
                 {/* Send OTP again */}
@@ -137,8 +142,8 @@ const VerifyOtpPageClient = () => {
                     {countdown > 0 ? (
                         <div className="flex justify-between items-center w-full">
                             {
-                                errors.otp ?
-                                    <span className="text-red-500 text-sm">{"'" + errors.otp.message + "'"}</span>
+                                errors.code ?
+                                    <span className="text-red-500 text-sm">{"'" + errors.code.message + "'"}</span>
                                     : <span className="text-sm text-description"></span>
                             }
                             <span className="text-sm text-primary">Gửi lại mã OTP sau {countdown}s</span>
@@ -146,8 +151,8 @@ const VerifyOtpPageClient = () => {
                     ) : (
                         <div className="flex justify-between items-center w-full">
                             {
-                                errors.otp ?
-                                    <span className="text-red-500 text-sm">{"'" + errors.otp.message + "'"}</span>
+                                errors.code ?
+                                    <span className="text-red-500 text-sm">{"'" + errors.code.message + "'"}</span>
                                     : <span className="text-sm text-description"></span>
                             }
                             <p
@@ -166,12 +171,12 @@ const VerifyOtpPageClient = () => {
             </form>
 
 
-            <p className="cursor-pointer flex mt-5 justify-center items-center text-holder hover:underline" onClick={handleBack} >
-                <ArrowLeft size={20} className="text-dark mr-2" />
-                <Link href={''} onClick={handleBack} className="font-sm text-dark">
-                    Quay lại
+            <div className="flex mt-5 justify-center items-center text-holder">
+                <Link href={''} className="flex items-center font-sm text-dark hover:underline" onClick={handleBack}>
+                    <ArrowLeft size={20} className="text-dark mr-2" />
+                    <p className="font-sm text-dark">Quay lại</p>
                 </Link>
-            </p>
+            </div>
         </div>
     )
 }

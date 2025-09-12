@@ -157,9 +157,11 @@ const ResetPassswordPage = () => {
                 </form>
 
                 <p className="flex mt-5 justify-center items-center text-holder">
-                    <ArrowLeft size={20} className="text-dark mr-2" />
-                    <Link href={ROUTES.AUTH.FORGOT_PASSWORD} className="font-sm text-dark hover:underline" onClick={() => localStorage.removeItem('email')}>
-                        Quay lại
+                    <Link href={ROUTES.AUTH.FORGOT_PASSWORD} className="flex flex-row items-center hover:underline" onClick={() => localStorage.removeItem('email')}>
+                        <ArrowLeft size={20} className="text-dark mr-2" />
+                        <p className="font-sm text-dark">
+                            Quay lại
+                        </p>
                     </Link>
                 </p>
             </div >

@@ -87,9 +87,11 @@ const ForgotPasswordPageClient = () => {
                 </form>
 
                 <p className="flex mt-5 justify-center items-center text-holder">
-                    <ArrowLeft size={20} className="text-dark mr-2" />
-                    <Link href={ROUTES.AUTH.LOGIN} className="font-sm text-dark hover:underline">
-                        Quay lại trang đăng nhập
+                    <Link href={ROUTES.AUTH.LOGIN} className="flex items-center hover:underline">
+                        <ArrowLeft size={20} className="text-dark mr-2" />
+                        <p className="font-sm text-dark">
+                            Quay lại trang đăng nhập
+                        </p>
                     </Link>
                 </p>
                 {/* --- End --- */}

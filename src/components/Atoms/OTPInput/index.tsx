@@ -55,8 +55,8 @@ const OTPInput = ({ length = 6, onChange, error = false }: ICOMPONENTS.OTPInputP
                     onPaste={handlePaste}
                     placeholder=""
                     title={`OTP digit ${index + 1}`}
-                    className={`border w-12 h-12 text-center text-lg rounded 
-                        ${error ? 'border-red-500' : 'border-grey'}`}
+                    className={`border w-12 h-12 text-center text-lg rounded text-holder
+                        ${error ? 'border-red-500' : 'border-holder'}`}
                 />
             ))}
         </div>

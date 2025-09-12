@@ -1,5 +1,5 @@
 import http from "@configs/fetch"
-import { ILoginFormDataRequest, IRegisterFormDataRequest } from "@models/user/request";
+import { ILoginFormDataRequest, IRegisterFormDataRequest, IVerifyOtpFormDataRequest } from "@models/user/request";
 
 const authService = {
     login: async (data: ILoginFormDataRequest) => {
@@ -13,6 +13,9 @@ const authService = {
     },
     forgotPassword: async (email: string) => {
         return await http.post(`/auth/forgot-password`, { email });
+    },
+    verifyOtp: async (data: IVerifyOtpFormDataRequest) => {
+        return await http.post(`/auth/verify-forgot-password`, data);
     }
 }
 
