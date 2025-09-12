@@ -57,12 +57,12 @@ export default function NotFoundPageClient() {
         setCharacterClicked(true);
         setTimeout(() => setCharacterClicked(false), 500);
     };
-    
+
     const [hasMounted, setHasMounted] = useState<boolean>(false);
     useEffect(() => { setHasMounted(true); }, []);
     if (!hasMounted) return null;
     return (
-        <div>
+        <>
             <Header />
             {/* Render các ngôi sao từ state */}
             {sparkles.map(({ id, top, left }) => (
@@ -74,7 +74,7 @@ export default function NotFoundPageClient() {
             </div>
             <div className={styles.backgroundOverlay}></div>
 
-            <main className="px-5 py-10 flex justify-center items-center min-h-[calc(100vh-120px)] relative z-10">
+            <main className="px-5 py-16 flex justify-center items-center min-h-[calc(100vh-120px)] relative z-10">
                 <div className={clsx(styles.errorContainer, 'max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-20 items-center text-center lg:text-left')}>
                     <div ref={errorContentRef} className="animate-slide-in-left">
                         <div className={clsx(styles.errorCode, 'text-[140px] font-bold leading-none mb-5 animate-text-glow')}>
@@ -132,6 +132,6 @@ export default function NotFoundPageClient() {
                     </div>
                 </div>
             </main>
-        </div>
+        </>
     );
 }
