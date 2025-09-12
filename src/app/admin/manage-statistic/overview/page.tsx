@@ -1,6 +1,6 @@
 import StatisticOverViewPage from "@pages/Admin/Statistic/Overview";
 
-export default async function UserInfo() {
+export default async function StatisticOverviewServer() {
   return (
     <>
       <StatisticOverViewPage />

@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   };
 
   return (
-    <header className="p-3 backdrop-blur-lg bg-gray-100/10 rounded-xl">
+    <header className="p-3 rounded-xl">
       <div className="max-w-6xl mx-auto px-5 flex flex-row flex-wrap justify-between items-center relative z-10 gap-3 lg:gap-0">
         {/* Logo */}
         <div className="flex items-center order-1 lg:order-1 ml-0 lg:-ml-12 shrink-0">
