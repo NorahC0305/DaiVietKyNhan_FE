@@ -13,7 +13,7 @@ type SparkleItem = { id: number; top: number; left: number };
 
 export default function NotFoundPageClient() {
     const [sparkles, setSparkles] = useState<SparkleItem[]>([]);
-    const [isCharacterClicked, setCharacterClicked] = useState(false);
+    const [isCharacterClicked, setCharacterClicked] = useState<boolean>(false);
 
     const characterContainerRef = useRef<HTMLDivElement | null>(null);
     const errorContentRef = useRef<HTMLDivElement | null>(null);
@@ -57,9 +57,12 @@ export default function NotFoundPageClient() {
         setCharacterClicked(true);
         setTimeout(() => setCharacterClicked(false), 500);
     };
-
+    
+    const [hasMounted, setHasMounted] = useState<boolean>(false);
+    useEffect(() => { setHasMounted(true); }, []);
+    if (!hasMounted) return null;
     return (
-        <>
+        <div>
             <Header />
             {/* Render các ngôi sao từ state */}
             {sparkles.map(({ id, top, left }) => (
@@ -129,6 +132,6 @@ export default function NotFoundPageClient() {
                     </div>
                 </div>
             </main>
-        </>
+        </div>
     );
 }
