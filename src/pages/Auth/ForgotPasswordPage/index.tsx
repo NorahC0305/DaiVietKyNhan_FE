@@ -13,6 +13,9 @@ import { useState } from "react"
 import { Button } from "@components/Atoms/ui/button"
 import { Input } from "@components/Atoms/ui/input"
 import H1 from "@components/Atoms/H1"
+import { IBackendResponse } from "@models/backend"
+import { toast } from "react-toastify"
+import { z } from "zod"
 
 const ForgotPasswordPageClient = () => {
     const router = useRouter();
@@ -23,7 +26,7 @@ const ForgotPasswordPageClient = () => {
         handleSubmit,
         formState: { errors },
     } = useForm<{ email: string }>({
-        // resolver: zodResolver(),
+        resolver: zodResolver(z.object({ email: z.string().email() })),
     })
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -31,25 +34,16 @@ const ForgotPasswordPageClient = () => {
         try {
             setIsLoading(true);
 
-            // const res = await userService.getAUserByEmail(data.email) as IBackendResponse<any>;
-            // if (!res.statusCode || ![200, 201].includes(res.statusCode)) {
-            //     toast.error(res.message || "Email không tồn tại trong hệ thống");
-            //     return;
-            // }
+            const res = await authService.forgotPassword(data.email) as IBackendResponse<any>;
+            if (!res.statusCode || ![200, 201].includes(res.statusCode)) {
+                toast.error(res.message || "Email không tồn tại trong hệ thống");
+                return;
+            }
 
-            // const otpRes = await authService.sendOtp(data.email) as IBackendResponse<any>;
-            // if (otpRes.statusCode !== 201) {
-            //     toast.error(otpRes.message || "Gửi mã OTP thất bại");
-            //     return;
-            // }
+            localStorage.setItem('email', data.email);
+            toast.success("Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra email để tiếp tục đặt lại mật khẩu.");
 
-            // localStorage.setItem('email', data.email);
-            // toast.success("Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra email để tiếp tục đặt lại mật khẩu.", {
-            //     duration: 5000,
-            //     position: "top-right",
-            // });
-
-            // router.push(`${ROUTES.AUTH.VERIFY_OTP}?purpose=reset-password`);
+            router.push(ROUTES.AUTH.VERIFY_OTP);
         } catch (error) {
             // toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
             console.error(error);

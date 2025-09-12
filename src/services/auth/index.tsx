@@ -10,6 +10,9 @@ const authService = {
     },
     resendVerifiedEmail: async (email: string) => {
         return await http.post(`/auth/resend-verified-email/${email}`, {});
+    },
+    forgotPassword: async (email: string) => {
+        return await http.post(`/auth/forgot-password`, { email });
     }
 }
 
