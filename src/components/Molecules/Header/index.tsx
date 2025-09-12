@@ -17,6 +17,7 @@ const navigationItems = [
   { href: ROUTES.PUBLIC.HOME, label: "Trang chủ" },
   { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân" },
   { href: ROUTES.PUBLIC.MAP, label: "Bản đồ Kỳ Nhân" },
+  { href: ROUTES.PUBLIC.PRODUCTS, label: "Sản phẩm" },
   { href: ROUTES.PUBLIC.ABOUT, label: "Về chúng tôi" },
   { href: ROUTES.PUBLIC.CONTACT, label: "Liên hệ" },
 ];
@@ -45,9 +46,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     return (
       <Link
         href={href}
-        className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden group transition-colors duration-300 ${
-          isActive ? "text-yellow-400 font-semibold" : "hover:text-yellow-400"
-        }`}
+        className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden group transition-colors duration-300 ${isActive ? "text-yellow-400 font-semibold" : "hover:text-yellow-400"
+          }`}
       >
         <span className="relative z-10">{label}</span>
 
@@ -72,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
   return (
     <header className="p-3 rounded-xl">
-      <div className="max-w-6xl mx-auto px-5 flex flex-row flex-wrap justify-between items-center relative z-10 gap-3 lg:gap-0">
+      <div className="max-w-6xl mx-auto px-5 flex flex-wrap justify-between items-center relative z-10 gap-3 lg:gap-0">
         {/* Logo */}
         <div className="flex items-center order-1 lg:order-1 ml-0 lg:-ml-12 shrink-0">
           <Link
@@ -115,9 +115,8 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
         {/* Navigation Links */}
         <nav
-          className={`${
-            menuOpen ? "flex" : "hidden"
-          } w-full lg:w-auto lg:flex items-center gap-3 md:gap-4 lg:gap-8 order-3 lg:order-2 flex-col lg:flex-row justify-center mt-2 lg:mt-0`}
+          className={`${menuOpen ? "flex" : "hidden"
+            } w-full lg:w-auto lg:flex items-center gap-3 md:gap-4 lg:gap-8 order-3 lg:order-2 flex-col lg:flex-row justify-center mt-2 lg:mt-0`}
         >
           {navigationItems.map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} />
@@ -126,23 +125,15 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
 
         {/* Auth Buttons */}
         <div
-          className={`${
-            menuOpen ? "flex" : "hidden"
-          } w-full lg:w-auto lg:flex gap-3 md:gap-5 order-4 lg:order-3 justify-center lg:justify-end mt-2 lg:mt-0`}
+          className={`${menuOpen ? "flex" : "hidden"
+            } w-full lg:w-auto lg:flex gap-3 md:gap-5 order-4 lg:order-3 justify-center lg:justify-end mt-2 lg:mt-0`}
         >
           <Link
             href={ROUTES.AUTH.LOGIN}
-            className="group relative bg-primary text-black px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+            className="group relative bg-primary text-holder px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
             onClick={() => setMenuOpen(false)}
           >
             <span className="relative z-10">Đăng Nhập</span>
-          </Link>
-          <Link
-            href={ROUTES.AUTH.REGISTER}
-            className="group relative bg-transparent text-white px-4 lg:px-6 py-2 lg:py-2.5 border border-white rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter cursor-pointer min-w-[96px] text-center overflow-hidden transition-colors duration-200 hover:bg-white hover:text-black"
-            onClick={() => setMenuOpen(false)}
-          >
-            <span className="relative z-10">Đăng kí</span>
           </Link>
         </div>
       </div>

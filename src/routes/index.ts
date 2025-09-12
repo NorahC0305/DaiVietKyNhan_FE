@@ -14,6 +14,7 @@ const PUBLIC = {
     LIBRARY: '/library',
     MAP: '/map',
     ABOUT: '/about',
+    PRODUCTS: '/products',
     CONTACT: '/contact',
 } as const;
 
