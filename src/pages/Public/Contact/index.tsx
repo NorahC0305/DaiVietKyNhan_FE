@@ -13,13 +13,8 @@ const ContacPage = () => {
       <div className="min-h-screen w-full">
         <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
           <ContactHeader />
-          {/* <VietnameseLoading /> */}
-          {/* <VietnameseHistoryLoading/> */}
-          <div className="mt-8 flex flex-col lg:flex-row gap-8">
-            <div className="lg:w-1/2">
-              <ContactForm />
-            </div>
-            <div className="lg:w-1/2 space-y-8">
+          <div className="mt-8 flex justify-center">
+            <div className="w-full max-w-2xl space-y-8">
               <ContactInfo />
               <CommunitySupport />
             </div>
