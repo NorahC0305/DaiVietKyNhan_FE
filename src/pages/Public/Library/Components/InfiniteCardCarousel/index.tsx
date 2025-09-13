@@ -167,7 +167,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
   } = usePrevNextButtons(emblaApi);
 
   const setTweenNodes = useCallback((emblaApi: EmblaCarouselType): void => {
-    tweenNodes.current = emblaApi.slideNodes().map((slideNode) => {
+    tweenNodes.current = emblaApi.slideNodes()?.map((slideNode) => {
       return slideNode.querySelector(".card-container") as HTMLElement;
     });
   }, []);
@@ -238,7 +238,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
     <div className="max-w-6xl mx-auto">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y touch-pinch-zoom -ml-8">
-          {cards.map((card, index) => (
+          {cards?.map((card, index) => (
           <div
           className="transform-gpu flex-none w-[300px] min-w-0 pl-8 cursor-pointer"
           key={card.id}
