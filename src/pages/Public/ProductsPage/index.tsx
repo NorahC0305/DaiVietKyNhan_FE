@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { BookCard } from './components/bookingCard'
+import BookCard  from './components/bookingCard'
 
 const ProductsPageClient = () => {
 

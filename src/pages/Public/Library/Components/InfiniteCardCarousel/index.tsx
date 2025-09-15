@@ -239,15 +239,15 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y touch-pinch-zoom -ml-8">
           {cards?.map((card, index) => (
-          <div
-          className="transform-gpu flex-none w-[300px] min-w-0 pl-8 cursor-pointer"
-          key={card.id}
-          onClick={() => {
-            if (emblaApi) {
-              emblaApi.scrollTo(index);
-            }
-          }}
-        >
+            <div
+              className="transform-gpu flex-none w-[300px] min-w-0 pl-8 cursor-pointer"
+              key={card.id}
+              onClick={() => {
+                if (emblaApi) {
+                  emblaApi.scrollTo(index);
+                }
+              }}
+            >
               <div className="card-container transition-transform duration-200 ease-out">
                 <Card
                   {...card}
@@ -259,7 +259,6 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
           ))}
         </div>
       </div>
-
     </div>
   );
 };
