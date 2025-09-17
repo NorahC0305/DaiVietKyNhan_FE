@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./index.module.scss";
+import { motion } from "framer-motion";
 
 // Import images
 import facebookIcon from "../../../../public/facebook.png";
@@ -57,60 +58,89 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
   ];
 
   return (
-    <div className={`${styles.socialMediaIcons} ${className || ""}`}>
+    <motion.div
+      className={`${styles.socialMediaIcons} ${className || ""}`}
+      initial="hidden"
+      animate="show"
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+    >
       {/* Top divider */}
-      <Image
-        src={verticalDivider}
-        alt="Top Divider"
-        width={2}
-        height={2}
-        style={{
-          display: "block",
-          marginBottom: "-1px",
-        }}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        <Image
+          src={verticalDivider}
+          alt="Top Divider"
+          width={2}
+          height={2}
+          style={{
+            display: "block",
+            marginBottom: "-1px",
+          }}
+          priority
+        />
+      </motion.div>
 
       {socialIcons.map((social, index) => (
-        <a
+        <motion.div
           key={social.id}
-          href={social.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.socialLink}
-          style={{
-            marginBottom: index < socialIcons.length - 1 ? "-1px" : "-1px",
-          }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.04 * index, duration: 0.28, ease: "easeOut" }}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
         >
-          {/* Particles */}
-          <div className={styles.particles}>
-            <div className={styles.particle1} />
-            <div className={styles.particle2} />
-            <div className={styles.particle3} />
-            <div className={styles.particle4} />
-            <div className={styles.particle5} />
-          </div>
+          <a
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.socialLink}
+            style={{
+              marginBottom: index < socialIcons.length - 1 ? "-1px" : "-1px",
+            }}
+          >
+            {/* Particles */}
+            <div className={styles.particles}>
+              <div className={styles.particle1} />
+              <div className={styles.particle2} />
+              <div className={styles.particle3} />
+              <div className={styles.particle4} />
+              <div className={styles.particle5} />
+            </div>
 
-          <Image
-            src={social.icon}
-            alt={social.alt}
-            width={60}
-            height={60}
-            className={styles.iconImage}
-          />
-        </a>
+            <Image
+              src={social.icon}
+              alt={social.alt}
+              width={56}
+              height={56}
+              sizes="(max-width: 640px) 48px, (max-width: 768px) 54px, 56px"
+              className={styles.iconImage}
+              priority={social.id === "facebook"}
+            />
+          </a>
+        </motion.div>
       ))}
 
       {/* Bottom divider */}
-      <Image
-        src={verticalDividerUpper}
-        alt="Bottom Divider"
-        width={2}
-        height={2}
-        style={{
-          display: "block",
-        }}
-      />
-    </div>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.05 * socialIcons.length }}
+      >
+        <Image
+          src={verticalDividerUpper}
+          alt="Bottom Divider"
+          width={2}
+          height={2}
+          style={{
+            display: "block",
+          }}
+          priority
+        />
+      </motion.div>
+    </motion.div>
   );
 };
 

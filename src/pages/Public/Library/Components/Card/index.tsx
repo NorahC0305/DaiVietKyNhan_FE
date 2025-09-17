@@ -7,6 +7,7 @@ export default function Card({
   cardNumber,
   imageSrc,
   backContent,
+  isFlipped,
 }: {
   isLocked: boolean;
   isCenter: boolean;
@@ -18,6 +19,7 @@ export default function Card({
     ctaText?: string;
     ctaHref?: string;
   };
+  isFlipped?: boolean;
 }) {
   return (
     <div className="relative">
@@ -31,7 +33,8 @@ export default function Card({
           <div
             className={cn(
               "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-              isCenter && !isLocked && "group-hover:[transform:rotateY(180deg)]"
+              isCenter && !isLocked && "group-hover:[transform:rotateY(180deg)]",
+              isFlipped && !isLocked && "[transform:rotateY(180deg)]"
             )}
           >
             {/* Front side */}

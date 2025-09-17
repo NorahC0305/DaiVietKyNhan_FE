@@ -219,3 +219,50 @@
   border-radius: 50%;
   animation: particleFloat5 2.3s infinite ease-in-out;
 }
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .socialMediaIcons {
+    padding: 12px 6px;
+  }
+
+  .socialLink {
+    &:hover {
+      // Keep hover subtle on mobile (often no hover)
+      transform: rotate(45deg) scale(1.02);
+      filter: brightness(1.08) drop-shadow(0 0 3px rgba(255, 215, 0, 0.35));
+    }
+  }
+
+  .iconImage {
+    // Next/Image respects width/height props, this ensures visual balance
+    max-width: 48px;
+    max-height: 48px;
+  }
+
+  .particles {
+    width: 72px;
+    height: 72px;
+  }
+
+  .particle1,
+  .particle2,
+  .particle3,
+  .particle4,
+  .particle5 {
+    // Slightly smaller sparkles on mobile
+    transform-origin: center;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .iconImage {
+    max-width: 54px;
+    max-height: 54px;
+  }
+
+  .particles {
+    width: 84px;
+    height: 84px;
+  }
+}
