@@ -67,8 +67,7 @@ const MOCK_CARDS: CardData[] = [
 const LibraryPage = () => {
   return (
     <div
-      className="min-h-screen w-full
-     flex items-center justify-center py-12"
+      className="min-h-screen w-full flex items-center justify-center py-6 sm:py-10 md:py-12"
     >
       <EmblaCarouselWithCards
         cards={MOCK_CARDS}

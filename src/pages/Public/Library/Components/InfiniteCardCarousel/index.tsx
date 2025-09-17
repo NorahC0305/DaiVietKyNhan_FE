@@ -154,6 +154,7 @@ const useDotButton = (emblaApi: EmblaCarouselType | undefined) => {
 const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
   const { cards, options } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
+  const [flippedIndex, setFlippedIndex] = React.useState<number | null>(null);
   const tweenFactor = useRef(0);
   const tweenNodes = useRef<HTMLElement[]>([]);
 
@@ -231,19 +232,27 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
       .on("reInit", setTweenFactor)
       .on("reInit", tweenScale)
       .on("scroll", tweenScale)
-      .on("slideFocus", tweenScale);
+      .on("slideFocus", tweenScale)
+      .on("select", () => {
+        // Reset flip when changing selected slide
+        setFlippedIndex(null);
+      });
   }, [emblaApi, tweenScale]);
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="mx-auto max-w-full sm:max-w-3xl md:max-w-5xl lg:max-w-6xl px-3 sm:px-4">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex touch-pan-y touch-pinch-zoom -ml-8">
+        <div className="flex touch-pan-y touch-pinch-zoom -ml-3 sm:-ml-6 md:-ml-8">
           {cards?.map((card, index) => (
             <div
-              className="transform-gpu flex-none w-[300px] min-w-0 pl-8 cursor-pointer"
+              className="transform-gpu flex-none w-[200px] sm:w-[240px] md:w-[280px] lg:w-[300px] min-w-0 pl-3 sm:pl-6 md:pl-8 cursor-pointer"
               key={card.id}
               onClick={() => {
-                if (emblaApi) {
+                if (!emblaApi) return;
+                const isCenter = index === selectedIndex;
+                if (isCenter && !card.isLocked) {
+                  setFlippedIndex((prev) => (prev === index ? null : index));
+                } else {
                   emblaApi.scrollTo(index);
                 }
               }}
@@ -253,6 +262,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
                   {...card}
                   isCenter={index === selectedIndex}
                   cardNumber={index}
+                  isFlipped={flippedIndex === index}
                 />
               </div>
             </div>
