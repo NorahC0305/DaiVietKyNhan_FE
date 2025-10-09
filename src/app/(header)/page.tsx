@@ -1,8 +1,11 @@
+import { authOptions } from "@lib/authOptions";
 import HomePageClient from "@pages/Public/HomePage";
-import Image from "next/image";
+import { getServerSession } from "next-auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions) as UTILS.ISession;
+
   return (
-    <HomePageClient />
+    <HomePageClient session={session} />
   );
 }

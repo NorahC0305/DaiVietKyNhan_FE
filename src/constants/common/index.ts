@@ -3,8 +3,14 @@ const COOKIES = {
 };
 
 const ROLE = {
-    ADMIN: 'admin',
-    CUSTOMER: 'customer',
+    ADMIN: {
+        ID: 1,
+        NAME: 'admin',
+    },
+    CUSTOMER: {
+        ID: 2,
+        NAME: 'customer',
+    },
 };
 
 export { COOKIES, ROLE };

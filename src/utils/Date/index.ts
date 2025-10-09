@@ -98,3 +98,6 @@ export const getWeekdayLabel = (date: string) => {
     const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
     return weekdays[d.getDay()]
 }
+
+const currentYear = new Date().getFullYear();
+export const years = Array.from({ length: 100 }, (_, index: number) => currentYear - index);

@@ -14,12 +14,13 @@ export const authOptions: NextAuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
                 accessToken: { label: "Access Token", type: "text" },
+                refreshToken: { label: "Refresh Token", type: "text" },
             },
 
             async authorize(credentials) {
                 if (!credentials) return null;
 
-                if (credentials?.accessToken) {
+                if (credentials.accessToken) {
                     const decoded: any = jwtDecode(credentials.accessToken);
 
                     return {
@@ -27,6 +28,7 @@ export const authOptions: NextAuthOptions = {
                         role: decoded.role,
                         email: credentials.email,
                         accessToken: credentials.accessToken,
+                        refreshToken: credentials.refreshToken,
                     };
                 }
 
@@ -35,6 +37,8 @@ export const authOptions: NextAuthOptions = {
                     password: credentials.password,
                 }) as { statusCode: number; data: any; message: string };
 
+
+                console.log('res', res);
                 switch (res.statusCode) {
                     case 404:
                         throw new Error(res.message || AuthError.USER_NOT_FOUND);
@@ -53,6 +57,9 @@ export const authOptions: NextAuthOptions = {
                     id: res.data.id,
                     email: res.data.email,
                     role: res.data.role.id,
+                    name: res.data.name,
+                    gender: res.data.gender,
+                    birthDate: res.data.birthDate,
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
                 }
@@ -66,6 +73,9 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
+                token.name = user.name;
+                token.gender = user.gender;
+                token.birthDate = user.birthDate;
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
             }
@@ -74,6 +84,9 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }: any) {
             session.user.id = token.id;
             session.user.role = token.role;
+            session.user.name = token.name;
+            session.user.gender = token.gender;
+            session.user.birthDate = token.birthDate;
             session.user.accessToken = token.accessToken;
             session.user.refreshToken = token.refreshToken;
             (session as any).accessToken = token.accessToken;

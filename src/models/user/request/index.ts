@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UserSchema } from "../entity";
 
 /**
  * Login form data request
@@ -36,3 +37,19 @@ export const verifyOtpFormDataRequest = z.object({
 });
 export type IVerifyOtpFormDataRequest = z.infer<typeof verifyOtpFormDataRequest>;
 //-----------------End-Verify-Otp-Request-----------------//
+
+
+/**
+ * Update me body schema
+ */
+export const UpdateMeBodySchema = UserSchema.pick({
+    name: true,
+    phoneNumber: true,
+    gender: true,
+    birthDate: true,
+    avatar: true
+})
+    .partial()
+    .strict()
+export type IUpdateMeBodySchema = z.infer<typeof UpdateMeBodySchema>
+//-----------------End-----------------//

@@ -47,8 +47,6 @@ const LoginPageClient = () => {
      * Define variables zustand
      */
     const email = useEmailSelector();
-    console.log('email', email);
-
     const setEmail = useUserSetEmail();
     //-----------------------------End-----------------------------//
 
@@ -72,16 +70,18 @@ const LoginPageClient = () => {
             //#region Handle success
             if (status === 200) {
                 const session = await getSession() as unknown as UTILS.ISession;
-                // switch (session?.user?.role) {
-                //     case ROLE.CUSTOMER:
-                //         router.push(ROUTES.PUBLIC.HOME);
-                //         break;
-                //     case ROLE.ADMIN:
-                //         router.push(ROUTES.ADMIN_DASHBOARD.USER.INFO);
-                //         break;
-                //     default:
-                //         break;
-                // }
+                console.log('session', session);
+
+                switch (session?.user?.role) {
+                    case ROLE.CUSTOMER.ID:
+                        router.push(ROUTES.PUBLIC.HOME);
+                        break;
+                    case ROLE.ADMIN.ID:
+                        router.push(ROUTES.ADMIN_DASHBOARD.USER.INFO);
+                        break;
+                    default:
+                        break;
+                }
                 router.refresh();
                 return;
             }
