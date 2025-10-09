@@ -43,7 +43,7 @@ const DetailInfo = () => {
                                 <div className='relative flex items-center justify-center '>
                                     <Image src={ButtonHeight} alt="button" className="h-full max-w-[100px] md:max-w-[138px]" />
                                     <div className='absolute w-full h-full flex items-center justify-start flex-col'>
-                                        <span className='text-center font-dfvn-graphit h-full md:text-2xl text-lg font-bold text-secondary'>
+                                        <span className='text-center font-dfvn-graphit md:mt-1.5 h-full md:text-2xl text-lg font-bold text-secondary'>
                                             6
                                         </span>
                                         <span className='text-center font-dfvn-graphit h-full text-md text-third'>
@@ -56,7 +56,7 @@ const DetailInfo = () => {
                                 <div className='relative  flex items-center justify-center gap-2'>
                                     <Image src={ButtonHeight} alt="button" className="h-auto max-w-[100px] md:max-w-[138px]" />
                                     <div className='absolute w-full h-full flex items-center justify-start flex-col'>
-                                        <span className='text-center font-dfvn-graphit h-full md:text-2xl text-xl font-bold text-secondary'>
+                                        <span className='text-center font-dfvn-graphit md:mt-1.5 h-full md:text-2xl text-xl font-bold text-secondary'>
                                             23
                                         </span>
                                         <span className='text-center font-dfvn-graphit h-full text-md text-third'>
@@ -69,7 +69,7 @@ const DetailInfo = () => {
                                 <div className='relative  flex items-center justify-center gap-2'>
                                     <Image src={ButtonHeight} alt="button" className="h-auto max-w-[100px] md:max-w-[138px]" />
                                     <div className='absolute w-full h-full flex items-center justify-start flex-col'>
-                                        <span className='text-center font-dfvn-graphit h-full md:text-2xl text-xl font-bold text-secondary'>
+                                        <span className='text-center font-dfvn-graphit md:mt-1.5 h-full md:text-2xl text-xl font-bold text-secondary'>
                                             59
                                         </span>
                                         <span className='text-center font-dfvn-graphit h-full text-md text-third'>
@@ -82,7 +82,7 @@ const DetailInfo = () => {
                                 <div className='relative  flex items-center justify-center gap-2'>
                                     <Image src={ButtonHeight} alt="button" className="h-auto max-w-[100px] md:max-w-[138px]" />
                                     <div className='absolute w-full h-full flex items-center justify-start flex-col'>
-                                        <span className='text-center font-dfvn-graphit h-full md:text-2xl text-xl font-bold text-secondary'>
+                                        <span className='text-center font-dfvn-graphit md:mt-1.5 h-full md:text-2xl text-xl font-bold text-secondary'>
                                             59
                                         </span>
                                         <span className='text-center font-dfvn-graphit h-full text-md text-third'>
@@ -106,7 +106,7 @@ const DetailInfo = () => {
                                     <Image src={ButtonHeight} alt="button" className="h-full max-w-[80px] md:max-w-[110px]" />
 
                                     <div className='absolute flex items-center justify-start flex-col'>
-                                        <p className='flex items-center justify-center text-center text-secondary font-dfvn-graphit h-fit text-xl mt-1'>
+                                        <p className='flex items-center justify-center text-center text-secondary font-dfvn-graphit h-fit md:text-2xl text-xl mt-1'>
                                             099
                                         </p>
                                     </div>
