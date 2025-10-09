@@ -13,7 +13,7 @@ const PUBLIC = {
     HOME: BASE_PATHS.ROOT,
     LIBRARY: '/library',
     MAP: '/map',
-    ABOUT: '/about',
+    ABOUT: '/about-us',
     PRODUCTS: '/products',
     CONTACT: '/contact',
 } as const;
