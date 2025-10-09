@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const AboutUsPage = () => {
   return (
-    <div className="min-h-screenÏ text-white py-8 px-4 font-sans">
+    <div className="min-h-screen text-white py-8 px-4 font-sans">
       {/* Main Title */}
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
@@ -13,50 +13,70 @@ const AboutUsPage = () => {
 
       {/* First Scroll Section - Dai Viet Ky Nhan */}
       <div className="mb-16">
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative w-full max-w-5xl mx-auto">
           {/* Scroll Paper Background */}
-          <div
-            className="relative bg-cover bg-center bg-no-repeat p-8 md:p-22 rounded-3xl"
-            style={{ backgroundImage: "url(/ScrollPaper.svg)" }}
-          >
-            {/* Content */}
-            <div className="flex flex-col lg:flex-row items-start gap-8 relative z-10">
+          <Image
+            src="/ScrollPaper.svg"
+            alt="Scroll Paper"
+            width={1000}
+            height={1000}
+            className="w-full h-auto"
+          />
+
+          {/* Content - Giới hạn chặt chẽ hơn để nằm trong ảnh nền */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75%] sm:w-[70%] md:w-[55%] max-h-[70%] overflow-y-auto">
+            {/* Thay đổi để mobile cũng hiển thị 2 cột như desktop */}
+            <div className="grid grid-cols-2 gap-2 md:gap-4 items-start">
               {/* Left Side - Text Content */}
-              <div className="flex-1 text-gray-800">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ddac40] mb-6 drop-shadow-sm">
-                  ĐẠI VIỆT KỸ NHÂN
+              <div className="text-gray-800">
+                {/* Điều chỉnh font size nhỏ hơn để nằm trong ảnh nền */}
+                <h2 className="text-center text-[9px] md:text-base font-bold text-[#ddac40] mb-1 md:mb-2 drop-shadow-sm">
+                  ĐẠI VIỆT KỲ NHÂN
                 </h2>
-                <div className="space-y-4">
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
-                    Đại Việt Kỷ Nhân là một dự án cộng đồng sáng tạo, với sứ
-                    mệnh làm mới cách kể chuyện lịch sử và đưa những nhân vật
-                    "lực la – kiệt xuất – bị lãng quên" trong sử Việt đến gần
-                    hơn với thế hệ trẻ.
+                <div className="space-y-1 md:space-y-2">
+                  {/* Giảm kích thước text để nằm trong ảnh nền */}
+                  <p className="text-[8px] sm:text-[10px] md:text-sm leading-tight text-gray-700">
+                    Đại Việt Kỳ Nhân là một dự án cộng đồng sáng tạo, ra đời với
+                    sứ mệnh làm mới cách kể chuyện lịch sử và đưa những nhân vật
+                    "kỳ lạ – kiệt xuất – bị lãng quên" trong sử Việt đến gần hơn
+                    với thế hệ trẻ.
                   </p>
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
+                  <p className="text-[8px] sm:text-[10px] md:text-sm leading-tight text-gray-700">
                     Thông qua những minh họa nhân vật công phu, mang đậm bản sắc
                     và tính thẩm mỹ hiện đại, dự án hướng tới việc kết nối Gen Z
                     với lịch sử bằng những hình thức truyền tải gần gũi, trực
                     quan và cảm xúc hơn.
                   </p>
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
+                  <p className="text-[8px] sm:text-[10px] md:text-sm leading-tight text-gray-700">
                     Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác
-                    – kết nối cộng đồng. Đại Việt Kỷ Nhân mong muốn tạo nên một
-                    không gian nói lịch sử không chỉ được ghi nhớ mà còn được
-                    sống lại một cách sáng tạo, và truyền cảm hứng trong đời
-                    sống hiện đại.
+                    – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một
+                    không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được
+                    sống lại một cách sáng tạo và truyền cảm hứng trong đời sống
+                    hiện đại.
                   </p>
                 </div>
               </div>
 
               {/* Right Side - Images */}
-              <div className="flex-1 flex justify-center items-center">
-                <div className="w-full max-w-md">
+              {/* Điều chỉnh layout cho mobile 2 cột */}
+              <div className="flex flex-col gap-1 md:gap-2 justify-center items-center">
+                {/* Giảm kích thước ảnh để nằm trong ảnh nền */}
+                <div className="w-full max-w-[80%] md:max-w-xs">
                   <Image
                     src="/boardgamefb2b 1.svg"
                     alt="Đại Việt Kỷ Nhân Cards"
-                    width={400}
-                    height={300}
+                    width={300}
+                    height={225}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                </div>
+                {/* Giảm kích thước ảnh để nằm trong ảnh nền */}
+                <div className="w-full max-w-[80%] md:max-w-xs">
+                  <Image
+                    src="/daivietkynhan1h 1.svg"
+                    alt="Đại Việt Kỷ Nhân Cards"
+                    width={300}
+                    height={225}
                     className="w-full h-auto rounded-lg shadow-lg"
                   />
                 </div>
@@ -67,47 +87,55 @@ const AboutUsPage = () => {
       </div>
 
       {/* Second Scroll Section - Founder */}
+
       <div className="mb-16">
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative w-full max-w-5xl mx-auto">
           {/* Scroll Paper Background */}
-          <div
-            className="relative bg-cover bg-center bg-no-repeat p-8 md:p-22 rounded-3xl"
-            style={{ backgroundImage: "url(/ScrollPaper.svg)" }}
-          >
-            {/* Content */}
-            <div className="flex flex-col lg:flex-row items-start gap-8 relative z-10">
+          <Image
+            src="/ScrollPaper.svg"
+            alt="Scroll Paper"
+            width={1000}
+            height={1000}
+            className="w-full h-auto"
+          />
+
+          {/* Content - Giới hạn chặt chẽ hơn để nằm trong ảnh nền */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75%] sm:w-[70%] md:w-[55%] max-h-[70%] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 items-start">
               {/* Left Side - Logo */}
-              <div className="flex-1 flex justify-center items-center">
-                <div className="w-48 h-48 md:w-56 md:h-56">
+              <div className="flex justify-center items-center mb-4 md:mb-0">
+                <div className="w-full h-32 md:h-64">
+                  {/* Reduced mobile height for logo */}
                   <Image
                     src="/big-logo.svg"
                     alt="Đại Việt Kỷ Nhân Logo"
-                    width={200}
-                    height={200}
-                    className="w-full h-full drop-shadow-xl"
+                    width={300}
+                    height={300}
+                    className="w-full h-full object-contain drop-shadow-xl"
                   />
                 </div>
               </div>
 
               {/* Right Side - Text Content */}
-              <div className="flex-1 text-gray-800">
-                <h2 className="text-2xl md:text-3xl font-bold text-[#ddac40] mb-6 drop-shadow-sm">
+              <div className="text-gray-800">
+                <h2 className="text-center text-sm sm:text-base md:text-lg font-bold text-[#ddac40] mb-2 md:mb-3 drop-shadow-sm">
                   FOUNDER
                 </h2>
-                <div className="space-y-4">
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
-                    Đại Việt Kỷ Nhân được khởi xướng bởi một người trẻ yêu sử –
-                    Tô Quốc Nghĩ, họa sĩ minh họa và nhà sáng tạo nội dung có
+                <div className="space-y-1 md:space-y-2">
+                  {/* Reduced text size slightly for tighter mobile fit */}
+                  <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed text-gray-700">
+                    Đại Việt Kỳ Nhân được khởi xướng bởi một người trẻ yêu sử –
+                    Tô Quốc Nghi, họa sĩ minh họa và nhà sáng tạo nội dung có
                     niềm đam mê đặc biệt với lịch sử và bản sắc dân tộc.
                   </p>
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
+                  <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed text-gray-700">
                     Với tư duy thẩm mỹ hiện đại kết hợp tinh thần gìn giữ di
                     sản, anh là người đứng sau hơn 500 minh họa nhân vật lịch sử
                     mang phong cách riêng biệt – vừa chỉn chu về sử liệu, vừa
                     cuốn hút về hình ảnh.
                   </p>
-                  <p className="text-base md:text-lg leading-relaxed text-gray-700">
-                    Từ những nét vẽ đầu tiên, Tô Quốc Nghĩ đã dần định hình nên
+                  <p className="text-[10px] sm:text-xs md:text-sm leading-relaxed text-gray-700">
+                    Từ những nét vẽ đầu tiên, Tô Quốc Nghi đã dần định hình nên
                     một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm
                     hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới
                     mẻ, gần gũi và đầy cảm xúc.
