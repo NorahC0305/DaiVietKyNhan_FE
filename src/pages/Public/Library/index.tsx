@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
+import DailyCheckin from "@/components/Molecules/DailyCheckin";
 
 interface CardData {
   id: number;
@@ -65,13 +67,34 @@ const MOCK_CARDS: CardData[] = [
   { id: 12, isLocked: true },
 ];
 const LibraryPage = () => {
+  const [isDailyCheckinOpen, setIsDailyCheckinOpen] = useState(false);
+
   return (
-    <div
-      className="min-h-screen w-full flex items-center justify-center py-6 sm:py-10 md:py-12"
-    >
-      <EmblaCarouselWithCards
-        cards={MOCK_CARDS}
-        options={{ loop: true, align: "center" }}
+    <div className="min-h-screen w-full relative">
+      {/* Header với nút Daily Checkin */}
+      <div className="absolute top-4 right-4 z-10">
+        <button
+          onClick={() => setIsDailyCheckinOpen(true)}
+          className="bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg shadow-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 flex items-center gap-2 font-semibold"
+        >
+          <span className="text-lg">📅</span>
+          <span>Sổ Điểm Danh</span>
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="min-h-screen w-full flex items-center justify-center py-6 sm:py-10 md:py-12">
+        <EmblaCarouselWithCards
+          cards={MOCK_CARDS}
+          options={{ loop: true, align: "center" }}
+        />
+      </div>
+
+      {/* Daily Checkin Modal */}
+      <DailyCheckin
+        isModal={true}
+        isOpen={isDailyCheckinOpen}
+        onClose={() => setIsDailyCheckinOpen(false)}
       />
     </div>
   );
