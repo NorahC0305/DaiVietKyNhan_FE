@@ -6,7 +6,7 @@ import CommunitySupport from "./Components/CommunitySupport";
 import VietnameseLoading from "@components/Molecules/Loading";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 
-const ContacPage = () => {
+const ContactPage = () => {
   return (
     <div className="min-h-screen w-full bg-center bg-fixed relative">
       {/* translucent gray overlay */}
@@ -25,4 +25,4 @@ const ContacPage = () => {
   );
 };
 
-export default ContacPage;
+export default ContactPage;
