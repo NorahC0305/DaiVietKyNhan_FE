@@ -7,6 +7,7 @@ import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseLoading from "@components/Molecules/Loading";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
+import localFont from 'next/font/local';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const StreetSignSans = localFont({
+  src: './fonts/StreetSignSans.otf',
+  variable: '--font-bd-street-sign',
 });
 
 export const metadata: Metadata = {
@@ -34,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${StreetSignSans.variable} antialiased`}
       >
         <ToastContainer />
         <QueryProviderWrapper>
