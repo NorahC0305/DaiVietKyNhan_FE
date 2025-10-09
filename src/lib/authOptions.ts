@@ -37,6 +37,8 @@ export const authOptions: NextAuthOptions = {
                     password: credentials.password,
                 }) as { statusCode: number; data: any; message: string };
 
+
+                console.log('res', res);
                 switch (res.statusCode) {
                     case 404:
                         throw new Error(res.message || AuthError.USER_NOT_FOUND);
@@ -55,6 +57,8 @@ export const authOptions: NextAuthOptions = {
                     id: res.data.id,
                     email: res.data.email,
                     role: res.data.role.id,
+                    name: res.data.name,
+                    gender: res.data.gender,
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
                 }
@@ -68,6 +72,8 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
+                token.name = user.name;
+                token.gender = user.gender;
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
             }
@@ -76,6 +82,8 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }: any) {
             session.user.id = token.id;
             session.user.role = token.role;
+            session.user.name = token.name;
+            session.user.gender = token.gender;
             session.user.accessToken = token.accessToken;
             session.user.refreshToken = token.refreshToken;
             (session as any).accessToken = token.accessToken;
