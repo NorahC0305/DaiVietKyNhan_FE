@@ -1,7 +1,10 @@
 import HomePageClient from "@pages/Public/HomePage";
-import Image from "next/image";
+import { getServerSession } from "next-auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession();
+  console.log('session', session);
+
   return (
     <HomePageClient />
   );

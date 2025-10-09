@@ -14,12 +14,13 @@ export const authOptions: NextAuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
                 accessToken: { label: "Access Token", type: "text" },
+                refreshToken: { label: "Refresh Token", type: "text" },
             },
 
             async authorize(credentials) {
                 if (!credentials) return null;
 
-                if (credentials?.accessToken) {
+                if (credentials.accessToken) {
                     const decoded: any = jwtDecode(credentials.accessToken);
 
                     return {
@@ -27,6 +28,7 @@ export const authOptions: NextAuthOptions = {
                         role: decoded.role,
                         email: credentials.email,
                         accessToken: credentials.accessToken,
+                        refreshToken: credentials.refreshToken,
                     };
                 }
 

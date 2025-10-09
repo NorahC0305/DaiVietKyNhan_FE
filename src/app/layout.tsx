@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import QueryProviderWrapper from "@components/providers/QueryProviderWrapper";
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
-import VietnameseLoading from "@components/Molecules/Loading";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import localFont from 'next/font/local';
-import ForceLandscape from "@components/Atoms/ForceLandscape";
 
 const StreetSignSans = localFont({
   src: './fonts/StreetSignSans.otf',
