@@ -131,9 +131,9 @@ const ModalLayout: React.FC<
               </div>
 
               {/* Progress and Reward Display */}
-              <div className="flex flex-col sm:flex-row items-center bg-gradient-to-b from-yellow-100 to-amber-50 border border-amber-800 rounded-lg p-1.5 sm:p-2 mb-3 sm:mb-4 relative z-20 max-w-[300px] mx-auto">
-                <div className="flex-1 text-center mb-1.5 sm:mb-0">
-                  <div className="text-base sm:text-lg font-bold text-gray-800 mb-1">
+              <div className="flex flex-col sm:flex-row items-center bg-gradient-to-b from-yellow-100 to-amber-50 border border-amber-800 rounded-lg p-2 sm:p-3 mb-3 sm:mb-4 relative z-20 max-w-[510px] mx-auto">
+                <div className="flex-1 text-center mb-1.5 sm:mb-0 px-2 sm:px-3">
+                  <div className="text-base sm:text-xl font-extrabold text-red-500 mb-1">
                     {currentProgress}/7
                   </div>
                   <div className="text-gray-600 text-xs">
@@ -141,7 +141,7 @@ const ModalLayout: React.FC<
                   </div>
                 </div>
                 <div className="w-full sm:w-px h-px sm:h-6 bg-gray-500 my-1.5 sm:my-0 sm:mx-1.5"></div>
-                <div className="flex-1 flex justify-center">
+                <div className="flex-1 flex justify-center px-2 sm:px-3">
                   <RewardDisplay
                     reward={currentReward}
                     className={styles["reward-frame"]}

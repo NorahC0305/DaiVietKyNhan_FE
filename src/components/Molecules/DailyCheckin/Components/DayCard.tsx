@@ -38,14 +38,14 @@ const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
               variant === "mobile"
                 ? "w-6 h-6"
                 : "w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-            } bg-green-600 rounded-full flex items-center justify-center shadow-md`}
+            } bg-red-800 rounded-full flex items-center justify-center shadow-md`}
           >
             <Check
               className={`${
                 variant === "mobile"
                   ? "w-4 h-4"
                   : "w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4"
-              } text-white stroke-[2]`}
+              } text-white stroke-[3]`}
             />
           </div>
         ) : (
