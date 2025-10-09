@@ -1,8 +1,11 @@
 import React from 'react'
+import DetailInfo from './DetailInfo'
 
 const HomePageClient = () => {
   return (
-    <div>Home</div>
+    <>
+      <DetailInfo />
+    </>
   )
 }
 
