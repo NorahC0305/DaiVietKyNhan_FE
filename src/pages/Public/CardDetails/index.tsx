@@ -15,7 +15,7 @@ const CardDetailsPage = ({ content }: CardDetailsPageProps) => {
       <div className="w-full max-w-[1600px] px-2">
         <div className="relative w-full">
           <Image
-            src="/ScrollPaper.png"
+            src="/ScrollPaper.svg"
             alt="ScrollPaper"
             className="w-full h-auto object-contain"
             width={1600}
