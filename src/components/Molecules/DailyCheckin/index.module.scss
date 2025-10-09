@@ -1,0 +1,272 @@
+// Desktop scroll texture effect
+.scroll-texture {
+  // Paper texture effect for scroll content
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+        circle at 20% 30%,
+        rgba(139, 69, 19, 0.03) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(139, 69, 19, 0.03) 0%,
+        transparent 50%
+      );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// Special reward frame effect - using decorative banner image
+.reward-frame {
+  // The decorative banner image provides the ornate frame effect
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  
+  // Optimize background image rendering
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+// Mobile-optimized button styles
+.mobileButton {
+  min-height: 48px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  // Improve button performance
+  will-change: transform;
+  backface-visibility: hidden;
+  
+  // Better focus states for accessibility
+  &:focus-visible {
+    outline: 2px solid #dc2626;
+    outline-offset: 2px;
+  }
+  
+  // Smooth transitions
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Card styles for mobile
+.mobileCard {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Improve performance
+  will-change: transform;
+  backface-visibility: hidden;
+  
+  // Better focus management
+  &:focus-within {
+    outline: 2px solid #f59e0b;
+    outline-offset: 2px;
+  }
+}
+
+.mobileCard:active {
+  transform: scale(0.98);
+}
+
+// Grid layout for mobile
+.mobileGrid {
+  gap: 0.5rem;
+  
+  // Optimize grid rendering
+  contain: layout style;
+}
+
+.mobileGridItem {
+  padding: 2px;
+  min-height: 50px;
+  touch-action: manipulation;
+  
+  // Improve performance
+  will-change: transform;
+  transform: translateZ(0);
+  
+  // Better accessibility
+  &:focus-visible {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+  }
+}
+
+// Animation keyframes with better performance
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+// Progressive enhancement for mobile
+@supports (backdrop-filter: blur(10px)) {
+  .mobileCard {
+    backdrop-filter: blur(10px);
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .mobileCard {
+    border: 2px solid currentColor;
+  }
+  
+  .mobileButton {
+    border: 2px solid currentColor;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .mobileCard,
+  .mobileButton,
+  .mobileGridItem {
+    transition: none;
+  }
+  
+  .mobileCard:active {
+    transform: none;
+  }
+}
+
+// Dark mode support (if needed)
+@media (prefers-color-scheme: dark) {
+  .scroll-texture::before {
+    background-image: radial-gradient(
+        circle at 20% 30%,
+        rgba(139, 69, 19, 0.05) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(139, 69, 19, 0.05) 0%,
+        transparent 50%
+      );
+  }
+}
+
+// Modal specific styles
+.modalContent {
+  // Smooth modal animation
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  // Ensure modal content is properly contained
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  // Custom scrollbar for modal
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Modal animation keyframes
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+// Modal backdrop - Removed vì không sử dụng backdrop nữa
+// .modalBackdrop {
+//   // Smooth backdrop fade
+//   animation: backdropFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+// }
+
+// @keyframes backdropFadeIn {
+//   from {
+//     opacity: 0;
+//   }
+//   to {
+//     opacity: 1;
+//   }
+// }
+
+// Modal responsive adjustments với scroll background support
+@media (max-width: 640px) {
+  .modalContent {
+    margin: 0.5rem;
+    max-height: 85vh;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .modalContent {
+    margin: 1rem;
+    max-height: 80vh;
+  }
+}
+
+@media (min-width: 769px) {
+  .modalContent {
+    margin: 1rem;
+    max-height: 90vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modalContent {
+    margin: 2rem;
+    max-height: 95vh;
+  }
+}
+
+// Enhanced responsive modal styles
+.modalContent {
+  // Responsive padding
+  @media (max-width: 640px) {
+    padding: 0.5rem;
+  }
+  
+  @media (min-width: 641px) {
+    padding: 1rem;
+  }
+}
