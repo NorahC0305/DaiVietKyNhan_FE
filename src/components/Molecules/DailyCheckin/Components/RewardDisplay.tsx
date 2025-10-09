@@ -10,14 +10,14 @@ const RewardDisplay: React.FC<ICOMPONENTS.RewardDisplayProps> = memo(
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         minHeight: "40px",
-        minWidth: "80px",
+        minWidth: "180px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
       aria-label={`Reward: ${reward} points`}
     >
-      <div className="text-lg font-bold text-gray-800 relative z-10">
+      <div className="text-xl font-bold text-yellow-400 relative z-10">
         {reward}
       </div>
     </div>
