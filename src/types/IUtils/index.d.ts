@@ -10,6 +10,7 @@ declare namespace UTILS {
             id: string;
             name: string;
             email: string;
+            role: number;
         };
         accessToken: string;
         refreshToken: string;

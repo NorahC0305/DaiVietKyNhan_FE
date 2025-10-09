@@ -41,7 +41,7 @@ export default function RootLayout({
         <ToastContainer />
         <QueryProviderWrapper>
           <Suspense fallback={<VietnameseHistoryLoading />}>
-            <ForceLandscape>{children}</ForceLandscape>
+            {children}
           </Suspense>
           <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
             <SocialMediaIcons />
