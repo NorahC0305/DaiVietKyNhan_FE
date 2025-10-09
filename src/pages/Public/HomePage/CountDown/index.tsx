@@ -5,20 +5,24 @@ import frame from "../../../../../public/frame.svg"
 import ButtonImage from "../../../../../public/Button.svg"
 import { years } from '@utils/Date'
 
-const DetailInfo = () => {
+const CountDown = () => {
 
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
-                <Image src={ScrollPaper} alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" />
+                <Image src={ScrollPaper} alt="Scroll Paper" className="w-full h-auto max-w-[900px]" />
 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] md:w-[80%] flex items-center justify-center flex-col">
-                    <h1 className='text-center text-6xl font-bd-street-sign text-secondary mb-2'>
-                        THÔNG TIN CHI TIẾT
+                    <h1 className='text-center text-xl sm:text-5xl lg:text-6xl font-bd-street-sign text-secondary mb-2'>
+                        ĐẠI VIỆT KỲ NHÂN
+                    </h1>
+
+                    <h1 className='text-center text-xl sm:text-5xl lg:text-6xl font-bd-street-sign text-third mb-2'>
+                        Trang web chính thức ra mắt
                     </h1>
 
                     <div className='relative w-full flex justify-center'>
-                        <Image src={frame} alt="Frame" className="w-full h-auto max-w-[550px] md:max-w-[800px]" />
+                        <Image src={frame} alt="Frame" className="w-full h-auto max-w-[550px]" />
 
                         <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] md:w-[45%] flex items-center justify-start flex-col space-y-2 sm:space-y-4'>
                             {/* --- Hàng Giới tính --- */}
@@ -73,4 +77,4 @@ const DetailInfo = () => {
     )
 }
 
-export default DetailInfo;
+export default CountDown;
