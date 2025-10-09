@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
                     role: res.data.role.id,
                     name: res.data.name,
                     gender: res.data.gender,
+                    birthDate: res.data.birthDate,
                     accessToken: res.data.accessToken,
                     refreshToken: res.data.refreshToken,
                 }
@@ -74,6 +75,7 @@ export const authOptions: NextAuthOptions = {
                 token.role = user.role;
                 token.name = user.name;
                 token.gender = user.gender;
+                token.birthDate = user.birthDate;
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
             }
@@ -84,6 +86,7 @@ export const authOptions: NextAuthOptions = {
             session.user.role = token.role;
             session.user.name = token.name;
             session.user.gender = token.gender;
+            session.user.birthDate = token.birthDate;
             session.user.accessToken = token.accessToken;
             session.user.refreshToken = token.refreshToken;
             (session as any).accessToken = token.accessToken;

@@ -7,5 +7,6 @@ declare module 'next-auth/jwt' {
         accessToken: string;
         refreshToken: string;
         gender: string;
+        birthDate: string;
     }
 }

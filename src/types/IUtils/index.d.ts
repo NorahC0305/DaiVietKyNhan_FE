@@ -11,6 +11,8 @@ declare namespace UTILS {
             name: string;
             email: string;
             role: number;
+            gender: string;
+            birthDate: string;
         };
         accessToken: string;
         refreshToken: string;
