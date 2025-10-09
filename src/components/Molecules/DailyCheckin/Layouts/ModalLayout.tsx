@@ -92,7 +92,7 @@ const ModalLayout: React.FC<
           <div
             className="relative w-full"
             style={{
-              backgroundImage: "url('/scroll-vertical.png')",
+              backgroundImage: "url('/scroll-vertical.svg')",
               backgroundSize: "contain",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",

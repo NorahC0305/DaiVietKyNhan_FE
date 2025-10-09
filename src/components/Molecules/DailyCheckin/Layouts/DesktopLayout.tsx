@@ -17,7 +17,7 @@ const DesktopLayout: React.FC<ICOMPONENTS.LayoutProps> = memo(
       <div
         className="relative w-full max-w-[320px] sm:max-w-[500px] md:max-w-[700px] lg:max-w-[900px] xl:max-w-[1100px]"
         style={{
-          backgroundImage: "url('/scroll-vertical.png')",
+          backgroundImage: "url('/scroll-vertical.svg')",
           backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
