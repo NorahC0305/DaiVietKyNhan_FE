@@ -24,6 +24,7 @@
   --font-bd-street-sign: var(--font-bd-street-sign);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-dfvn-graphit: var(--font-dfvn-graphit);
 }
 
 body {
