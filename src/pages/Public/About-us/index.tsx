@@ -23,12 +23,12 @@ const AboutUsPage = () => {
             className="w-full h-auto"
           />
 
-          {/* Content - Giới hạn chặt chẽ hơn để nằm trong ảnh nền */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[75%] sm:w-[70%] md:w-[55%] max-h-[70%] overflow-y-auto">
+          {/* Content - Giảm kích thước để nằm gọn trong ảnh nền */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] sm:w-[65%] md:w-[50%] h-[70%] sm:h-[75%] md:h-[75%]">
             {/* Thay đổi để mobile cũng hiển thị 2 cột như desktop */}
-            <div className="grid grid-cols-2 gap-2 md:gap-4 items-start">
-              {/* Left Side - Text Content */}
-              <div className="text-gray-800">
+            <div className="grid grid-cols-2 gap-2 md:gap-4 items-stretch h-full">
+              {/* Left Side - Text Content - Sử dụng tối đa không gian có sẵn */}
+              <div className="text-gray-800 h-full overflow-y-auto pr-1">
                 {/* Điều chỉnh font size nhỏ hơn để nằm trong ảnh nền */}
                 <h2 className="text-center text-[9px] md:text-base font-bold text-[#ddac40] mb-1 md:mb-2 drop-shadow-sm">
                   ĐẠI VIỆT KỲ NHÂN
@@ -57,9 +57,8 @@ const AboutUsPage = () => {
                 </div>
               </div>
 
-              {/* Right Side - Images */}
-              {/* Điều chỉnh layout cho mobile 2 cột */}
-              <div className="flex flex-col gap-1 md:gap-2 justify-center items-center">
+              {/* Right Side - Images - Cố định, không scroll */}
+              <div className="flex flex-col gap-1 md:gap-2 justify-center items-center h-full">
                 {/* Giảm kích thước ảnh để nằm trong ảnh nền */}
                 <div className="w-full max-w-[80%] md:max-w-xs">
                   <Image
