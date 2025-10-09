@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import VietnameseLoading from "@components/Molecules/Loading";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import localFont from 'next/font/local';
+import ForceLandscape from "@components/Atoms/ForceLandscape";
 
 const StreetSignSans = localFont({
   src: './fonts/StreetSignSans.otf',
@@ -39,7 +40,9 @@ export default function RootLayout({
       >
         <ToastContainer />
         <QueryProviderWrapper>
-          <Suspense fallback={<VietnameseHistoryLoading />}>{children}</Suspense>
+          <Suspense fallback={<VietnameseHistoryLoading />}>
+            <ForceLandscape>{children}</ForceLandscape>
+          </Suspense>
           <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
             <SocialMediaIcons />
           </div>
