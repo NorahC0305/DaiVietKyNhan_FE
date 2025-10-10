@@ -5,8 +5,8 @@ import LucideIcon from "@/components/Atoms/LucideIcon";
 
 const ContactInfo = () => {
   return (
-    <div className="rounded-xl bg-gray-200/25 p-5 sm:p-16 border border-white/10 text-white">
-      <h2 className="text-2xl sm:text-3xl font-semibold">Thông tin liên hệ</h2>
+    <div className="rounded-xl bg-gray-200/25 py-1 px-10 sm:py-10 sm:px-16 border border-white/10 text-white">
+      <h2 className="text-2xl sm:text-4xl text-center font-semibold">Thông tin liên hệ</h2>
       <div className="mt-6 space-y-6">
         <div className="flex items-start gap-4">
           <div className="mt-1 h-12 w-12 flex items-center justify-center rounded-full bg-gray-200/25 border border-white/10">
@@ -15,7 +15,7 @@ const ContactInfo = () => {
           <div>
             <div className="text-base font-semibold">Email</div>
             <div className="text-base text-gray-200">
-              photogoagency.contact@gmail.com
+              daivietkynhan.er@gmail.com
             </div>
           </div>
         </div>
@@ -25,7 +25,7 @@ const ContactInfo = () => {
           </div>
           <div>
             <div className="text-base font-semibold">Điện thoại</div>
-            <div className="text-base text-gray-200">+1 (555) 123-4567</div>
+            <div className="text-base text-gray-200">039 495 9607</div>
           </div>
         </div>
         <div className="flex items-start gap-4">
@@ -33,8 +33,8 @@ const ContactInfo = () => {
             <LucideIcon name="MapPin" iconSize={24} iconColor="currentColor" />
           </div>
           <div>
-            <div className="text-base font-semibold">Địa chỉ văn phòng</div>
-            <div className="text-base text-gray-200">123 Photography Lane</div>
+            <div className="text-base font-semibold">Địa chỉ</div>
+            <div className="text-base text-gray-200">FM STUDIO</div>
           </div>
         </div>
       </div>
