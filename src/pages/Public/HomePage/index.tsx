@@ -4,7 +4,7 @@ import CountDown from './CountDown'
 import { IUser } from '@models/user/entity'
 
 const HomePageClient = ({ user }: { user: IUser }) => {
-  return (
+    return (
     <div className='mt-7'>
       {!user.gender && !user.birthDate ? <DetailInfo /> :
         <CountDown />

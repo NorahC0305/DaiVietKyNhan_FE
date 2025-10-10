@@ -5,7 +5,7 @@ const AboutUsPage = () => {
   return (
     <div className="min-h-screen text-white py-8 px-4 font-sans">
       {/* Main Title */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-2">
         <h1 className="text-4xl md:text-5xl font-dfvn-graphit font-extrabold text-white drop-shadow-lg">
           VỀ CHÚNG TÔI
         </h1>
