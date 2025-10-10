@@ -2,11 +2,11 @@
 
 import React from "react";
 import { Calendar } from "lucide-react";
-import { SystemStatusDashboard } from "@components/ReleaseDateManager/Components/Countdown";
-import { EventList } from "@components/ReleaseDateManager/Components/EventList";
-import { EventSummary } from "@components/ReleaseDateManager/Components/EventSummary";
+import { SystemStatusDashboard } from "@pages/Admin/System-Config/ReleaseDateManager/ReleaseDateManager/Components/Countdown";
+import { EventList } from "@pages/Admin/System-Config/ReleaseDateManager/ReleaseDateManager/Components/EventList";
+import { EventSummary } from "@pages/Admin/System-Config/ReleaseDateManager/ReleaseDateManager/Components/EventSummary";
 import { useReleaseDateManager } from "@hooks/useReleaseDateManager";
-import ReleaseDateForm from "@components/ReleaseDateManager/ReleaseDateForm";
+import ReleaseDateForm from "@pages/Admin/System-Config/ReleaseDateManager/ReleaseDateManager/ReleaseDateForm";
 
 const ReleaseDateManager: React.FC = () => {
   const {
