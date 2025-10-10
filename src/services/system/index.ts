@@ -3,17 +3,17 @@ import { ISetReleaseDateBodySchema, IUpdateReleaseDateBodySchema } from "@models
 
 
 const systemService = {
-    getReleaseDate: async () => {
-        return await http.get("/system/release-date");
+    getReleaseDate: async (qs: string) => {
+        return await http.get(`/system-config?qs=${qs}`);
     },
-    updateReleaseDate: async (data: IUpdateReleaseDateBodySchema) => {
-        return await http.patch("/system/release-date", data);
+    updateReleaseDate: async (id:number, data: IUpdateReleaseDateBodySchema) => {
+        return await http.put(`/system-config/${id}`, data);
     },
-    deleteReleaseDate: async (id: number) => {
-        return await http.delete("/system/release-date", { body: { id } });
+    deleteReleaseDate: async (id:number) => {
+        return await http.delete(`/system-config/${id}`,{});
     },
     setReleaseDate: async (data: ISetReleaseDateBodySchema) => {
-        return await http.put("/system-config", data);
+        return await http.post("/system-config", data);
     }
 }
 
