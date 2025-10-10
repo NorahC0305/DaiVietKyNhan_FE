@@ -1,36 +1,108 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@atoms/ui/button";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
-import { Input } from "@components/Atoms/ui/input";
+import { IUser } from "@models/user/entity";
+import { IRoleModel } from "@models/role/model";
+import { signOut } from "next-auth/react";
+import { ROUTES } from "@routes";
 
-const AdminHeader = () => {
+interface UserWithRole extends IUser {
+  role?: IRoleModel;
+}
+
+interface ApiUserResponse {
+  data: UserWithRole;
+}
+
+interface AdminHeaderProps {
+  user: ApiUserResponse;
+  pageTitle?: string;
+}
+
+const AdminHeader = ({
+  user,
+  pageTitle = "Bảng điều khiển",
+}: AdminHeaderProps) => {
+  // State for dropdown menu
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Get user initials for avatar fallback
+  const getUserInitials = (name: string) => {
+    return name
+      ?.split(" ")
+      ?.map((word) => word.charAt(0))
+      ?.join("")
+      ?.toUpperCase()
+      ?.slice(0, 2);
+  };
+
+  // Extract user data from API response
+  const userData = user?.data;
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await signOut({
+        callbackUrl: ROUTES.AUTH.LOGIN,
+        redirect: true,
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="flex items-center justify-between w-full p-5 border-b border-gray-300 bg-admin-primary">
-      {/* Left side - Mobile menu button will be handled by sidebar */}
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg md:text-xl font-semibold text-gray-800 hidden sm:block">
-          Quản lý Người dùng
-        </h2>
-        <div className="px-3 py-1 bg-orange-500 text-white text-sm font-medium rounded-md">
-          Admin
+    <div className="flex items-center justify-between w-full px-6 py-4 border-b border-gray-200 bg-white shadow-sm">
+      {/* Left side - Page title and breadcrumb */}
+      <div className="flex items-center gap-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            {pageTitle}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Chào mừng trở lại, {userData?.name}
+          </p>
         </div>
+        {userData?.role && (
+          <div className="px-3 py-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-semibold rounded-full shadow-sm">
+            {userData.role.name}
+          </div>
+        )}
       </div>
 
-      {/* Right side - User actions */}
-      <div className="flex items-center gap-2 md:gap-4">
-        {/* Find */}
+      {/* Right side - User actions and profile */}
+      <div className="flex items-center gap-3">
+        {/* Search */}
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 md:h-9 md:w-9 rounded-lg hover:bg-gray-100 transition-colors"
+          className="h-10 w-10 rounded-xl hover:bg-gray-100 transition-all duration-200"
           title="Tìm kiếm"
         >
           <LucideIcon
             name="Search"
-            iconSize={18}
+            iconSize={20}
             iconColor={COLORS.TEXT.DARK}
           />
         </Button>
@@ -39,43 +111,89 @@ const AdminHeader = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 md:h-9 md:w-9 rounded-lg hover:bg-gray-100 transition-colors"
+          className="h-10 w-10 rounded-xl hover:bg-gray-100 transition-all duration-200 relative"
           title="Thông báo"
         >
-          <LucideIcon
-            name="BellIcon"
-            iconSize={18}
-            iconColor={COLORS.TEXT.DARK}
-          />
+          <LucideIcon name="Bell" iconSize={20} iconColor={COLORS.TEXT.DARK} />
+          {/* Notification badge */}
+          <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            3
+          </span>
         </Button>
 
         {/* Settings */}
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 md:h-9 md:w-9 rounded-lg hover:bg-gray-100 transition-colors"
+          className="h-10 w-10 rounded-xl hover:bg-gray-100 transition-all duration-200"
           title="Cài đặt"
         >
           <LucideIcon
             name="Settings"
-            iconSize={18}
+            iconSize={20}
             iconColor={COLORS.TEXT.DARK}
           />
         </Button>
 
+        {/* Divider */}
+        <div className="h-8 w-px bg-gray-200"></div>
+
         {/* User Profile */}
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center">
-            <LucideIcon
-              name="User"
-              iconSize={16}
-              iconColor={COLORS.TEXT.LIGHT}
-            />
+        <div className="relative" ref={dropdownRef}>
+          <div className="flex items-center gap-3 pl-2">
+            <div className="relative">
+              {userData?.avatar ? (
+                <img
+                  src={userData.avatar}
+                  alt={userData.name}
+                  className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center border-2 border-gray-200">
+                  <span className="text-white font-semibold text-sm">
+                    {getUserInitials(userData?.name || "")}
+                  </span>
+                </div>
+              )}
+              {/* Online status indicator */}
+              <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 border-2 border-white rounded-full"></div>
+            </div>
+
+            <div className="hidden md:block">
+              <p className="text-sm font-semibold text-gray-900">
+                {userData?.name}
+              </p>
+              <p className="text-xs text-gray-500">{userData?.email}</p>
+            </div>
+
+            {/* Dropdown arrow */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <LucideIcon
+                name={isDropdownOpen ? "ChevronUp" : "ChevronDown"}
+                iconSize={16}
+                iconColor={COLORS.TEXT.DARK}
+              />
+            </Button>
           </div>
-          <div className="hidden md:block">
-            <p className="text-sm font-medium text-gray-800">Admin User</p>
-            <p className="text-xs text-gray-500">Administrator</p>
-          </div>
+
+          {/* Dropdown Menu - Only Logout */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <Button
+                variant="ghost"
+                className="w-full justify-start px-4 py-3 h-auto text-sm text-red-600 hover:bg-red-50"
+                onClick={handleLogout}
+              >
+                <LucideIcon name="LogOut" iconSize={16} iconColor="#dc2626" />
+                <span className="ml-3">Đăng xuất</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

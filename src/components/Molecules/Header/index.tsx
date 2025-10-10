@@ -22,7 +22,7 @@ import {
 
 interface HeaderProps {
   className?: string;
-  user: IUser;
+  user: IUser | null;
 }
 
 const navigationItems = [
@@ -167,8 +167,8 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
         >
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30">
             <Image
-              src={user.avatar || defaultAvatarUrl}
-              alt={user.name || "User Avatar"}
+              src={user?.avatar || defaultAvatarUrl}
+              alt={user?.name || "User Avatar"}
               width={40}
               height={40}
               className="w-full h-full object-cover"
@@ -208,9 +208,9 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
               <div className="py-2">
                 <div className="px-4 py-3 border-b border-gray-200/50">
                   <p className="text-sm font-semibold text-gray-800">
-                    {user.name || "User"}
+                    {user?.name || "User"}
                   </p>
-                  <p className="text-xs text-gray-600">{user.email}</p>
+                  <p className="text-xs text-gray-600">{user?.email}</p>
                 </div>
 
                 <Link

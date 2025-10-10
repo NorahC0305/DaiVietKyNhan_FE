@@ -63,7 +63,7 @@ export default function NotFoundPageClient() {
     if (!hasMounted) return null;
     return (
         <>
-            <Header />
+            <Header user={null} />
             {/* Render các ngôi sao từ state */}
             {sparkles.map(({ id, top, left }) => (
                 <Sparkle key={id} id={id} top={top} left={left} onAnimationEnd={removeSparkle} />
