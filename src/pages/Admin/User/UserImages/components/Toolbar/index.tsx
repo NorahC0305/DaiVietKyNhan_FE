@@ -12,7 +12,7 @@ const Toolbar = () => {
         <Input
           size="sm"
           placeholder="Tìm kiếm ảnh..."
-          className="bg-transparent hover:bg-gray-100"
+          className="bg-transparent hover:bg-gray-100 text-black"
         />
         <Button variant="outline" className="gap-2 border-gray-300">
           <LucideIcon name="Filter" iconSize={16} />
