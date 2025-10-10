@@ -4,6 +4,9 @@ import { UserSchema } from "@models/user/entity";
 import { IBackendResponse } from "@models/backend";
 import { IUser } from "@models/user/entity";
 
+// Force dynamic rendering since we need to access headers for auth
+export const dynamic = 'force-dynamic';
+
 async function userMe() {
   try {
     return await userService.getMe();
