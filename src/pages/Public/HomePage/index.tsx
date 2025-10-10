@@ -1,14 +1,15 @@
 import React from 'react'
 import DetailInfo from './DetailInfo'
 import CountDown from './CountDown'
+import { IUser } from '@models/user/entity'
 
-const HomePageClient = ({ session }: { session: UTILS.ISession }) => {
+const HomePageClient = ({ user }: { user: IUser }) => {
   return (
     <div className='mt-7'>
-      {!session.user.gender && !session.user.birthDate ? <DetailInfo /> :
+      {!user.gender && !user.birthDate ? <DetailInfo /> :
         <CountDown />
       }
-      
+
     </div>
   )
 }

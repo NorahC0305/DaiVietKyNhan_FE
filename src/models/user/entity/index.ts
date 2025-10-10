@@ -1,4 +1,4 @@
-import { Gender, UserStatus } from "@constants/user";
+import { USER } from "@constants/user";
 import z from "zod";
 
 export const UserSchema = z.object({
@@ -7,10 +7,10 @@ export const UserSchema = z.object({
     name: z.string(),
     password: z.string().min(6).max(100),
     phoneNumber: z.string().min(9).max(15),
-    gender: z.enum([Gender.MALE, Gender.FEMALE, Gender.OTHER]).nullable(),
+    gender: z.enum([USER.GENDER.MALE, USER.GENDER.FEMALE, USER.GENDER.OTHER]).nullable(),
     birthDate: z.coerce.date().nullable(),
     avatar: z.string().nullable(),
-    status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE]),
+    status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
     roleId: z.number().positive(),
     createdById: z.number().nullable(),
     updatedById: z.number().nullable(),
