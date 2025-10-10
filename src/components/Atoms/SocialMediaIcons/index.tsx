@@ -9,7 +9,6 @@ import { motion } from "framer-motion";
 import facebookIcon from "../../../../public/facebook.png";
 import communityIcon from "../../../../public/community.png";
 import youtubeIcon from "../../../../public/youtube.png";
-import discordIcon from "../../../../public/discord.png";
 import tiktokIcon from "../../../../public/tiktok.png";
 import verticalDivider from "../../../../public/VerticalDivider.png";
 import verticalDividerUpper from "../../../../public/VerticalDividerUpper.png";
@@ -32,7 +31,7 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       name: "Community",
       icon: communityIcon,
       alt: "Community",
-      url: "#",
+      url: "https://www.facebook.com/groups/1084277652036931",
     },
     {
       id: "youtube",
@@ -40,13 +39,6 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       icon: youtubeIcon,
       alt: "YouTube",
       url: "https://www.youtube.com/@SuKyToanThu-vk3wi/featured",
-    },
-    {
-      id: "discord",
-      name: "Discord",
-      icon: discordIcon,
-      alt: "Discord",
-      url: "https://discord.com",
     },
     {
       id: "tiktok",
