@@ -6,13 +6,15 @@ import ScrollPaper from "../../../../../public/ScrollPaper.svg"
 import frame from "../../../../../public/frame.svg"
 import ButtonHeight from "../../../../../public/ButtonHeight.svg"
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
+import { getSocket } from '@configs/socket'
 
-interface DetailInfoProps {
+interface CountDownProps {
     activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
+    accessToken: string
 }
 
-const DetailInfo = ({ activeWithAmountUser }: DetailInfoProps) => {
-    const { systemConfig, amountUser } = activeWithAmountUser;
+const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
+    const { systemConfig, amountUser: initialAmountUser } = activeWithAmountUser;
     const launchDate = systemConfig?.launchDate;
 
     const [timeLeft, setTimeLeft] = useState({
@@ -26,6 +28,10 @@ const DetailInfo = ({ activeWithAmountUser }: DetailInfoProps) => {
         ? new Date(launchDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : '';
 
+
+    /**
+     * Count Down
+     */
     useEffect(() => {
         if (!launchDate) return;
 
@@ -52,9 +58,41 @@ const DetailInfo = ({ activeWithAmountUser }: DetailInfoProps) => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [launchDate]); // Dependency array: useEffect sẽ chạy lại nếu launchDate thay đổi
+    }, [launchDate]);
+    //--------------------------------End--------------------------------//
 
     const formatTime = (time: number) => time.toString().padStart(2, '0');
+
+    /**
+     * Socket
+     */
+    const [userCount, setUserCount] = useState(initialAmountUser);
+
+    useEffect(() => {
+        const socket = getSocket(accessToken);
+
+        socket.on('connect', () => {
+            console.log('Socket connected:', socket.id);
+            socket.emit('joinSystemConfigRoom', { room: 'system-config-room' });
+        });
+
+        socket.on('userCountUpdate', (data: { userCount: number }) => {
+            console.log('Received userCountUpdate:', data);
+            setUserCount(data.userCount);
+        });
+
+        socket.on('disconnect', (reason) => {
+            console.log('Socket disconnected:', reason);
+        });
+
+        return () => {
+            console.log('Cleaning up socket connection...');
+            socket.off('connect');
+            socket.off('disconnect');
+            socket.off('userCountUpdate');
+            socket.disconnect();
+        };
+    }, [accessToken]);
 
     return (
         <div className='w-full flex items-center justify-center'>
@@ -152,7 +190,7 @@ const DetailInfo = ({ activeWithAmountUser }: DetailInfoProps) => {
                                     <Image src={ButtonHeight} alt="button" className="h-full max-w-[80px] md:max-w-[110px]" />
                                     <div className='absolute flex items-center justify-start flex-col'>
                                         <p className='flex items-center justify-center text-center text-secondary font-dfvn-graphit h-fit md:text-2xl text-xl mt-1'>
-                                            {amountUser}
+                                            {userCount}
                                         </p>
                                     </div>
                                 </div>
@@ -165,4 +203,4 @@ const DetailInfo = ({ activeWithAmountUser }: DetailInfoProps) => {
     )
 }
 
-export default DetailInfo;
+export default CountDown;

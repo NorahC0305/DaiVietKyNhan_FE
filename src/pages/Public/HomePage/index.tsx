@@ -9,13 +9,14 @@ import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
 interface HomePageClientProps {
   user: IUser
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
+  accessToken: string
 }
 
-const HomePageClient = ({ user, activeWithAmountUser }: HomePageClientProps) => {
+const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
   return (
     <div className='mt-7'>
       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
-        <CountDown activeWithAmountUser={activeWithAmountUser} />
+        <CountDown activeWithAmountUser={activeWithAmountUser} accessToken={accessToken} />
       }
 
     </div>
