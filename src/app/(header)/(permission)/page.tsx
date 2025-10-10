@@ -3,9 +3,8 @@ import userService from "@services/user";
 import { UserSchema } from "@models/user/entity";
 import { IBackendResponse } from "@models/backend";
 import { IUser } from "@models/user/entity";
-
-// Force dynamic rendering since we need to access headers for auth
-export const dynamic = 'force-dynamic';
+import systemService from "@services/system";
+import { GetSystemConfigWithAmountUserResSchema, IGetSystemConfigWithAmountUserResponse } from "@models/system/response";
 
 async function userMe() {
   try {
@@ -18,8 +17,9 @@ async function userMe() {
 
 export default async function Home() {
   const user = await userMe() as IBackendResponse<typeof UserSchema>;
+  const activeWithAmountUser = await systemService.getActiveWithAmountUser(true) as IBackendResponse<typeof GetSystemConfigWithAmountUserResSchema>;
 
   return (
-    <HomePageClient user={user.data as IUser} />
+    <HomePageClient user={user.data as IUser} activeWithAmountUser={activeWithAmountUser.data as IGetSystemConfigWithAmountUserResponse} />
   );
 }

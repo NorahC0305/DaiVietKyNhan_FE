@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PaginationModel } from "@/models/pagination";
+import { SystemConfigSchema } from "../entity";
 /**
  * Release date entity schema
  */
@@ -83,4 +84,12 @@ export const DeleteReleaseDateResponseSchema = z
 
 export type IDeleteReleaseDateResponse = z.infer<
   typeof DeleteReleaseDateResponseSchema
+>;
+
+export const GetSystemConfigWithAmountUserResSchema = z.object({
+  systemConfig: SystemConfigSchema.nullable(),
+  amountUser: z.number().int().nonnegative()
+})
+export type IGetSystemConfigWithAmountUserResponse = z.infer<
+  typeof GetSystemConfigWithAmountUserResSchema
 >;

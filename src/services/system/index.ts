@@ -6,6 +6,11 @@ const systemService = {
     getReleaseDate: async (qs: string) => {
         return await http.get(`/system-config?qs=${qs}`);
     },
+    getActiveWithAmountUser: async (isActive: boolean) => {
+        return await http.get(`/system-config/active/${isActive}`, {
+            cache: 'no-store',
+        });
+    },
     updateReleaseDate: async (id:number, data: IUpdateReleaseDateBodySchema) => {
         return await http.put(`/system-config/${id}`, data);
     },
