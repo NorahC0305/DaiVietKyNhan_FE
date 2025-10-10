@@ -60,8 +60,6 @@ const LoginPageClient = () => {
                 redirect: false,
                 ...data,
             });
-            console.log('res', res);
-
 
             //#region Handle response
             const status = res?.status;
@@ -137,6 +135,23 @@ const LoginPageClient = () => {
         return () => clearInterval(interval);
     }, [countdown]);
     //--------------------End--------------------//
+
+
+    /**
+     * Handle google login
+     */
+    const handleGoogleLogin = async () => {
+        try {
+            const res = await authService.googleLogin() as IBackendResponse<any>;
+            if (res.statusCode === 200) {
+                window.location.href = res.data.url;
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi, vui lòng thử lại");
+            console.error(error);
+        }
+    }
+    //-----------------------------End-----------------------------//
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="w-xl flex flex-col px-8 md:px-16">
@@ -227,7 +242,7 @@ const LoginPageClient = () => {
                     <button
                         type="button"
                         className="cursor-pointer w-full h-12 flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    // onClick={handleGoogleLogin}
+                        onClick={handleGoogleLogin}
                     >
                         <GoogleIcon size="default" />
                         Google

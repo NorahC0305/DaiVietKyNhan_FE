@@ -5,6 +5,9 @@ const authService = {
     login: async (data: ILoginFormDataRequest) => {
         return await http.post("/auth/login", data);
     },
+    googleLogin: async () => {
+        return await http.get("/auth/google-link");
+    },
     register: async (data: IRegisterFormDataRequest) => {
         return await http.post("/auth/register", data);
     },

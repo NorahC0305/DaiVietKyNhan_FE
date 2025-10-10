@@ -12,7 +12,7 @@ interface HomePageClientProps {
 }
 
 const HomePageClient = ({ user, activeWithAmountUser }: HomePageClientProps) => {
-    return (
+  return (
     <div className='mt-7'>
       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
         <CountDown activeWithAmountUser={activeWithAmountUser} />
