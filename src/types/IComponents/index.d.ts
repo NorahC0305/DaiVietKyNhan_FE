@@ -94,4 +94,23 @@ declare namespace ICOMPONENTS {
     title?: string;
     className?: string;
   }
+
+  export interface ReleaseDateData {
+    id?: number;
+    date: Date | undefined;
+    description: string;
+    isActive: boolean;
+  }
+
+  export interface ReleaseDateMessage {
+    type: "success" | "error";
+    text: string;
+  }
+
+  export interface CountdownState {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
 }

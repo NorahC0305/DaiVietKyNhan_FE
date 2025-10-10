@@ -83,7 +83,7 @@ const formatVietnamTime = (
 // Component hiển thị số với hiệu ứng "tick"
 const AnimatedNumber = React.memo(({ value }: { value: string }) => {
   return (
-    <div className="relative h-12 w-10 overflow-hidden">
+    <div className="relative h-12 w-12 overflow-hidden">
       <AnimatePresence>
         <motion.span
           key={value}
@@ -162,10 +162,10 @@ const LaunchProgressBar = ({
 // Component Bảng điều khiển trạng thái (Phiên bản hoàn chỉnh)
 const SystemStatusDashboard = ({
   currentTime,
-  releaseDate,
+  activeReleaseDate,
 }: {
   currentTime: Date;
-  releaseDate: Date | undefined;
+  activeReleaseDate: Date | undefined;
 }) => {
   const [countdown, setCountdown] = useState({
     days: 0,
@@ -177,7 +177,7 @@ const SystemStatusDashboard = ({
   const [startDate] = useState(getCurrentVietnamTime());
 
   useEffect(() => {
-    if (!releaseDate || !isValid(releaseDate)) {
+    if (!activeReleaseDate || !isValid(activeReleaseDate)) {
       setIsLaunched(false);
       return;
     }
@@ -185,7 +185,7 @@ const SystemStatusDashboard = ({
     const interval = setInterval(() => {
       // Lấy thời gian hiện tại (đã là múi giờ Việt Nam)
       const nowVietnam = getCurrentVietnamTime();
-      const releaseDateVietnam = convertUtcToVietnamTime(releaseDate);
+      const releaseDateVietnam = convertUtcToVietnamTime(activeReleaseDate);
 
       const distance = releaseDateVietnam.getTime() - nowVietnam.getTime();
 
@@ -207,7 +207,7 @@ const SystemStatusDashboard = ({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [releaseDate]);
+  }, [activeReleaseDate]);
 
   const padZero = (num: number) => num.toString().padStart(2, "0");
 
@@ -236,7 +236,7 @@ const SystemStatusDashboard = ({
 
         {/* Countdown Section */}
         <AnimatePresence>
-          {releaseDate && isValid(releaseDate) ? (
+          {activeReleaseDate && isValid(activeReleaseDate) ? (
             <motion.div
               key="countdown"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -277,7 +277,7 @@ const SystemStatusDashboard = ({
                 )}
               </div>
               <LaunchProgressBar
-                releaseDate={releaseDate}
+                releaseDate={activeReleaseDate}
                 startDate={startDate}
               />
             </motion.div>
@@ -288,7 +288,15 @@ const SystemStatusDashboard = ({
               animate={{ opacity: 1 }}
               className="text-center text-gray-500 h-40 flex items-center justify-center bg-black/5 rounded-lg"
             >
-              <p>Vui lòng thiết lập ngày ra mắt để bắt đầu đếm ngược</p>
+              <div>
+                <p className="font-medium">
+                  Chưa có ngày ra mắt được kích hoạt
+                </p>
+                <p className="text-sm mt-1">
+                  Vui lòng thiết lập và kích hoạt ngày ra mắt để bắt đầu đếm
+                  ngược
+                </p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -311,7 +319,7 @@ const EventListItem = React.memo(
     onSelect: (event: ReleaseDateData) => void;
   }) => (
     <div
-      className={`py-4 p-2 cursor-pointer border-l-4 transition-colors bg-gray-200 rounded-xl ${
+      className={`py-5 p-3 cursor-pointer border-l-4 transition-colors bg-gray-200 rounded-xl ${
         isSelected
           ? "bg-orange-50 border-orange-500"
           : "hover:bg-gray-50 border-transparent"
@@ -365,6 +373,9 @@ const ReleaseDateManager: React.FC = () => {
   const [allReleaseDates, setAllReleaseDates] = useState<ReleaseDateData[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [activeReleaseDate, setActiveReleaseDate] = useState<Date | undefined>(
+    undefined
+  );
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -396,7 +407,7 @@ const ReleaseDateManager: React.FC = () => {
   const loadAllReleaseDates = useCallback(async () => {
     try {
       const response = (await systemService.getReleaseDate(
-        "sort:-launchDate"
+        "sort:-launchDate,sort:-isActive"
       )) as IGetReleaseDateResponse;
 
       if (response.data && response.data.results.length > 0) {
@@ -414,6 +425,14 @@ const ReleaseDateManager: React.FC = () => {
         });
 
         setAllReleaseDates(allDates);
+
+        // Tìm sự kiện có isActive = true để dùng cho countdown
+        const activeEvent = allDates.find((event) => event.isActive);
+        if (activeEvent && activeEvent.date) {
+          setActiveReleaseDate(activeEvent.date);
+        } else {
+          setActiveReleaseDate(undefined);
+        }
 
         // Chọn sự kiện gần nhất làm mặc định
         const nearestEvent = allDates[0];
@@ -448,6 +467,7 @@ const ReleaseDateManager: React.FC = () => {
         setReleaseDate(emptyState);
         setCurrentReleaseSetting(emptyState);
         setSelectedEventId(null);
+        setActiveReleaseDate(undefined);
       }
     } catch (error) {
       console.error("Error loading release dates:", error);
@@ -461,6 +481,7 @@ const ReleaseDateManager: React.FC = () => {
       setReleaseDate(emptyState);
       setCurrentReleaseSetting(emptyState);
       setSelectedEventId(null);
+      setActiveReleaseDate(undefined);
     }
   }, [isCreatingNew, selectedEventId]);
 
@@ -661,7 +682,7 @@ const ReleaseDateManager: React.FC = () => {
       {isClient && (
         <SystemStatusDashboard
           currentTime={currentDateTime}
-          releaseDate={currentReleaseSetting.date}
+          activeReleaseDate={activeReleaseDate}
         />
       )}
 
@@ -687,7 +708,7 @@ const ReleaseDateManager: React.FC = () => {
           <CardContent className="p-0">
             <div className="max-h-96 overflow-y-auto">
               {allReleaseDates.length > 0 ? (
-                <div className="space-y-1">
+                <div className="space-y-3">
                   {allReleaseDates.map((event) => (
                     <EventListItem
                       key={event.id}

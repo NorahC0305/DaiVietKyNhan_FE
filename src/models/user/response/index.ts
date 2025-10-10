@@ -1,4 +1,5 @@
-import { UserStatus } from "@constants/user"
+
+import { USER } from "@constants/user"
 import { roleModel } from "@models/role/model"
 import z from "zod"
 
@@ -8,7 +9,7 @@ const loginResponse = z.object({
     id: z.number(),
     name: z.string(),
     email: z.string(),
-    status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE]),
+    status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
     phoneNumber: z.string(),
     roleId: z.number(),
     avatar: z.string(),

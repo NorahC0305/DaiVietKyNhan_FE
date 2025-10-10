@@ -1,4 +1,4 @@
-import ContactPage from "@pages/Public/Contact";
+import ContactPage from "@pages/Public/About";
 
 export default async function ContactServer() {
   return (
