@@ -13,7 +13,7 @@ const systemService = {
         return await http.delete("/system/release-date", { body: { id } });
     },
     setReleaseDate: async (data: ISetReleaseDateBodySchema) => {
-        return await http.post("/system-config", data);
+        return await http.put("/system-config", data);
     }
 }
 
