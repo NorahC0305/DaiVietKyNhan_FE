@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import Sparkle from '@components/Atoms/Sparkle';
 import styles from './index.module.scss';
-import Header from '@components/Molecules/Header';
 import Image from 'next/image';
 import characterImage from '../../../../public/Character.png';
 
@@ -63,7 +62,6 @@ export default function NotFoundPageClient() {
     if (!hasMounted) return null;
     return (
         <>
-            <Header user={null} />
             {/* Render các ngôi sao từ state */}
             {sparkles.map(({ id, top, left }) => (
                 <Sparkle key={id} id={id} top={top} left={left} onAnimationEnd={removeSparkle} />
@@ -74,7 +72,7 @@ export default function NotFoundPageClient() {
             </div>
             <div className={styles.backgroundOverlay}></div>
 
-            <main className="px-5 py-16 flex justify-center items-center min-h-[calc(100vh-120px)] relative z-10">
+            <main className="px-5 py-16 flex justify-center items-center min-h-[calc(100vh-120px)] relative z-0">
                 <div className={clsx(styles.errorContainer, 'max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-20 items-center text-center lg:text-left')}>
                     <div ref={errorContentRef} className="animate-slide-in-left">
                         <div className={clsx(styles.errorCode, 'text-[140px] font-bold leading-none mb-5 animate-text-glow')}>
@@ -99,7 +97,7 @@ export default function NotFoundPageClient() {
                         </div>
                     </div>
 
-                    <div ref={characterContainerRef} className="relative flex justify-center items-center animate-slide-in-right">
+                    <div ref={characterContainerRef} className="relative flex justify-center items-center animate-slide-in-right -z-10">
                         <div className={clsx(styles.characterFrame, 'relative w-[320px] h-[420px] md:w-[400px] md:h-[520px] border-[8px] border-amber-500 rounded-2xl overflow-hidden animate-border-glow')}>
                             <div
                                 onClick={handleCharacterClick}
