@@ -1,1 +1,3 @@
-export { default as EventSummary } from "./EventSummary";
+import EventSummary from "./EventSummary";
+
+export default EventSummary;

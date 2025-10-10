@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@atoms/ui/card";
 import { Separator } from "@atoms/ui/separator";
@@ -37,28 +39,38 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
     }
 
     const interval = setInterval(() => {
-      // Lấy thời gian hiện tại (đã là múi giờ Việt Nam)
-      const nowVietnam = getCurrentVietnamTime();
-      const releaseDateVietnam = convertUtcToVietnamTime(activeReleaseDate);
+      try {
+        // Lấy thời gian hiện tại (đã là múi giờ Việt Nam)
+        const nowVietnam = getCurrentVietnamTime();
+        const releaseDateVietnam = convertUtcToVietnamTime(activeReleaseDate);
 
-      const distance = releaseDateVietnam.getTime() - nowVietnam.getTime();
+        // Validate dates before calculation
+        if (!isValid(nowVietnam) || !isValid(releaseDateVietnam)) {
+          console.warn('Invalid date detected in countdown calculation');
+          return;
+        }
 
-      if (distance < 0) {
-        setIsLaunched(true);
-        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        clearInterval(interval);
-        return;
+        const distance = releaseDateVietnam.getTime() - nowVietnam.getTime();
+
+        if (distance < 0) {
+          setIsLaunched(true);
+          setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+          clearInterval(interval);
+          return;
+        }
+
+        setIsLaunched(false);
+        setCountdown({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor(
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+          ),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        });
+      } catch (error) {
+        console.error('Error in countdown calculation:', error);
       }
-
-      setIsLaunched(false);
-      setCountdown({
-        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
     }, 1000);
     return () => clearInterval(interval);
   }, [activeReleaseDate]);
@@ -77,12 +89,12 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xl font-bold text-gray-800">
-                {formatVietnamTime(currentTime, "HH:mm:ss")}
+                {isValid(currentTime) ? formatVietnamTime(currentTime, "HH:mm:ss") : "Invalid Time"}
               </span>
             </div>
           </div>
           <div className="flex justify-end text-sm text-gray-600 mt-1">
-            <span>{formatVietnamTime(currentTime, "EEEE, dd/MM/yyyy")}</span>
+            <span>{isValid(currentTime) ? formatVietnamTime(currentTime, "EEEE, dd/MM/yyyy") : "Invalid Date"}</span>
           </div>
         </div>
 

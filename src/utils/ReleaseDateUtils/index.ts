@@ -26,6 +26,10 @@ export const formatVietnamTime = (
   date: Date,
   formatStr: string = "dd/MM/yyyy HH:mm:ss"
 ) => {
+  // Validate date before formatting
+  if (!date || !isValid(date)) {
+    return "Invalid Date";
+  }
   return format(date, formatStr, { locale: vi });
 };
 

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@atoms/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@atoms/ui/card";
@@ -33,7 +35,7 @@ const EventList: React.FC<EventListProps> = React.memo(
         </CardHeader>
         <CardContent className="p-0">
           <div className="max-h-96 overflow-y-auto">
-            {events.length > 0 ? (
+            {events?.length > 0 ? (
               <div className="space-y-3">
                 {events.map((event) => (
                   <EventListItem

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Edit } from "lucide-react";
 import { formatVietnamTime } from "@utils/ReleaseDateUtils";
@@ -21,16 +23,16 @@ const EventListItem: React.FC<EventListItemProps> = React.memo(
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate">
-            {event.description || "Sự kiện không có mô tả"}
+            {event?.description || "Sự kiện không có mô tả"}
           </p>
           <p className="text-xs text-gray-500">
-            {event.date
+            {event?.date
               ? formatVietnamTime(event.date, "dd/MM/yyyy HH:mm")
               : "Chưa có ngày"}
           </p>
         </div>
         <div className="flex items-center gap-1">
-          {event.isActive && (
+          {event?.isActive && (
             <div className="w-2 h-2 bg-green-500 rounded-full" />
           )}
           <Edit className="h-3 w-3 text-gray-400" />

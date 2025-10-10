@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react'
 import DetailInfo from './DetailInfo'
 import CountDown from './CountDown'
@@ -6,7 +8,7 @@ import { IUser } from '@models/user/entity'
 const HomePageClient = ({ user }: { user: IUser }) => {
     return (
     <div className='mt-7'>
-      {!user.gender && !user.birthDate ? <DetailInfo /> :
+      {!user?.gender && !user?.birthDate ? <DetailInfo /> :
         <CountDown />
       }
 

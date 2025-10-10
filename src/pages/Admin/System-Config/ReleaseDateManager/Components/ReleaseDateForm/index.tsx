@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@atoms/ui/button";
 import {
@@ -61,7 +63,7 @@ const ReleaseDateForm: React.FC<ReleaseDateFormProps> = React.memo(
         </CardHeader>
         <CardContent className="space-y-6">
           <AntdDateTimePicker
-            date={releaseDate.date}
+            date={releaseDate?.date}
             onDateChange={onDateChange}
             placeholder="Chọn ngày và giờ ra mắt (GMT+7)"
             minDate={getCurrentVietnamTime()}
@@ -71,7 +73,7 @@ const ReleaseDateForm: React.FC<ReleaseDateFormProps> = React.memo(
             <Label htmlFor="description">Mô tả</Label>
             <Textarea
               id="description"
-              value={releaseDate.description}
+              value={releaseDate?.description}
               onChange={(e) => onDescriptionChange(e.target.value)}
               placeholder="Ví dụ: Sự kiện ra mắt phiên bản 1.0..."
               rows={3}
@@ -81,7 +83,7 @@ const ReleaseDateForm: React.FC<ReleaseDateFormProps> = React.memo(
           <div className="flex items-center space-x-2 pt-2">
             <Checkbox
               id="is-active"
-              checked={releaseDate.isActive}
+              checked={releaseDate?.isActive}
               onCheckedChange={(checked) => onActiveChange(checked as boolean)}
             />
             <Label htmlFor="is-active" className="cursor-pointer">
