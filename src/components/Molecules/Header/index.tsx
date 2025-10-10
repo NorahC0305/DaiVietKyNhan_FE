@@ -9,9 +9,11 @@ import logoImage from "../../../../public/logo_dvkn.svg";
 import { ROUTES } from "@routes";
 import effectGif from "../../../../public/effect-1.gif";
 import { AnimatePresence, motion } from "framer-motion";
+import { IUser } from "@models/user/entity";
 
 interface HeaderProps {
   className?: string;
+  user: IUser;
 }
 
 const navigationItems = [
@@ -23,7 +25,7 @@ const navigationItems = [
   { href: ROUTES.PUBLIC.CONTACT, label: "Liên hệ" },
 ];
 
-const Header: React.FC<HeaderProps> = ({ className }) => {
+const Header: React.FC<HeaderProps> = ({ className, user }) => {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -149,13 +151,23 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
         <div
           className={`hidden lg:flex gap-3 md:gap-5 order-4 lg:order-3 justify-center lg:justify-end mt-2 lg:mt-0`}
         >
-          <Link
-            href={ROUTES.AUTH.LOGIN}
-            className="group relative bg-primary text-holder px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-            onClick={() => setMenuOpen(false)}
-          >
-            <span className="relative z-10">Đăng Nhập</span>
-          </Link>
+          {user ? (
+            <Link
+              href={ROUTES.AUTH.LOGOUT}
+              className="group relative bg-primary text-holder px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span className="relative z-10">Đăng Xuất</span>
+            </Link>
+          ) : (
+            <Link
+              href={ROUTES.AUTH.LOGIN}
+              className="group relative bg-primary text-holder px-4 lg:px-6 py-2 lg:py-2.5 rounded-lg no-underline text-xs lg:text-sm font-semibold font-inter border-none cursor-pointer min-w-[96px] text-center shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span className="relative z-10">Đăng Nhập</span>
+            </Link>
+          )}
         </div>
       </div>
 

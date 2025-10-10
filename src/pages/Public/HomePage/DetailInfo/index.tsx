@@ -15,12 +15,17 @@ import { USER } from '@constants/user';
 import { useRouter } from 'next/navigation';
 
 const DetailInfo = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
+    /**
+     * Handle form submit
+     */
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm<IUpdateMeBodySchema>({
         resolver: zodResolver(UpdateMeBodySchema),
         defaultValues: {
             gender: USER.GENDER.MALE,
+            birthDate: new Date(),
         }
     });
 
@@ -42,6 +47,7 @@ const DetailInfo = () => {
             setIsSubmitting(false);
         }
     };
+    //-----------------------------End-----------------------------//
 
     return (
         <div className='w-full flex items-center justify-center'>
