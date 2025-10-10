@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react'
 import DetailInfo from './DetailInfo'
 import CountDown from './CountDown'
