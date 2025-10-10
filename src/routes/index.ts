@@ -6,6 +6,7 @@ const BASE_PATHS = {
     MANAGE_USER: '/admin/manage-user',
     MANAGE_QUESTION: '/admin/manage-question',
     MANAGE_STATISTICS: '/admin/manage-statistic',
+    MANAGE_SYSTEM: '/admin/manage-system',
 } as const;
 
 // Public routes
@@ -57,6 +58,9 @@ const ADMIN_DASHBOARD = {
     STATISTICS: {
         OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/overview`,
         USER: `${BASE_PATHS.MANAGE_STATISTICS}/user`,
+    },
+    SYSTEM: {
+        RELEASE_DATE: `${BASE_PATHS.MANAGE_SYSTEM}/release-date`,
     },
 } as const;
 

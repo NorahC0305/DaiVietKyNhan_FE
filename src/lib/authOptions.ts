@@ -95,6 +95,7 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: ROUTES.AUTH.LOGIN,
+        error: ROUTES.AUTH.LOGIN,
     },
     session: {
         strategy: "jwt" as SessionStrategy,

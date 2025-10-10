@@ -88,6 +88,14 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
       },
     ],
   },
+  {
+    id: "system-config",
+    label: "Hệ thống",
+    icon: "Settings",
+    subItems: [
+      { id: "release-date", label: "Ngày phát hành", icon: "Calendar" },
+    ],
+  },
 ];
 
 // Style constants
@@ -128,6 +136,7 @@ const AdminSideBar = () => {
       "question-statistics": ROUTES.ADMIN_DASHBOARD.QUESTION.STATISTICS,
       "statistics-overview": ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW,
       "statistics-user": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
+      "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
     }),
     []
   );
@@ -137,6 +146,7 @@ const AdminSideBar = () => {
       "content-management": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
       "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
+      "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
     }),
     []
   );
@@ -179,6 +189,10 @@ const AdminSideBar = () => {
       [ROUTES.ADMIN_DASHBOARD.STATISTICS.USER]: {
         parentId: "statistics-reports",
         subId: "statistics-user",
+      },
+      [ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE]: {
+        parentId: "system-config",
+        subId: "release-date",
       },
     }),
     []
