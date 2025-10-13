@@ -122,9 +122,9 @@ const PersonalityResultPage = () => {
 
   // Guardian Deity Result Component
   const GuardianDeityResult = () => (
-    <div className="flex gap-6 md:gap-10">
+    <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full items-center">
       {/* Left Side - Guardian Info */}
-      <div className="flex-1 flex flex-col justify-center items-start space-y-6 px-4">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-start space-y-6 px-4">
         {/* Title */}
         <div className="text-left">
           <h2
@@ -142,7 +142,7 @@ const PersonalityResultPage = () => {
                 borderColor: selectedOption?.color || "#2B638F",
               }}
             >
-              {selectedGuardian?.title || "CHỦ ĐẠO TỔ"}
+              {selectedGuardian?.title || "CHỬ ĐẠO TỔ"}
             </div>
             <div
               className="text-7xl md:text-8xl font-bd-street-sign font-extrabold"
@@ -163,7 +163,7 @@ const PersonalityResultPage = () => {
       </div>
 
       {/* Right Side - Character Image */}
-      <div className="flex-1 flex justify-center items-center">
+      <div className="w-full md:w-1/2 flex justify-center items-center">
         <div className="relative">
           {/* Character Image */}
           <div
@@ -187,9 +187,9 @@ const PersonalityResultPage = () => {
 
   // Personality Selection Component
   const PersonalitySelection = () => (
-    <div className="flex gap-6 md:gap-10">
+    <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full items-center">
       {/* Left Side - Personality Options */}
-      <div className="flex-1 flex flex-col justify-center items-center space-y-5">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center space-y-5">
         {/* Title */}
         <div className="text-center mb-4">
           <h1
@@ -240,7 +240,7 @@ const PersonalityResultPage = () => {
           );
         })}
         {/* Footer */}
-        <div className="mt-6 text-left self-start">
+        <div className="mt-6 text-left self-start w-full max-w-[460px]">
           <span
             className="text-xs"
             style={{ color: selectedOption?.color || "#6B7280" }}
@@ -251,7 +251,7 @@ const PersonalityResultPage = () => {
       </div>
 
       {/* Right Side - Description */}
-      <div className="flex-1 flex justify-center items-center">
+      <div className="w-full md:w-1/2 flex justify-center items-center">
         {selectedOption && (
           <div className="bg-gray-300/20 rounded-xl p-8 md:p-10 border border-gray-300 max-h-[24rem] md:max-h-[30rem] w-full flex flex-col">
             <div
@@ -277,9 +277,9 @@ const PersonalityResultPage = () => {
         <div className="p-5 md:p-8 lg:p-10">
           {/* This container hides overflow */}
           <div className="relative min-h-[30rem] md:min-h-[38rem] lg:min-h-[44rem] overflow-hidden">
-            {/* Personality slides in from left - ADDED flex items-center */}
+            {/* Personality slides in from left */}
             <div
-              className={`absolute inset-0 flex items-center transition-transform duration-500 ease-in-out ${
+              className={`absolute inset-0 flex transition-transform duration-500 ease-in-out ${
                 showGuardianResult
                   ? "-translate-x-[110%]"
                   : mounted
@@ -290,9 +290,9 @@ const PersonalityResultPage = () => {
               <PersonalitySelection />
             </div>
 
-            {/* Guardian slides in from right - ADDED flex items-center */}
+            {/* Guardian slides in from right */}
             <div
-              className={`absolute inset-0 flex items-center transition-transform duration-500 ease-in-out ${
+              className={`absolute inset-0 flex transition-transform duration-500 ease-in-out ${
                 showGuardianResult ? "translate-x-0" : "translate-x-[110%]"
               }`}
             >
