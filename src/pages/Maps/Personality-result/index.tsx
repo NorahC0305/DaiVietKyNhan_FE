@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FrameText from "../Components/FrameText";
@@ -12,6 +12,13 @@ const PersonalityResultPage = () => {
   );
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showGuardianResult, setShowGuardianResult] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // trigger initial slide-in animation
+    const id = window.setTimeout(() => setMounted(true), 10);
+    return () => window.clearTimeout(id);
+  }, []);
 
   const personalityOptions = [
     {
@@ -44,8 +51,53 @@ const PersonalityResultPage = () => {
     },
   ];
 
+  // Guardian Deity Data
+  const guardianDeities = [
+    {
+      id: "chu-dao-to",
+      title: "CHỬ ĐẠO TỔ",
+      name: "CHỦ ĐỒNG TỬ",
+      personalityId: "vui-tuoi",
+      description: "Vị thần của niềm vui và sự sáng tạo",
+      image: "/Character.png", // Placeholder - replace with actual image
+      cardBg: "from-yellow-100 to-yellow-200",
+    },
+    {
+      id: "tan-vien-son-thanh",
+      title: "TẢN VIÊN SƠN THÁNH",
+      name: "SƠN TỈNH",
+      personalityId: "diem-tinh",
+      description: "Vị thần của sự điềm tĩnh và trí tuệ",
+      image: "/Character.png", // Placeholder - replace with actual image
+      cardBg: "from-green-100 to-green-200",
+    },
+    {
+      id: "phu-dong-thien-vuong",
+      title: "PHÙ ĐỔNG THIÊN VƯỚNG",
+      name: "THÁNH GIÓNG",
+      personalityId: "manh-me",
+      description: "Vị thần của sức mạnh và quyết đoán",
+      image: "/Character.png", // Placeholder - replace with actual image
+      cardBg: "from-orange-100 to-orange-200",
+    },
+    {
+      id: "mau-thuong-thien",
+      title: "MẪU THƯỢNG THIÊN",
+      name: "CÔNG CHÚA LIỄU HẠNH",
+      personalityId: "uu-tu",
+      description: "Vị thần của sự sâu sắc và cảm xúc",
+      image: "/Character.png", // Placeholder - replace with actual image
+      cardBg: "from-pink-100 to-purple-200",
+    },
+  ];
+
   const selectedOption = personalityOptions.find(
     (option) => option.id === selectedPersonality
+  );
+
+  // Find the corresponding guardian deity based on selected personality
+  const selectedGuardian = guardianDeities.find(
+    (guardian) => guardian.personalityId === selectedPersonality
   );
 
   const handleOptionSelect = (optionId: string) => {
@@ -58,41 +110,25 @@ const PersonalityResultPage = () => {
 
   const handleNext = () => {
     if (showGuardianResult) {
-      // If already showing guardian result, go to next step
       console.log("Go to next step");
       return;
     }
-
-    // Start transition animation
-    setIsTransitioning(true);
-
-    // After animation completes, show guardian result
-    setTimeout(() => {
-      setShowGuardianResult(true);
-      setIsTransitioning(false);
-    }, 500); // Animation duration
+    setShowGuardianResult(true);
   };
 
   const handleBack = () => {
-    // Start transition animation to go back
-    setIsTransitioning(true);
-
-    // After animation completes, go back to personality selection
-    setTimeout(() => {
-      setShowGuardianResult(false);
-      setIsTransitioning(false);
-    }, 500); // Animation duration
+    setShowGuardianResult(false);
   };
 
   // Guardian Deity Result Component
   const GuardianDeityResult = () => (
-    <div className="flex gap-6">
+    <div className="flex gap-6 md:gap-10">
       {/* Left Side - Guardian Info */}
       <div className="flex-1 flex flex-col justify-center items-start space-y-6 px-4">
         {/* Title */}
         <div className="text-left">
           <h2
-            className="text-lg font-semibold mb-4"
+            className="text-xl md:text-2xl font-semibold mb-5"
             style={{ color: selectedOption?.color || "#2B638F" }}
           >
             Vị Thần Bảo Hộ của bạn là:
@@ -100,19 +136,19 @@ const PersonalityResultPage = () => {
           {/* Guardian Names */}
           <div className="space-y-2">
             <div
-              className="text-3xl font-bold border-b pb-1"
+              className="text-4xl md:text-5xl font-bold border-b pb-2"
               style={{
                 color: selectedOption?.color || "#2B638F",
                 borderColor: selectedOption?.color || "#2B638F",
               }}
             >
-              CHỦ ĐẠO TỔ
+              {selectedGuardian?.title || "CHỦ ĐẠO TỔ"}
             </div>
             <div
-              className="text-7xl font-bd-street-sign font-extrabold"
+              className="text-7xl md:text-8xl font-bd-street-sign font-extrabold"
               style={{ color: selectedOption?.color || "#2B638F" }}
             >
-              CHỦ ĐỒNG TỬ
+              {selectedGuardian?.name || "CHỦ ĐỒNG TỬ"}
             </div>
           </div>
         </div>
@@ -120,7 +156,7 @@ const PersonalityResultPage = () => {
         {/* Continue Button */}
         <button
           onClick={handleNext}
-          className="bg-gradient-to-r from-yellow-300 to-yellow-400 hover:from-yellow-400 hover:to-yellow-500 text-gray-800 font-semibold px-8 py-3 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+          className="bg-gradient-to-r from-yellow-300 to-yellow-400 hover:from-yellow-400 hover:to-yellow-500 text-gray-800 font-semibold px-9 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105"
         >
           Tiếp tục
         </button>
@@ -129,11 +165,19 @@ const PersonalityResultPage = () => {
       {/* Right Side - Character Image */}
       <div className="flex-1 flex justify-center items-center">
         <div className="relative">
-          {/* Character placeholder - you can replace with actual image */}
-          <div className="w-80 h-96 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center border-2 border-blue-300">
+          {/* Character Image */}
+          <div
+            className={`w-80 h-[24rem] md:w-96 md:h-[28rem] lg:w-[28rem] lg:h-[32rem] bg-gradient-to-br ${
+              selectedGuardian?.cardBg || "from-blue-100 to-purple-100"
+            } rounded-xl flex items-center justify-center border-2 border-gray-300`}
+          >
             <div className="text-center text-gray-600">
-              <div className="text-lg font-semibold mb-2">CHỦ ĐỒNG TỬ</div>
-              <div className="text-sm">Character Illustration</div>
+              <div className="text-lg md:text-xl font-semibold mb-2">
+                {selectedGuardian?.name || "CHỦ ĐỒNG TỬ"}
+              </div>
+              <div className="text-sm md:text-base">
+                {selectedGuardian?.description || "Character Illustration"}
+              </div>
             </div>
           </div>
         </div>
@@ -143,13 +187,13 @@ const PersonalityResultPage = () => {
 
   // Personality Selection Component
   const PersonalitySelection = () => (
-    <div className="flex gap-6">
+    <div className="flex gap-6 md:gap-10">
       {/* Left Side - Personality Options */}
-      <div className="flex-1 flex flex-col justify-center items-center space-y-4">
+      <div className="flex-1 flex flex-col justify-center items-center space-y-5">
         {/* Title */}
         <div className="text-center mb-4">
           <h1
-            className="text-2xl font-extrabold uppercase"
+            className="text-3xl md:text-4xl font-extrabold uppercase"
             style={{ color: selectedOption?.color || "#2B638F" }}
           >
             KHÍ CHẤT CỦA BẠN CÓ THIÊN HƯỚNG:
@@ -170,7 +214,7 @@ const PersonalityResultPage = () => {
             >
               <FrameText
                 text={option.title}
-                className={`font-semibold text-sm transition-all duration-300 ${
+                className={`font-semibold text-base md:text-lg transition-all duration-300 ${
                   isSelected ? "scale-105" : "scale-100"
                 }`}
                 textClassName={`transition-all duration-300 ${
@@ -189,8 +233,8 @@ const PersonalityResultPage = () => {
                     ? "#6B7280"
                     : option.color,
                 }}
-                width={350}
-                height={80}
+                width={460}
+                height={98}
               />
             </div>
           );
@@ -209,9 +253,9 @@ const PersonalityResultPage = () => {
       {/* Right Side - Description */}
       <div className="flex-1 flex justify-center items-center">
         {selectedOption && (
-          <div className="bg-gray-300/20 rounded-lg p-8 border border-gray-300 max-h-80 w-full flex flex-col">
+          <div className="bg-gray-300/20 rounded-xl p-8 md:p-10 border border-gray-300 max-h-[24rem] md:max-h-[30rem] w-full flex flex-col">
             <div
-              className="text-lg leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2"
+              className="text-xl md:text-2xl leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2"
               style={{ color: selectedOption.color }}
             >
               {selectedOption.description}
@@ -223,58 +267,73 @@ const PersonalityResultPage = () => {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 ">
+    <div className="flex items-center justify-center min-h-screen p-3 ">
       {/* Main Content Frame */}
       <div
-        className="relative bg-amber-100/80 border-3 rounded-2xl p-6 max-w-4xl w-full shadow-2xl overflow-hidden"
+        className="relative bg-amber-100/80 border-3 rounded-2xl max-w-5xl md:max-w-6xl w-full shadow-2xl"
         style={{ borderColor: selectedOption?.color || "#2B638F" }}
       >
-        <div
-          className={`transition-all duration-500 ease-in-out ${
-            isTransitioning
-              ? "transform translate-x-full opacity-0"
-              : "transform translate-x-0 opacity-100"
-          }`}
-        >
-          {showGuardianResult ? (
-            <GuardianDeityResult />
-          ) : (
-            <PersonalitySelection />
-          )}
+        {/* Padded content wrapper */}
+        <div className="p-5 md:p-8 lg:p-10">
+          {/* This container hides overflow */}
+          <div className="relative min-h-[30rem] md:min-h-[38rem] lg:min-h-[44rem] overflow-hidden">
+            {/* Personality slides in from left - ADDED flex items-center */}
+            <div
+              className={`absolute inset-0 flex items-center transition-transform duration-500 ease-in-out ${
+                showGuardianResult
+                  ? "-translate-x-[110%]"
+                  : mounted
+                  ? "translate-x-0"
+                  : "-translate-x-full"
+              }`}
+            >
+              <PersonalitySelection />
+            </div>
+
+            {/* Guardian slides in from right - ADDED flex items-center */}
+            <div
+              className={`absolute inset-0 flex items-center transition-transform duration-500 ease-in-out ${
+                showGuardianResult ? "translate-x-0" : "translate-x-[110%]"
+              }`}
+            >
+              <GuardianDeityResult />
+            </div>
+          </div>
         </div>
+
+        {/* Edge-aligned navigation buttons */}
+        {!showGuardianResult && (
+          <button
+            onClick={handleNext}
+            className="cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 rounded-full flex items-center justify-center hover:bg-amber-200/80 transition-all duration-300"
+            aria-label="Next"
+          >
+            <Image
+              src="/Next.svg"
+              alt="Next"
+              width={50}
+              height={50}
+              className="text-gray-700"
+            />
+          </button>
+        )}
+
+        {showGuardianResult && (
+          <button
+            onClick={handleBack}
+            className="cursor-pointer absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 rounded-full flex items-center justify-center hover:bg-amber-200/80 transition-all duration-300"
+            aria-label="Back"
+          >
+            <Image
+              src="/Back.svg"
+              alt="Back"
+              width={50}
+              height={50}
+              className="text-gray-700"
+            />
+          </button>
+        )}
       </div>
-
-      {/* Next Button - Only show for personality selection */}
-      {!showGuardianResult && (
-        <button
-          onClick={handleNext}
-          className="cursor-pointer absolute right-110 top-1/2 transform -translate-y-1/2 z-10 rounded-full flex items-center justify-center hover:bg-amber-200/80 transition-all duration-300"
-        >
-          <Image
-            src="/Next.svg"
-            alt="Next"
-            width={50}
-            height={50}
-            className="text-gray-700"
-          />
-        </button>
-      )}
-
-      {/* Back Button - Only show for guardian result */}
-      {showGuardianResult && (
-        <button
-          onClick={handleBack}
-          className="cursor-pointer absolute left-110 top-1/2 transform -translate-y-1/2 z-10 rounded-full flex items-center justify-center hover:bg-amber-200/80 transition-all duration-300"
-        >
-          <Image
-            src="/Back.svg"
-            alt="Back"
-            width={50}
-            height={50}
-            className="text-gray-700"
-          />
-        </button>
-      )}
     </div>
   );
 };
