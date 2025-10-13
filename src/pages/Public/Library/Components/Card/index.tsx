@@ -42,7 +42,7 @@ export default function Card({
               {isLocked ? (
                 <>
                   <Image
-                    src="/HiddenCard.png"
+                    src="/HiddenCard.svg"
                     alt="Hidden framed card"
                     fill
                     sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
