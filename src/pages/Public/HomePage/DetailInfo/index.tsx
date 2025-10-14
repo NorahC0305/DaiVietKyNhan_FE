@@ -21,7 +21,7 @@ const DetailInfo = () => {
      * Handle form submit
      */
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<IUpdateMeBodySchema>({
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<IUpdateMeBodySchema>({
         resolver: zodResolver(UpdateMeBodySchema),
         defaultValues: {
             gender: USER.GENDER.MALE,
@@ -75,11 +75,10 @@ const DetailInfo = () => {
                                         <input
                                             type="radio"
                                             value={USER.GENDER.MALE}
-                                            checked
                                             {...register("gender")}
                                             className='appearance-none peer'
                                         />
-                                        <span className='w-4 h-4 border-2 border-gray-700 rounded-full p-0.5 transition peer-checked:border-primary peer-checked:bg-primary bg-clip-content'></span>
+                                        <span className={`w-4 h-4 border-2 border-gray-700 rounded-full p-0.5 transition ${watch("gender") === USER.GENDER.MALE ? 'border-primary bg-primary' : ''} bg-clip-content`}></span>
                                         <span className='ml-2 font-dfvn-graphit text-third'>Nam</span>
                                     </label>
                                     <label className='flex items-center cursor-pointer'>
@@ -89,7 +88,7 @@ const DetailInfo = () => {
                                             {...register("gender")}
                                             className='appearance-none peer'
                                         />
-                                        <span className='w-4 h-4 border-2 border-gray-700 rounded-full p-0.5 transition peer-checked:border-primary peer-checked:bg-primary bg-clip-content'></span>
+                                        <span className={`w-4 h-4 border-2 border-gray-700 rounded-full p-0.5 transition ${watch("gender") === USER.GENDER.FEMALE ? 'border-primary bg-primary' : ''} bg-clip-content`}></span>
                                         <span className='ml-2 font-dfvn-graphit text-third'>Nữ</span>
                                     </label>
                                 </div>
