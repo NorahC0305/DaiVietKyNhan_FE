@@ -28,7 +28,7 @@ export const formatVietnamTime = (
 ) => {
   // Validate date before formatting
   if (!date || !isValid(date)) {
-    return "Invalid Date";
+    return "Năm không hợp lệ";
   }
   return format(date, formatStr, { locale: vi });
 };

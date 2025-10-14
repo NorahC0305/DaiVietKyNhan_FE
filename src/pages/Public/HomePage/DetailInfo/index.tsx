@@ -13,6 +13,7 @@ import { UpdateMeBodySchema, IUpdateMeBodySchema } from '@models/user/request';
 import { toast } from 'react-toastify';
 import { USER } from '@constants/user';
 import { useRouter } from 'next/navigation';
+import { IBackendResponse } from '@models/backend';
 
 const DetailInfo = () => {
     const router = useRouter();
@@ -36,13 +37,18 @@ const DetailInfo = () => {
                 ...data,
             };
 
-            await userService.updateMe(payload);
+            const res = await userService.updateMe(payload) as IBackendResponse<any>;
 
-            toast.success("Cập nhật thông tin thành công!");
-            router.refresh();
-
+            if (res.statusCode === 200) {
+                toast.success(res.message || "Cập nhật thông tin thành công!");
+                router.refresh();
+            } else {
+                toast.error(res.message || "Đã có lỗi xảy ra. Vui lòng thử lại.");
+                return;
+            }
         } catch (error: any) {
             toast.error(error.message || "Đã có lỗi xảy ra. Vui lòng thử lại.");
+            console.error(error);
         } finally {
             setIsSubmitting(false);
         }

@@ -13,7 +13,11 @@ export async function middleware(req: NextRequest) {
     }
 
     if (!token) {
-        if (pathname.startsWith('/admin')) {
+        const publicPaths = ['/auth', '/contact', '/about'];
+
+        const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+
+        if (!isPublicPath) {
             return NextResponse.redirect(new URL('/auth/login', req.url));
         }
     }
@@ -22,5 +26,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/auth/:path*'],
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
