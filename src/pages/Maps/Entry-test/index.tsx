@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  useAnswersSelector,
+  useSetAnswer,
+} from "@/stores/entry-test/selectors";
 import { Progress } from "@/components/Atoms/ui/progress";
 
 // --- DỮ LIỆU GIẢ LẬP CHO BÀI TEST ---
@@ -45,7 +49,7 @@ const answerOptions = [
   {
     id: 3,
     text: "Trung lập",
-    color: "FDBC44",
+    color: "DD9800",
     borderColor: "FDBC44",
   },
   {
@@ -57,7 +61,7 @@ const answerOptions = [
   {
     id: 5,
     text: "Hoàn toàn đồng ý",
-    color: "41821E",
+    color: "00A63E",
     borderColor: "41821E",
   },
 ];
@@ -98,23 +102,44 @@ const QuestionComponent = ({
   currentStep,
   onNext,
   onBack,
+  selectedAnswer,
+  showSaved,
+  progressPulse,
 }: {
   question: { id: number; text: string };
   currentStep: number;
   onNext: (answerId: number) => void;
   onBack: () => void;
+  selectedAnswer?: number;
+  showSaved?: boolean;
+  progressPulse?: boolean;
 }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const currentSelected = selectedAnswer ?? null;
+  const [clickedId, setClickedId] = useState<number | null>(null);
+  const [isFlashing, setIsFlashing] = useState(false);
+  const [optionsDisabled, setOptionsDisabled] = useState(false);
 
-  const handleNext = () => {
-    if (selectedAnswer !== null) {
-      onNext(selectedAnswer);
-      setSelectedAnswer(null);
-    }
+  // Re-enable options whenever the question (step) changes, including when going back
+  useEffect(() => {
+    setOptionsDisabled(false);
+    setClickedId(null);
+    setIsFlashing(false);
+  }, [currentStep]);
+
+  const handleClick = (answerId: number) => {
+    if (optionsDisabled) return;
+    setOptionsDisabled(true);
+    setClickedId(answerId);
+    setIsFlashing(true);
+    setTimeout(() => {
+      setIsFlashing(false);
+      onNext(answerId);
+      setClickedId(null);
+    }, 200);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto border-3 bg-amber-200/50 border-[#835D26] rounded-3xl p-8 shadow-lg animate-fade-in">
+    <div className="w-full max-w-4xl mx-auto border-3 bg-amber-200/50 border-[#835D26] rounded-3xl p-8 shadow-lg animate-fade-in relative">
       {/* Header */}
       <div className="flex items-center justify-center gap-4 mb-8">
         <span className="font-bold text-[#835D26] text-lg whitespace-nowrap">
@@ -123,13 +148,24 @@ const QuestionComponent = ({
         <div>
           <Progress
             value={(currentStep / TOTAL_QUESTIONS) * 100}
-            className="w-72 h-2 bg-transparent border border-[#835D26] rounded-full shadow-inner [&>div]:bg-[#835D26] [&>div]:rounded-full"
+            className={`w-72 h-2 bg-transparent border border-[#835D26] rounded-full shadow-inner [&>div]:bg-[#835D26] [&>div]:rounded-full [&>div]:transition-all [&>div]:duration-500 ${
+              progressPulse ? "[&>div]:animate-pulse" : ""
+            }`}
           />
         </div>
-        <button className="text-[#835D26] font-bold text-2xl hover:bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center">
+        <button
+          onClick={onBack}
+          className="cursor-pointer text-[#835D26] font-bold text-2xl hover:scale-105 rounded-full w-16 h-16 flex items-center justify-center"
+        >
           <Image src="/Return 1.svg" alt="Quay lại" width={72} height={72} />
         </button>
       </div>
+      {showSaved && (
+        <div className="absolute top-3 right-3 flex items-center gap-2 bg-white/80 border border-green-500 text-green-700 rounded-full px-3 py-1 shadow-sm">
+          <span className="text-green-600">✔</span>
+          <span className="text-xs font-semibold">Đã lưu</span>
+        </div>
+      )}
 
       {/* Question Text */}
       <p className="text-center text-2xl text-[#835D26] font-extrabold my-12 leading-relaxed">
@@ -139,53 +175,50 @@ const QuestionComponent = ({
       {/* Answer Options */}
       <div className="flex justify-center items-end gap-10 my-12">
         {answerOptions.map((option, index) => (
-          <div key={option.id} className="flex flex-col items-center">
+          <div key={option.id} className="flex flex-col items-center w-24">
             {/* Label above the box */}
-            <div className={`text-sm font-medium mb-3 text-center leading-tight max-w-[110px] ${option.color}`}>
+            <div
+              className={`text-sm font-medium mb-3 text-center leading-tight max-w-[110px] h-10 flex items-end justify-center ${
+                option.id === 2 || option.id === 4 ? "opacity-0" : ""
+              }`}
+              style={{ color: `#${option.color}` }}
+            >
               {option.text}
             </div>
             {/* Selection box */}
             <button
-              onClick={() => setSelectedAnswer(option.id)}
+              onClick={() => handleClick(option.id)}
+              disabled={optionsDisabled}
               className={`w-12 h-12 rounded-lg border-2 transition-all duration-200 ${
-                selectedAnswer === option.id
-                  ? `${option.borderColor} bg-opacity-20 bg-gradient-to-br from-[#835D26] to-[#835D26] shadow-md scale-110`
-                  : `${option.borderColor} bg-white hover:shadow-md hover:scale-105`
+                optionsDisabled ? `opacity-60 cursor-not-allowed` : ``
+              } ${
+                currentSelected === option.id || clickedId === option.id
+                  ? `shadow-md scale-110`
+                  : `bg-white ${
+                      optionsDisabled ? `` : `hover:shadow-md hover:scale-105`
+                    }`
               }`}
+              style={{ borderColor: `#${option.borderColor}` }}
             >
-              {selectedAnswer === option.id && (
+              {(currentSelected === option.id || clickedId === option.id) && (
                 <div className="w-full h-full flex items-center justify-center">
                   <div
-                    className={`w-6 h-6 rounded bg-gradient-to-br ${
-                      option.id <= 2
-                        ? "from-red-400 to-red-500"
-                        : option.id === 3
-                        ? "from-orange-400 to-orange-500"
-                        : "from-green-400 to-green-500"
+                    className={`w-6 h-6 rounded ${
+                      isFlashing && clickedId === option.id ? "ring-2" : ""
                     }`}
+                    style={{
+                      backgroundColor: `#${option.borderColor}`,
+                      boxShadow:
+                        isFlashing && clickedId === option.id
+                          ? `0 0 0 3px #${option.borderColor}55`
+                          : undefined,
+                    }}
                   ></div>
                 </div>
               )}
             </button>
           </div>
         ))}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex justify-center gap-6 mt-8">
-        <button
-          onClick={onBack}
-          className="bg-transparent border-2 border-yellow-400 text-yellow-900 font-bold py-3 px-8 rounded-full hover:bg-yellow-400/20 transition-colors duration-300"
-        >
-          Quay lại
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={selectedAnswer === null}
-          className="bg-gradient-to-r from-yellow-400 to-orange-400 text-amber-900 font-bold py-3 px-8 rounded-full transition-all duration-300 disabled:from-yellow-200 disabled:to-orange-200 disabled:cursor-not-allowed hover:from-yellow-500 hover:to-orange-500 shadow-lg"
-        >
-          Tiếp
-        </button>
       </div>
     </div>
   );
@@ -194,16 +227,22 @@ const QuestionComponent = ({
 // --- COMPONENT CHÍNH (ROUTE) ---
 export default function EntryTestPage() {
   const [currentStep, setCurrentStep] = useState(0); // 0 = intro, 1-16 = questions
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const answers = useAnswersSelector();
+  const setAnswer = useSetAnswer();
+  const [showSaved, setShowSaved] = useState(false);
+
+  // Store is already persisted; no manual hydration needed
 
   const handleStartTest = () => {
     setCurrentStep(1);
   };
 
   const handleNextQuestion = (answerId: number) => {
-    setAnswers((prev) => ({ ...prev, [currentStep]: answerId }));
+    setAnswer(currentStep, answerId);
+    setShowSaved(true);
     if (currentStep < TOTAL_QUESTIONS) {
-      setCurrentStep(currentStep + 1);
+      // small delay to allow flash/tick feedback
+      setTimeout(() => setCurrentStep(currentStep + 1), 1000);
     } else {
       console.log("Test Completed. Answers:", {
         ...answers,
@@ -212,6 +251,12 @@ export default function EntryTestPage() {
       // Navigate to result page or show results here
     }
   };
+
+  useEffect(() => {
+    if (!showSaved) return;
+    const id = setTimeout(() => setShowSaved(false), 1000);
+    return () => clearTimeout(id);
+  }, [showSaved]);
 
   const handleBackQuestion = () => {
     if (currentStep > 0) {
@@ -233,6 +278,9 @@ export default function EntryTestPage() {
           currentStep={currentStep}
           onNext={handleNextQuestion}
           onBack={handleBackQuestion}
+          selectedAnswer={answers[currentStep]}
+          showSaved={showSaved}
+          progressPulse={showSaved}
         />
       );
     }
