@@ -6,6 +6,8 @@
   --admin-primary: #FFFBED;
   --secondary: #835D26;
   --third: #B59100;
+  --third-light: #CDA600;
+  --third-lightest: #FFF6E3;
   --holder: #FCFCFC;
   --faded: rgba(113, 113, 122, 0.2);
   --error: rgb(228, 3, 3);
@@ -18,6 +20,8 @@
   --color-title: var(--title);
   --color-secondary: var(--secondary);
   --color-third: var(--third);
+  --color-third-light: var(--third-light);
+  --color-third-lightest: var(--third-lightest);
   --color-holder: var(--holder);
   --color-faded: var(--faded);
   --color-error: var(--error);
@@ -57,9 +61,11 @@ body {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
