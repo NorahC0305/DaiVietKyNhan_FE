@@ -1,4 +1,4 @@
-import EntryTestPage from "@pages/Maps/Entry-test";
+import EntryTestPage from "@pages/Starter/Entry-test";
 
 export default function PersonalityResult() {
   return (

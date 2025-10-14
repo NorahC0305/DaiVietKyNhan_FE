@@ -1,6 +1,6 @@
 "use client";
 
-import CharacterCard from "@pages/Maps/Select-character/Components/CharacterCard";
+import CharacterCard from "@pages/Starter/Select-character/Components/CharacterCard";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 

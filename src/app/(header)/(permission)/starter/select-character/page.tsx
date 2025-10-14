@@ -1,4 +1,4 @@
-import SelectCharacterPage from "@pages/Maps/Select-character";
+import SelectCharacterPage from "@pages/Starter/Select-character";
 
 export default function SelectCharacter() {
   return (
