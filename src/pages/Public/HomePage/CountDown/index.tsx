@@ -9,12 +9,12 @@ import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
 import { getSocket } from '@configs/socket'
 
 interface CountDownProps {
-    activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
+    activeWithAmountUser?: IGetSystemConfigWithAmountUserResponse
     accessToken: string
 }
 
 const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
-    const { systemConfig, amountUser: initialAmountUser } = activeWithAmountUser;
+    const { systemConfig, amountUser: initialAmountUser } = activeWithAmountUser || {};
     const launchDate = systemConfig?.launchDate;
 
     const [timeLeft, setTimeLeft] = useState({
@@ -66,7 +66,7 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     /**
      * Socket
      */
-    const [userCount, setUserCount] = useState(initialAmountUser);
+    const [userCount, setUserCount] = useState(initialAmountUser || 0);
 
     useEffect(() => {
         const socket = getSocket(accessToken);

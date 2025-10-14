@@ -1,7 +1,7 @@
 import envConfig from "@configs/env";
 import { getSession } from "next-auth/react";
+import { authOptions } from "@lib/authOptions";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/authOptions";
 type CustomOptions = RequestInit & {
   baseUrl?: string;
 };
