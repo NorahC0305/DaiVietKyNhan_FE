@@ -113,4 +113,36 @@ declare namespace ICOMPONENTS {
     minutes: number;
     seconds: number;
   }
+
+  export interface Position {
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+  }
+
+  export interface Size {
+    width: number;
+    height: number;
+  }
+
+  export interface Region {
+    id: string;
+    name: string;
+    imageSrc: string;
+    position: Position;
+    size: Size;
+    zIndex?: number;
+    hitboxScale?: number;
+    hitboxOffset?: {
+      x?: number; // Offset theo chiều ngang (âm = trái, dương = phải), tính theo % của width
+      y?: number; // Offset theo chiều dọc (âm = lên, dương = xuống), tính theo % của height
+    };
+    description?: string;
+  }
+  interface RegionDetailModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    region: Region | null;
+  }
 }

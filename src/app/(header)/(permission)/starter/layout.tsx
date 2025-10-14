@@ -1,15 +1,15 @@
-import MapsLayoutClient from "@components/Templates/MapsLayout";
+import StarterLayoutClient from "@components/Templates/StarterLayout";
 
-export default function MapsLayoutServer({
+export default function StarterLayoutServer({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <>
-      <MapsLayoutClient>
+      <StarterLayoutClient>
         {children}
-      </MapsLayoutClient>
+      </StarterLayoutClient>
     </>
   );
 }

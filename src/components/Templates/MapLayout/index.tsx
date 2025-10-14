@@ -26,7 +26,7 @@ const MapsLayoutClient: React.FC<MapsLayoutProps> = ({
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/background web 1.svg"
+          src="/Trang map Kỳ Giới.svg"
           alt="Background"
           fill
           className="object-cover"
@@ -34,19 +34,6 @@ const MapsLayoutClient: React.FC<MapsLayoutProps> = ({
         />
       </div>
 
-      {/* Back Button */}
-      <button
-        onClick={handleBack}
-        className="absolute top-4 right-4 z-30 hover:scale-110 transition-transform duration-200"
-      >
-        <Image
-          src="/X.svg"
-          alt="X"
-          width={40}
-          height={40}
-          className="object-contain cursor-pointer"
-        />
-      </button>
 
       {/* Content */}
       <div className="relative z-20 min-h-screen">{children}</div>
