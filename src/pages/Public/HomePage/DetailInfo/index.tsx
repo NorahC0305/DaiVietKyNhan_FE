@@ -26,7 +26,7 @@ const DetailInfo = () => {
         resolver: zodResolver(UpdateMeBodySchema),
         defaultValues: {
             gender: USER.GENDER.MALE,
-            birthDate: new Date(),
+            birthDate: undefined,
         }
     });
 
