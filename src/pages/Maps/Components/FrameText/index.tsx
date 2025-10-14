@@ -71,7 +71,7 @@ const FrameText: React.FC<FrameTextProps> = ({
         >
           <span
             className={`
-              text-center font-bold text-green-800
+              text-center text-green-800
               ${getFontSize()}
               leading-tight
               break-words

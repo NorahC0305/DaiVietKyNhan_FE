@@ -13,6 +13,5 @@ export default async function HeaderSSR() {
       user = response.data;
     }
   }
-  console.log("user", user);
   return <Header user={user} />;
 }

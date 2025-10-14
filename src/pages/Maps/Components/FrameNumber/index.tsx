@@ -53,7 +53,7 @@ const FrameNumber: React.FC<FrameNumberProps> = ({
         >
           <span
             className={`
-              text-center font-bold
+              text-center text-green-800
               leading-none
               max-w-full
             `}
