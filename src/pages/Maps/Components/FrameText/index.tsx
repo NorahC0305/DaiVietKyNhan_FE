@@ -47,8 +47,8 @@ const FrameText: React.FC<FrameTextProps> = ({
           style={{
             width: `${width}px`,
             height: `${height}px`,
-            minWidth: "200px",
-            minHeight: "60px",
+            minWidth: width < 100 ? "auto" : "200px",
+            minHeight: height < 50 ? "auto" : "60px",
             maxWidth: "800px",
           }}
         />
@@ -56,7 +56,7 @@ const FrameText: React.FC<FrameTextProps> = ({
         {/* Text overlay positioned in the red-bounded area */}
         <div
           className={`
-            absolute inset-0 
+            absolute inset-0
             flex items-center justify-center
             px-6 py-2
             ${textClassName}

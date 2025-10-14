@@ -22,23 +22,19 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
       `}
       onClick={onClick}
     >
-      <div className="relative w-full h-auto">
+      <div className={`
+        relative w-full h-auto rounded-lg transition-all duration-300
+        ${isSelected ? 'border-2 border-blue-300 shadow-md' : 'border border-transparent'}
+      `}>
         <Image
           src={characterImage}
           alt={alt}
           width={200}
           height={300}
-          className="object-contain"
+          className="object-contain rounded-lg"
           priority
         />
       </div>
-      
-      {/* Selection indicator */}
-      {isSelected && (
-        <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-          <div className="w-3 h-3 bg-white rounded-full"></div>
-        </div>
-      )}
     </div>
   );
 };

@@ -49,7 +49,7 @@ const SelectCharacterPage = () => {
           <div className="text-center">
             <button
               onClick={handleContinue}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+              className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
             >
               Tiếp tục
             </button>

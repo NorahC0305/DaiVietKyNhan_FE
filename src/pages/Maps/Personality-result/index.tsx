@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FrameText from "../Components/FrameText";
+import FrameNumber from "../Components/FrameNumber";
 
 const PersonalityResultPage = () => {
   const router = useRouter();
@@ -13,31 +14,49 @@ const PersonalityResultPage = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showGuardianResult, setShowGuardianResult] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // trigger initial slide-in animation
     const id = window.setTimeout(() => setMounted(true), 10);
-    return () => window.clearTimeout(id);
+
+    // Check if mobile on mount and resize
+    const checkIsMobile = () => {
+      const mobile = window.innerWidth < 1200; // Tạm thời tăng breakpoint để test
+      console.log("Screen width:", window.innerWidth, "isMobile:", mobile);
+      setIsMobile(mobile);
+    };
+
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("resize", checkIsMobile);
+    };
   }, []);
 
   const personalityOptions = [
     {
-      id: "vui-tuoi",
-      title: "VUI TƯ, SẢNG KHOÁI",
-      color: "#2B638F",
-      description:
-        "Bạn là người vui vẻ, tràn đầy năng lượng và luôn nhìn cuộc sống bằng lăng kính lạc quan. Bạn hướng ngoại, cởi mở và dễ dàng hòa nhập với mọi người xung quanh. Ở bất cứ đâu, bạn cũng có thể trở thành tâm điểm mang lại niềm vui, bởi năng lượng sảng khoái và sự nhiệt tình của bạn có sức lan tỏa mạnh mẽ. Sự sáng tạo và trí tưởng tượng phong phú giúp bạn luôn mang lại cảm hứng và niềm vui cho người khác.\n\nBạn sống rất tự phát, đôi khi có phần bốc đồng. Bạn thường tập trung vào hiện tại và tận hưởng từng khoảnh khắc hơn là lo lắng quá nhiều cho tương lai. Điều này giúp bạn linh hoạt, dễ thích nghi và say mê với những gì đang diễn ra. Tuy nhiên, vì quá say mê với những gì đang diễn ra, bạn đôi khi khó đầu tư và tập trung hoàn thiện các kế hoạch.",
-    },
-    {
       id: "diem-tinh",
       title: "ĐIỀM TĨNH, LÝ TRÍ",
+      number: "00",
       color: "#41821E",
       description:
         "Bạn là người điềm tĩnh, có khả năng suy nghĩ logic và phân tích sâu sắc. Bạn thường cân nhắc kỹ lưỡng trước khi đưa ra quyết định và luôn tìm kiếm sự chính xác trong mọi việc. Sự kiên nhẫn và khả năng tập trung cao giúp bạn giải quyết những vấn đề phức tạp một cách hiệu quả.",
     },
     {
+      id: "vui-tuoi",
+      title: "VUI TƯ, SẢNG KHOÁI",
+      number: "05",
+      color: "#2B638F",
+      description:
+        "Bạn là người vui vẻ, tràn đầy năng lượng và luôn nhìn cuộc sống bằng lăng kính lạc quan. Bạn hướng ngoại, cởi mở và dễ dàng hòa nhập với mọi người xung quanh. Ở bất cứ đâu, bạn cũng có thể trở thành tâm điểm mang lại niềm vui, bởi năng lượng sảng khoái và sự nhiệt tình của bạn có sức lan tỏa mạnh mẽ. Sự sáng tạo và trí tưởng tượng phong phú giúp bạn luôn mang lại cảm hứng và niềm vui cho người khác.\n\nBạn sống rất tự phát, đôi khi có phần bốc đồng. Bạn thường tập trung vào hiện tại và tận hưởng từng khoảnh khắc hơn là lo lắng quá nhiều cho tương lai. Điều này giúp bạn linh hoạt, dễ thích nghi và say mê với những gì đang diễn ra. Tuy nhiên, vì quá say mê với những gì đang diễn ra, bạn đôi khi khó đầu tư và tập trung hoàn thiện các kế hoạch.",
+    },
+    {
       id: "manh-me",
       title: "MẠNH MẼ, QUYẾT ĐOÁN",
+      number: "12",
       color: "#EF493D",
       description:
         "Bạn là người mạnh mẽ, quyết đoán và có khả năng lãnh đạo tự nhiên. Bạn không ngại đối mặt với thử thách và luôn sẵn sàng đưa ra những quyết định khó khăn. Sự tự tin và ý chí mạnh mẽ giúp bạn vượt qua mọi khó khăn trong cuộc sống.",
@@ -45,6 +64,7 @@ const PersonalityResultPage = () => {
     {
       id: "uu-tu",
       title: "ƯU TƯ, SÂU SẮC",
+      number: "24",
       color: "#8D3BBB",
       description:
         "Bạn là người có tâm hồn sâu sắc, thường suy nghĩ về ý nghĩa cuộc sống và những vấn đề lớn lao. Bạn có khả năng cảm nhận và thấu hiểu cảm xúc của người khác một cách tinh tế. Sự nhạy cảm và trí tuệ cảm xúc cao giúp bạn kết nối sâu sắc với mọi người xung quanh.",
@@ -54,15 +74,6 @@ const PersonalityResultPage = () => {
   // Guardian Deity Data
   const guardianDeities = [
     {
-      id: "chu-dao-to",
-      title: "CHỬ ĐẠO TỔ",
-      name: "CHỦ ĐỒNG TỬ",
-      personalityId: "vui-tuoi",
-      description: "Vị thần của niềm vui và sự sáng tạo",
-      image: "/Character.png", // Placeholder - replace with actual image
-      cardBg: "from-yellow-100 to-yellow-200",
-    },
-    {
       id: "tan-vien-son-thanh",
       title: "TẢN VIÊN SƠN THÁNH",
       name: "SƠN TỈNH",
@@ -70,6 +81,15 @@ const PersonalityResultPage = () => {
       description: "Vị thần của sự điềm tĩnh và trí tuệ",
       image: "/Character.png", // Placeholder - replace with actual image
       cardBg: "from-green-100 to-green-200",
+    },
+    {
+      id: "chu-dao-to",
+      title: "CHỬ ĐẠO TỔ",
+      name: "CHỦ ĐỒNG TỬ",
+      personalityId: "vui-tuoi",
+      description: "Vị thần của niềm vui và sự sáng tạo",
+      image: "/Character.png", // Placeholder - replace with actual image
+      cardBg: "from-yellow-100 to-yellow-200",
     },
     {
       id: "phu-dong-thien-vuong",
@@ -199,46 +219,77 @@ const PersonalityResultPage = () => {
             KHÍ CHẤT CỦA BẠN CÓ THIÊN HƯỚNG:
           </h1>
         </div>
-        {personalityOptions.map((option) => {
-          const isSelected = selectedPersonality === option.id;
-          const hasSelection = selectedPersonality !== null;
-          const shouldDim = hasSelection && !isSelected;
+        <div className="flex flex-col gap-4">
+          {personalityOptions.map((option) => {
+            const isSelected = selectedPersonality === option.id;
+            const hasSelection = selectedPersonality !== null;
+            const shouldDim = hasSelection && !isSelected;
 
-          return (
-            <div
-              key={option.id}
-              onClick={() => handleOptionSelect(option.id)}
-              className={`transition-all duration-300 cursor-pointer ${
-                shouldDim ? "opacity-40" : "opacity-100"
-              } hover:opacity-80`}
-            >
-              <FrameText
-                text={option.title}
-                className={`font-semibold text-base md:text-lg transition-all duration-300 ${
-                  isSelected ? "scale-105" : "scale-100"
-                }`}
-                textClassName={`transition-all duration-300 ${
-                  isSelected
-                    ? "font-extrabold"
-                    : shouldDim
-                    ? "text-gray-500"
-                    : ""
-                }`}
-                textStyle={{
-                  fontSize: "40px",
-                  fontFamily: "var(--font-bd-street-sign)",
-                  color: isSelected
-                    ? option.color
-                    : shouldDim
-                    ? "#6B7280"
-                    : option.color,
-                }}
-                width={460}
-                height={98}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={option.id}
+                onClick={() => handleOptionSelect(option.id)}
+                className={`transition-all duration-300 cursor-pointer ${
+                  shouldDim ? "opacity-40" : "opacity-100"
+                } hover:opacity-80`}
+              >
+                <div className="flex items-center">
+                  {/* Left Frame - Text */}
+                  <FrameText
+                    text={option.title}
+                    className={`font-semibold text-base md:text-lg transition-all duration-300 ${
+                      isSelected ? "scale-105" : "scale-100"
+                    }`}
+                    textClassName={`transition-all duration-300 ${
+                      isSelected
+                        ? "font-extrabold"
+                        : shouldDim
+                        ? "text-gray-500"
+                        : ""
+                    }`}
+                    textStyle={{
+                      fontSize: isMobile ? "18px" : "24px",
+                      fontFamily: "var(--font-bd-street-sign)",
+                      color: isSelected
+                        ? option.color
+                        : shouldDim
+                        ? "#6B7280"
+                        : option.color,
+                    }}
+                    width={isMobile ? 180 : 320}
+                    height={isMobile ? 50 : 70}
+                  />
+
+                  {/* Right Frame - Number */}
+                  <FrameNumber
+                    text={option.number}
+                    className={`font-semibold text-base md:text-lg transition-all duration-300 ${
+                      isSelected ? "scale-105" : "scale-100"
+                    }`}
+                    textClassName={`transition-all duration-300 ${
+                      isSelected
+                        ? "font-extrabold"
+                        : shouldDim
+                        ? "text-gray-500"
+                        : ""
+                    }`}
+                    textStyle={{
+                      fontSize: isMobile ? "16px" : "20px",
+                      fontFamily: "var(--font-bd-street-sign)",
+                      color: isSelected
+                        ? option.color
+                        : shouldDim
+                        ? "#6B7280"
+                        : option.color,
+                    }}
+                    width={isMobile ? 60 : 80}
+                    height={isMobile ? 60 : 80}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
         {/* Footer */}
         <div className="mt-6 text-left self-start w-full max-w-[460px]">
           <span
