@@ -2,10 +2,10 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-export function getSocket(token: string): Socket {
+export function getSocket(room: string, token: string): Socket {
     if (!socket || !socket.connected) {
-        socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL as string, {
-            query: { token },
+        socket = io(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/${room}`, {
+            auth: { authorization: `Bearer ${token}` },
             transports: ['websocket'],
         });
     }

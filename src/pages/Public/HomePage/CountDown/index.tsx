@@ -69,16 +69,15 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     const [userCount, setUserCount] = useState(initialAmountUser || 0);
 
     useEffect(() => {
-        const socket = getSocket(accessToken);
+        const socket = getSocket('home-page', accessToken);
 
         socket.on('connect', () => {
             console.log('Socket connected:', socket.id);
-            socket.emit('joinSystemConfigRoom', { room: 'system-config-room' });
         });
 
-        socket.on('userCountUpdate', (data: { userCount: number }) => {
-            console.log('Received userCountUpdate:', data);
-            setUserCount(data.userCount);
+        socket.on('user-count-updated', (data: { amountUser: number; systemConfig?: { launchDate?: string }; message?: string }) => {
+            console.log('Received user-count-updated:', data);
+            if (typeof data?.amountUser === 'number') setUserCount(data.amountUser);
         });
 
         socket.on('disconnect', (reason) => {
@@ -89,7 +88,7 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
             console.log('Cleaning up socket connection...');
             socket.off('connect');
             socket.off('disconnect');
-            socket.off('userCountUpdate');
+            socket.off('user-count-updated');
             socket.disconnect();
         };
     }, [accessToken]);
