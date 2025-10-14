@@ -64,7 +64,7 @@ export default function Card({
                 </>
               ) : (
                 <Image
-                  src={imageSrc || "/HiddenCard.png"}
+                  src={imageSrc || "/HiddenCard.svg"}
                   alt={`Unlocked card #${cardNumber}`}
                   fill
                   sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
