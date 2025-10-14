@@ -133,9 +133,8 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
       >
         <Link
           href={href}
-          className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden group transition-colors duration-300 ${
-            isActive ? "text-yellow-400 font-semibold" : "hover:text-yellow-400"
-          }`}
+          className={`text-white no-underline text-sm md:text-base font-bold font-inter relative py-2 px-4 rounded-lg overflow-hidden group transition-colors duration-300 ${isActive ? "text-yellow-400 font-semibold" : "hover:text-yellow-400"
+            }`}
         >
           <span className="relative z-10">{label}</span>
 
@@ -195,9 +194,8 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
             />
           </div>
           <svg
-            className={`w-4 h-4 text-white transition-transform ${
-              avatarDropdownOpen ? "rotate-180" : ""
-            }`}
+            className={`w-4 h-4 text-white transition-transform ${avatarDropdownOpen ? "rotate-180" : ""
+              }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -250,7 +248,7 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
                 </Link> */}
 
                 <Link
-                  href={ROUTES.AUTH.LOGOUT}
+                  href={''}
                   className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100/50 transition-colors"
                   onClick={handleLogout}
                 >
@@ -323,11 +321,10 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center justify-center p-2 transition-colors duration-200 ${
-                  isActive
+                className={`flex flex-col items-center justify-center p-2 transition-colors duration-200 ${isActive
                     ? "text-yellow-400"
                     : "text-white/60 hover:text-yellow-400"
-                }`}
+                  }`}
                 onClick={() => setMenuOpen(false)} // Đóng menu nếu có
               >
                 <Icon className="w-5 h-5" />

@@ -79,23 +79,13 @@ const AuthLayoutClient = ({ children }: { children: React.ReactNode }) => {
                 />
             </div>
 
-            {/* Card thứ 3 - Góc trên */}
-            <div className={`${styles.card3} hidden md:block`}>
-                <Image
-                    src={DaiVietKyNhan}
-                    alt="Dại Việt Kỳ Nhân"
-                    sizes='100vw'
-                    className='rounded-3xl'
-                />
-            </div>
-
             {/* Card thứ 4 - Góc phải dưới */}
             <div className={`${styles.card4} hidden md:block`}>
                 <Image
                     src={TrungTrac}
                     alt="Trung Trắc"
                     sizes='100vw'
-                    className={styles.cardImageCircle}
+                    className={styles.card4Image}
                 />
             </div>
             {/* 
