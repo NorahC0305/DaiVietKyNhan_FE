@@ -40,8 +40,8 @@ const MapsLayoutClient: React.FC<MapsLayoutProps> = ({
         className="absolute top-4 right-4 z-30 hover:scale-110 transition-transform duration-200"
       >
         <Image
-          src="/Trở lại trang trước.svg"
-          alt="Trở lại trang trước"
+          src="/X.svg"
+          alt="X"
           width={40}
           height={40}
           className="object-contain cursor-pointer"
