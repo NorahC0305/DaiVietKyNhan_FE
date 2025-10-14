@@ -1,6 +1,6 @@
 import AboutUsPage from "@pages/Public/About-us";
 
-export default async function ContactServer() {
+export default function ContactServer() {
   return (
     <>
       <AboutUsPage />

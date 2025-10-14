@@ -4,11 +4,11 @@ import userService from "@services/user";
 import { IUser } from "@models/user/entity";
 
 export default async function NotFound() {
-    const user = await userService.getMe() as IUser;
-    return (
-        <>
-            <Header user={user} />
-            <NotFoundPageClient />
-        </>
-    )
+  const user = await userService.getMe() as IUser;
+  return (
+    <>
+      <Header user={user} />
+      <NotFoundPageClient />
+    </>
+  )
 }
