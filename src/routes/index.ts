@@ -15,6 +15,7 @@ const PUBLIC = {
   HOME: BASE_PATHS.ROOT,
   LIBRARY: "/library",
   MAP: "/map",
+  KYGIOI: '/ky-gioi',
   ABOUT: "/about-us",
   PRODUCTS: "/products",
   CONTACT: "/contact",
