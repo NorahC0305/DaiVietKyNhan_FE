@@ -1,32 +1,39 @@
-# Stage 1: Cài đặt dependencies
+# Stage 1: Dependencies (Giữ nguyên)
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-# Dùng npm ci để cài đặt nhanh và nhất quán
 RUN npm ci
 
-# Stage 2: Build ứng dụng
+# Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# KHÔNG truyền bất kỳ ARG secret nào vào đây.
-# Next.js sẽ tự động build với các giá trị placeholder.
+# Chỉ truyền các biến public và URL vào lúc build.
+# TUYỆT ĐỐI KHÔNG TRUYỀN NEXTAUTH_SECRET VÀO ĐÂY.
+ARG NEXTAUTH_URL
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WEBSOCKET_URL
+
+# Tạo file .env chỉ với các biến cần thiết cho việc build
+RUN echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env.production && \
+    echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env.production && \
+    echo "NEXT_PUBLIC_WEBSOCKET_URL=$NEXT_PUBLIC_WEBSOCKET_URL" >> .env.production
+
+# Next.js sẽ tự động đọc file .env.production khi build
 RUN npm run build
 
-# Stage 3: Production Image - Tối ưu và nhỏ gọn
+# Stage 3: Runner (Giữ nguyên)
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-# ENV PORT=3000  <-- Không cần thiết, Next.js mặc định là 3000
-# ENV HOSTNAME=0.0.0.0 <-- Không cần thiết, Next.js standalone mặc định đã lắng nghe trên tất cả các địa chỉ
+# Các ENV PORT và HOSTNAME không cần thiết với output standalone
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy các file cần thiết từ chế độ standalone
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
@@ -34,6 +41,4 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 EXPOSE 3000
-
-# Lệnh chạy server.js từ thư mục standalone
 CMD ["node", "server.js"]

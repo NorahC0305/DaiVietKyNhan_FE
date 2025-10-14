@@ -68,7 +68,6 @@ const LoginPageClient = () => {
             //#region Handle success
             if (status === 200) {
                 const session = await getSession() as unknown as UTILS.ISession;
-                console.log('session', session);
 
                 switch (session?.user?.role) {
                     case ROLE.CUSTOMER.ID:

@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   frontend:
+    build: .
     image: daivietkynhan/daivietkynhan-fe:latest
     container_name: dvkn-frontend
     restart: always

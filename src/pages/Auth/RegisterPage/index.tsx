@@ -60,9 +60,9 @@ const RegisterPageClient = () => {
                 toast.success(res.message || "Đăng ký thành công");
                 router.push(ROUTES.AUTH.LOGIN);
                 setEmail(data.email);
-                console.log('res', res);
+            } else {
+                toast.error(res.message || "Đăng ký thất bại");
             }
-
         } catch (error: any) {
             toast.error(error.message || "Đăng ký thất bại");
             console.error("Login error:", error);
