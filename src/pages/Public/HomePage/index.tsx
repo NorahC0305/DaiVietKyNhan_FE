@@ -14,7 +14,7 @@ interface HomePageClientProps {
 
 const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
   return (
-    <div className='mt-7'>
+    <div className='mt-7 min-h-screen'>
       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
         <CountDown activeWithAmountUser={activeWithAmountUser} accessToken={accessToken} />
       }

@@ -30,6 +30,7 @@ interface HeaderProps {
 const navigationItems = [
   { href: ROUTES.PUBLIC.HOME, label: "Trang chủ" },
   { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân" },
+  { href: ROUTES.PUBLIC.KYGIOI, label: "Kỳ Giới" },
   { href: ROUTES.PUBLIC.MAP, label: "Bản đồ Kỳ Nhân" },
   { href: ROUTES.PUBLIC.PRODUCTS, label: "Sản phẩm" },
   { href: ROUTES.PUBLIC.ABOUT, label: "Về chúng tôi" },
@@ -38,7 +39,8 @@ const navigationItems = [
 const mobileFooterItems = [
   { href: ROUTES.PUBLIC.HOME, label: "Trang chủ", Icon: HomeIcon },
   { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện", Icon: LibraryIcon },
-  { href: ROUTES.PUBLIC.MAP, label: "Bản đồ", Icon: MapIcon },
+  { href: ROUTES.PUBLIC.KYGIOI, label: "Kỳ Giới", Icon: MapIcon },
+  // { href: ROUTES.PUBLIC.MAP, label: "Bản đồ", Icon: Icon },
   { href: ROUTES.PUBLIC.PRODUCTS, label: "Sản phẩm", Icon: PackageIcon },
   { href: ROUTES.PUBLIC.ABOUT, label: "Về chúng tôi", Icon: InfoIcon },
   { href: ROUTES.PUBLIC.CONTACT, label: "Liên hệ", Icon: ContactIcon },
@@ -322,8 +324,8 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center justify-center p-2 transition-colors duration-200 ${isActive
-                    ? "text-yellow-400"
-                    : "text-white/60 hover:text-yellow-400"
+                  ? "text-yellow-400"
+                  : "text-white/60 hover:text-yellow-400"
                   }`}
                 onClick={() => setMenuOpen(false)} // Đóng menu nếu có
               >
