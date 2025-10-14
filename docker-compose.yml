@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: daivietkynhan/daivietkynhan-fe:latest
+    container_name: dvkn-frontend
+    restart: always
+    networks:
+      - dvkn-network
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+
+networks:
+  dvkn-network:
+    external: true
