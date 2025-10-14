@@ -1,50 +1,48 @@
-name: CI/CD Deploy Frontend
+name: CI/CD Deploy DaiVietKyNhan FE
 
-# Kích hoạt workflow khi có push lên nhánh 'main'
 on:
   push:
     branches: [ "main" ]
 
-# Các biến môi trường dùng chung
 env:
   IMAGE_NAME: daivietkynhan/daivietkynhan-fe
 
 jobs:
-  # Job 1: Build và đẩy image lên Docker Hub
+  # Job 1: Build và đẩy image lên Docker Hub (AN TOÀN)
   build_and_push:
     name: Build and Push to Docker Hub
     runs-on: ubuntu-latest
 
     steps:
-      # Lấy code từ repo về máy ảo của GitHub
       - name: Check out code
         uses: actions/checkout@v4
 
-      # Đăng nhập vào Docker Hub bằng secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Build và push Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
+          platforms: linux/amd64
           tags: ${{ env.IMAGE_NAME }}:latest
 
-  # Job 2: Triển khai ứng dụng trên VPS
+  # Job 2: Triển khai lên VPS
   deploy:
     name: Deploy to VPS
-    # Chạy job này sau khi build_and_push thành công
     needs: build_and_push
     runs-on: ubuntu-latest
+    # Kết nối với môi trường 'production' để lấy secrets
+    environment:
+      name: production
 
     steps:
-      # Cài đặt SSH key để kết nối vào VPS
+      # Dùng action chuyên dụng để cài đặt SSH key, an toàn hơn
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -55,15 +53,17 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      # SSH vào VPS và chạy các lệnh triển khai
-      - name: Deploy to VPS
+      # SSH vào VPS và chạy các lệnh deploy bạn muốn
+      - name: Deploy using Docker Compose
         run: |
           ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} << 'EOF'
-            mkdir -p ~/daivietkynhan-fe && cd ~/daivietkynhan-fe
+            mkdir -p /home/root/FE && cd /home/root/FE
 
             echo "${{ secrets.ENV_FILE_PRODUCTION }}" > .env
 
             echo "${{ secrets.COMPOSE_FILE_PRODUCTION }}" > docker-compose.yml
+
+            docker-compose down
 
             docker-compose pull
 
