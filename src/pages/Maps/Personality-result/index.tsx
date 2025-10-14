@@ -328,52 +328,32 @@ const PersonalityResultPage = () => {
                   {/* Left Frame - Text */}
                   <FrameText
                     text={option.title}
-                    className={`font-semibold text-base md:text-lg transition-all duration-300 ${
+                    className={`text-base md:text-lg transition-all duration-300 ${
                       isSelected ? "scale-105" : "scale-100"
                     }`}
-                    textClassName={`transition-all duration-300 ${
-                      isSelected
-                        ? "font-extrabold"
-                        : shouldDim
-                        ? "text-gray-500"
-                        : ""
-                    }`}
+                    textClassName={`transition-all duration-300`}
                     textStyle={{
-                      fontSize: isMobile ? "18px" : "24px",
+                      fontSize: isMobile ? "22px" : "36px",
                       fontFamily: "var(--font-bd-street-sign)",
-                      color: isSelected
-                        ? option.color
-                        : shouldDim
-                        ? "#6B7280"
-                        : option.color,
+                      color: option.color,
                     }}
-                    width={isMobile ? 180 : 320}
+                    width={isMobile ? 220 : 320}
                     height={isMobile ? 50 : 70}
                   />
 
                   {/* Right Frame - Number */}
                   <FrameNumber
                     text={option.number}
-                    className={`font-semibold text-base md:text-lg transition-all duration-300 ${
+                    className={`text-base md:text-lg transition-all duration-300 ${
                       isSelected ? "scale-105" : "scale-100"
                     }`}
-                    textClassName={`transition-all duration-300 ${
-                      isSelected
-                        ? "font-extrabold"
-                        : shouldDim
-                        ? "text-gray-500"
-                        : ""
-                    }`}
+                    textClassName={`transition-all duration-300`}
                     textStyle={{
-                      fontSize: isMobile ? "16px" : "20px",
+                      fontSize: isMobile ? "20px" : "30px",
                       fontFamily: "var(--font-bd-street-sign)",
-                      color: isSelected
-                        ? option.color
-                        : shouldDim
-                        ? "#6B7280"
-                        : option.color,
+                      color: option.color,
                     }}
-                    width={isMobile ? 60 : 80}
+                    width={isMobile ? 70 : 120}
                     height={isMobile ? 60 : 80}
                   />
                 </div>
