@@ -1,15 +1,18 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@lib/authOptions";
 import Header from "../Header";
-import { IUser } from "@models/user/entity";
 import userService from "@services/user";
+import { IMeResponse } from "@models/user/response";
 
 export default async function HeaderSSR() {
-    const session = await getServerSession(authOptions) as UTILS.ISession;
-    let user: IUser | null = null;
-    if (session) {
-        user = await userService.getMe() as IUser;
+  const session = (await getServerSession(authOptions)) as UTILS.ISession;
+  let user: IMeResponse["data"] | null = null;
+  if (session) {
+    const response = (await userService.getMe()) as IMeResponse;
+    if (response.data) {
+      user = response.data;
     }
-
-    return <Header user={user} />;
+  }
+  console.log("user", user);
+  return <Header user={user} />;
 }

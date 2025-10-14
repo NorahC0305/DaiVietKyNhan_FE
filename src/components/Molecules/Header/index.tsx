@@ -10,6 +10,7 @@ import { ROUTES } from "@routes";
 import effectGif from "../../../../public/effect-1.gif";
 import { AnimatePresence, motion } from "framer-motion";
 import { IUser } from "@models/user/entity";
+import { IMeResponse } from "@models/user/response";
 import {
   ContactIcon,
   HomeIcon,
@@ -23,7 +24,7 @@ import { signOut } from "next-auth/react";
 
 interface HeaderProps {
   className?: string;
-  user: IUser | null;
+  user: IMeResponse["data"] | null;
 }
 
 const navigationItems = [
@@ -75,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
-
+  console.log(user);
   // Default avatar URL
   const defaultAvatarUrl =
     "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSL6QUqKxXrttERd_g8g1dNcuIwydqok49E6tlwEJWU7TBVSphW3EYy4lJb-bGerm7D2Shzl-KKOPqtu9md2zjHYdIHdmJYWbJRSbipK74";
