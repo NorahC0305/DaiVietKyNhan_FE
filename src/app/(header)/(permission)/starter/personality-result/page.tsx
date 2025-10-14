@@ -1,4 +1,4 @@
-import PersonalityResultPage from "@pages/Maps/Personality-result";
+import PersonalityResultPage from "@pages/Starter/Personality-result";
 
 export default function PersonalityResult() {
   return (
