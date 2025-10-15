@@ -13,6 +13,7 @@ interface MapRegionProps {
     bottom?: string;
     left?: string;
     right?: string;
+    transform?: string;
   };
   size?: {
     width: number;
@@ -102,8 +103,8 @@ export default function MapRegion({
           left: hitboxOffsetX,
           width: hitboxWidth,
           height: hitboxHeight,
-          // Debug: comment dòng dưới để ẩn vùng hover
-          backgroundColor: "rgba(255, 0, 0, 0.3)",
+          // Debug: uncomment để xem vùng hover
+          // backgroundColor: "rgba(255, 0, 0, 0.3)",
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
