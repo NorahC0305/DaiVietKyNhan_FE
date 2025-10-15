@@ -126,7 +126,7 @@ const AboutUsPage = () => {
                     Đại Việt Kỳ Nhân được sáng lập bởi một người trẻ yêu sử – Tô Quốc Nghi, một họa sĩ, nhà sáng tạo nội dung có niềm đam mê đặc biệt với lịch sử và bản sắc dân tộc.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Anh nhận thấy Việt Nam đang thiếu những sản phẩm minh họa hình ảnh các nhân vật lịch sử và quyết định thực hiện dự án Đại Việt Kỳ Nhân, bỏ tiền túi nuôi đam mê.
+                    Anh nhận thấy Việt Nam đang thiếu những sản phẩm minh họa hình ảnh các nhân vật lịch sử và quyết định thực hiện dự án Đại Việt Kỳ Nhân.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
                     Từ những nét vẽ đầu tiên, anh đã dần định hình nên một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới mẻ, gần gũi và đầy cảm xúc. 
