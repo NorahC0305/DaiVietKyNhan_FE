@@ -119,6 +119,7 @@ declare namespace ICOMPONENTS {
     bottom?: string;
     left?: string;
     right?: string;
+    transform?: string;
   }
 
   export interface Size {
