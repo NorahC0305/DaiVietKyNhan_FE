@@ -9,4 +9,10 @@ export const useSetAnswer = () =>
 export const useResetAnswers = () =>
   useEntryTestStore((state: ZUSTAND.IEntryTestState) => state.reset)
 
+export const useHouseScoresSelector = () =>
+  useEntryTestStore((state: ZUSTAND.IEntryTestState) => state.houseScores)
+
+export const useSetHouseScores = () =>
+  useEntryTestStore((state: ZUSTAND.IEntryTestState) => state.setHouseScores)
+
 

@@ -7,6 +7,8 @@ export const createEntryTestSlice = (
       answers: { ...state.answers, [questionId]: answerId },
     })),
   reset: () => set({ answers: {} }),
+  houseScores: undefined,
+  setHouseScores: (scores) => set({ houseScores: scores }),
 });
 
 let set: any;

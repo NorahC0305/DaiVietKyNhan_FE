@@ -7,6 +7,8 @@ import {
   useSetAnswer,
 } from "@/stores/entry-test/selectors";
 import { Progress } from "@/components/Atoms/ui/progress";
+import { useSetHouseScores } from "@/stores/entry-test/selectors";
+import { ROUTES } from "@routes";
 
 // --- DỮ LIỆU GIẢ LẬP CHO BÀI TEST ---
 const TOTAL_QUESTIONS = 16;
@@ -230,6 +232,7 @@ export default function EntryTestPage() {
   const answers = useAnswersSelector();
   const setAnswer = useSetAnswer();
   const [showSaved, setShowSaved] = useState(false);
+  const setHouseScores = useSetHouseScores();
 
   // Store is already persisted; no manual hydration needed
 
@@ -244,11 +247,50 @@ export default function EntryTestPage() {
       // small delay to allow flash/tick feedback
       setTimeout(() => setCurrentStep(currentStep + 1), 1000);
     } else {
-      console.log("Test Completed. Answers:", {
-        ...answers,
-        [currentStep]: answerId,
+      const finalAnswers = { ...answers, [currentStep]: answerId } as Record<number, number>;
+
+      // Compute mock scores for four houses from answers
+      // Mapping questions to houses (simple even spread)
+      const questionToHouse: Record<number, "diem-tinh" | "vui-tuoi" | "manh-me" | "uu-tu"> = {} as any;
+      const houseCycle: Array<"diem-tinh" | "vui-tuoi" | "manh-me" | "uu-tu"> = [
+        "diem-tinh",
+        "vui-tuoi",
+        "manh-me",
+        "uu-tu",
+      ];
+      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
+        questionToHouse[i] = houseCycle[(i - 1) % 4];
+      }
+
+      const baseScores: Record<string, number> = {
+        "diem-tinh": 0,
+        "vui-tuoi": 0,
+        "manh-me": 0,
+        "uu-tu": 0,
+      };
+
+      Object.entries(finalAnswers).forEach(([qidStr, ans]) => {
+        const qid = Number(qidStr);
+        const house = questionToHouse[qid];
+        if (!house) return;
+        // Normalize answer 1..5 -> score 0..4, then scale to 0..6 for nicer totals
+        const normalized = Math.max(1, Math.min(5, Number(ans))) - 1; // 0..4
+        baseScores[house] += normalized + 1; // 1..5 per question
       });
-      // Navigate to result page or show results here
+
+      // Cap and format to two-digit strings (00..24 etc.)
+      const format = (n: number) => String(Math.max(0, Math.min(99, n))).padStart(2, "0");
+
+      const diemTinh = format(baseScores["diem-tinh"]);
+      const vuiTuoi = format(baseScores["vui-tuoi"]);
+      const manhMe = format(baseScores["manh-me"]);
+      const uuTu = format(baseScores["uu-tu"]);
+
+      // Save scores to zustand store and navigate without URL params
+      setHouseScores({ diemTinh, vuiTuoi, manhMe, uuTu });
+      if (typeof window !== "undefined") {
+        window.location.href = ROUTES.STARTER.PERSONALITY_RESULT;
+      }
     }
   };
 

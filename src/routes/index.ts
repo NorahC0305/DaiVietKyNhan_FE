@@ -68,7 +68,7 @@ const ADMIN_DASHBOARD = {
 
 const STARTER = {
   ENTRY_TEST: `${BASE_PATHS.STARTER}/entry-test`,
-  PERSONALITY_TEST: `${BASE_PATHS.STARTER}/personality-test`,
+  PERSONALITY_RESULT: `${BASE_PATHS.STARTER}/personality-result`,
   SELECT_CHARACTER: `${BASE_PATHS.STARTER}/select-character`,
 };
 

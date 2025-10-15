@@ -9,21 +9,21 @@ import { Button } from '@components/Atoms/ui/button';
 
 // Dữ liệu cho các liên kết nhanh để dễ dàng quản lý
 const IntroduceLinks = [
-    { href: '/#', label: 'Về dự án' },
-    { href: '/#', label: 'Tầm nhìn & Sứ mệnh' },
-    { href: '/#', label: 'Người sáng lập' },
+    { id: 'about-project', href: '/#', label: 'Về dự án' },
+    { id: 'vision-mission', href: '/#', label: 'Tầm nhìn & Sứ mệnh' },
+    { id: 'founder', href: '/#', label: 'Người sáng lập' },
 ];
 
 const DiscoverLinks = [
-    { href: ROUTES.PUBLIC.LIBRARY, label: 'Về chúng tôi' },
-    { href: ROUTES.PUBLIC.KYGIOI, label: 'Thư viện nhân vật' },
-    { href: ROUTES.PUBLIC.MAP, label: 'Nội dung nổi bật' },
+    { id: 'about-us', href: ROUTES.PUBLIC.LIBRARY, label: 'Về chúng tôi' },
+    { id: 'character-library', href: ROUTES.PUBLIC.KYGIOI, label: 'Thư viện nhân vật' },
+    { id: 'featured-content', href: ROUTES.PUBLIC.MAP, label: 'Nội dung nổi bật' },
 ];
 
 const InfoLinks = [
-    { href: '/#', label: 'Điều khoản sử dụng' },
-    { href: '/#', label: 'Chính sách bảo mật' },
-    { href: '/#', label: 'Đóng góp nội dung' },
+    { id: 'terms', href: '/#', label: 'Điều khoản sử dụng' },
+    { id: 'privacy', href: '/#', label: 'Chính sách bảo mật' },
+    { id: 'contribute', href: '/#', label: 'Đóng góp nội dung' },
 ];
 
 
@@ -47,7 +47,7 @@ export const Footer = () => {
                         <h3 className="text-black mb-6 text-lg font-semibold">Giới thiệu</h3>
                         <ul className="list-none p-0 m-0 flex flex-col gap-3">
                             {IntroduceLinks.map((link) => (
-                                <li key={link.href}>
+                                <li key={link.id}>
                                     <Link href={link.href} className="no-underline text-[#a0a0a0] transition-colors hover:text-black">
                                         {link.label}
                                     </Link>
@@ -61,7 +61,7 @@ export const Footer = () => {
                         <h3 className="text-black mb-6 text-lg font-semibold">Khám phá</h3>
                         <ul className="list-none p-0 m-0 flex flex-col gap-3">
                             {DiscoverLinks.map((link) => (
-                                <li key={link.href}>
+                                <li key={link.id}>
                                     <Link href={link.href} className="no-underline text-[#a0a0a0] transition-colors hover:text-black">
                                         {link.label}
                                     </Link>
@@ -75,7 +75,7 @@ export const Footer = () => {
                         <h3 className="text-black mb-6 text-lg font-semibold">Thông tin</h3>
                         <ul className="list-none p-0 m-0 flex flex-col gap-3">
                             {InfoLinks.map((link) => (
-                                <li key={link.href}>
+                                <li key={link.id}>
                                     <Link href={link.href} className="no-underline text-[#a0a0a0] transition-colors hover:text-black">
                                         {link.label}
                                     </Link>
