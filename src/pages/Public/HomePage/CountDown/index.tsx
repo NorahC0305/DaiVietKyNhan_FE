@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
-import ScrollPaper from "../../../../../public/ScrollPaper.svg"
+import ScrollPaper from "../../../../../public/frame1.png"
 import frame from "../../../../../public/frame.svg"
 import ButtonHeight from "../../../../../public/ButtonHeight.svg"
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'

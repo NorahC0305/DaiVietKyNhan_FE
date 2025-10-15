@@ -38,14 +38,14 @@ const ForgotPasswordPageClient = () => {
             if (!res.statusCode || ![200, 201].includes(res.statusCode)) {
                 toast.error(res.message || "Email không tồn tại trong hệ thống");
                 return;
+            } else {
+                localStorage.setItem('email', data.email);
+                toast.success("Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra email để tiếp tục đặt lại mật khẩu.");
+                router.push(ROUTES.AUTH.VERIFY_OTP);
             }
 
-            localStorage.setItem('email', data.email);
-            toast.success("Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra email để tiếp tục đặt lại mật khẩu.");
-
-            router.push(ROUTES.AUTH.VERIFY_OTP);
         } catch (error) {
-            // toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+            toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
             console.error(error);
         } finally {
             setIsLoading(false);

@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeft, KeyRound } from "lucide-react"
 import OTPInput from "@components/Atoms/OTPInput"
 import { Input } from "@components/Atoms/ui/input"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useGetLocalStorage } from "@hooks/useLocalStorage"
 import H1 from "@components/Atoms/H1"
@@ -44,14 +44,16 @@ const VerifyOtpPageClient = () => {
             const res = await authService.verifyOtp(data) as IBackendResponse<any>
             console.log(res);
 
-            if (res.statusCode !== 201) {
+            if (res.statusCode === 200) {
+                localStorage.setItem('email', data.email)
+                localStorage.setItem('token', res.data.accessToken)
+                toast.success(res.message || 'Xác thực OTP thành công')
+                router.push(ROUTES.AUTH.RESET_PASSWORD)
+            } else {
                 toast.error(res.message || 'Xác thực OTP thất bại')
                 setIsLoading(false)
                 return
             }
-            localStorage.setItem('code', data.code)
-            toast.success(res.message || 'Xác thực OTP thành công')
-            router.push(ROUTES.AUTH.RESET_PASSWORD)
         } catch (error) {
             toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.")
             console.error(error)
@@ -63,10 +65,10 @@ const VerifyOtpPageClient = () => {
 
 
     //#region Handle OTP input change
-    const handleOTPChange = (code: string) => {
+    const handleOTPChange = useCallback((code: string) => {
         setValue('code', code)
         trigger('code')
-    }
+    }, [setValue, trigger])
     //#endregion
 
 
@@ -78,7 +80,7 @@ const VerifyOtpPageClient = () => {
         } else {
             setValue('email', value || '')
         }
-    }, [value, isReady, router])
+    }, [value, isReady, router, setValue])
     //#endregion
 
 
@@ -92,17 +94,18 @@ const VerifyOtpPageClient = () => {
         return () => clearInterval(interval)
     }, [countdown])
 
-    const handleResendOTP = async () => {
+    const handleResendOTP = useCallback(async () => {
         setCountdown(60)
         // const res = await authService.sendOtp(value || '') as IBackendResponse<any>
 
         // if (res.statusCode !== 201) {
         //     toast.error(res.message || 'Gửi OTP thất bại')
         //     return
+        // } else {
+        //     toast.success(res.message || 'Gửi OTP thành công')
         // }
 
-        // toast.success(res.message || 'Gửi OTP thành công')
-    }
+    }, [])
     //#endregion
 
     const handleBack = () => {

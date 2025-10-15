@@ -53,3 +53,15 @@ export const UpdateMeBodySchema = UserSchema.pick({
     .strict()
 export type IUpdateMeBodySchema = z.infer<typeof UpdateMeBodySchema>
 //-----------------End-----------------//
+
+
+/**
+ * Reset password form data request
+ */
+export const resetPasswordFormDataRequest = z.object({
+    email: z.string().email('Email không hợp lệ'),
+    newPassword: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    confirmNewPassword: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+});
+export type IResetPasswordFormDataRequest = z.infer<typeof resetPasswordFormDataRequest>;
+//-----------------End-Reset-Password-Request-----------------//
