@@ -15,7 +15,7 @@ export const useGetLocalStorage = (key: string) => {
         const storedValue = localStorage.getItem(key)
         setValue(storedValue)
         setIsReady(true)
-    }, [])
+    }, [key]) // Add key as dependency
 
     return { value, isReady }
 }
