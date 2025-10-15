@@ -7,31 +7,41 @@ const regionSlugs = {
     id: "phu-tay-ho",
     name: "Phủ Tây Hồ",
     imageSrc: "/Phủ Tây Hồ 1.svg",
-    description: "Phủ Tây Hồ là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
+    backgroundImage: "/Thánh Gióng 1.png",
+    description:
+      "Phủ Tây Hồ là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
   },
   "nui-tan-vien": {
-    id: "nui-tan-vien", 
+    id: "nui-tan-vien",
     name: "Núi Tản Viên",
     imageSrc: "/Núi Tản Viên 1.svg",
-    description: "Núi Tản Viên là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
+    backgroundImage: "/Map Sơn Tinh 2.svg",
+    description:
+      "Núi Tản Viên là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
   },
   "ky-linh-viet-hoa": {
     id: "ky-linh-viet-hoa",
-    name: "Kỳ Linh Việt Hỏa", 
+    name: "Kỳ Linh Việt Hỏa",
     imageSrc: "/Kỳ Linh Việt Hỏa 1.svg",
-    description: "Kỳ Linh Việt Hỏa là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
+    backgroundImage: "/Chử Đồng Tử 1.png",
+    description:
+      "Kỳ Linh Việt Hỏa là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
   },
   "dam-da-trach": {
     id: "dam-da-trach",
     name: "Đầm Dạ Trạch",
-    imageSrc: "/Đầm Dạ Trạch 1.svg", 
-    description: "Đầm Dạ Trạch là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
+    imageSrc: "/Đầm Dạ Trạch 1.svg",
+    backgroundImage: "/Map Chử Đồng Tử 1.svg", // Sử dụng ảnh Thánh Gióng cho Đầm Dạ Trạch
+    description:
+      "Đầm Dạ Trạch là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
   },
   "lang-phu-dong": {
     id: "lang-phu-dong",
     name: "Làng Phù Đổng",
     imageSrc: "/Làng Phù Đổng 1.svg",
-    description: "Làng Phù Đổng là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
+    backgroundImage: "/Map Thánh Gióng 1.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
+    description:
+      "Làng Phù Đổng là nơi linh thiêng, nơi thờ Tứ Pháp - bốn vị thần phù hộ cho vùng đất này. Đây là vùng đất đầu tiên trong hành trình khám phá Kỳ Giới.",
   },
 };
 
@@ -49,7 +59,7 @@ export default async function MapRegionPage({ params }: PageProps) {
     notFound();
   }
 
-  return <MapRegionDetail region={region} />;
+  return <MapRegionDetail backgroundImage={region.backgroundImage} />;
 }
 
 // Generate static params for all regions
