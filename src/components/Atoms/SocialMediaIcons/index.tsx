@@ -38,14 +38,14 @@ const SocialMediaIcons: React.FC<SocialMediaIconsProps> = ({ className }) => {
       name: "YouTube",
       icon: youtubeIcon,
       alt: "YouTube",
-      url: "https://www.youtube.com/@SuKyToanThu-vk3wi/featured",
+      url: "https://www.youtube.com/@%C4%90%E1%BA%A1iVi%E1%BB%87tK%E1%BB%B3Nh%C3%A2n/shorts",
     },
     {
       id: "tiktok",
       name: "TikTok",
       icon: tiktokIcon,
       alt: "TikTok",
-      url: "https://www.tiktok.com/@daivietkynhan",
+      url: "https://www.tiktok.com/@daivietkynhan.official",
     },
   ];
 

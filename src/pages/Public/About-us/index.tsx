@@ -41,23 +41,13 @@ const AboutUsPage = () => {
                 <div className="space-y-1 md:space-y-2 lg:space-y-3">
                   {/* Font size responsive - tận dụng không gian desktop */}
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Đại Việt Kỳ Nhân là một dự án cộng đồng sáng tạo, ra đời với
-                    sứ mệnh làm mới cách kể chuyện lịch sử và đưa những nhân vật
-                    "kỳ lạ – kiệt xuất – bị lãng quên" trong sử Việt đến gần hơn
-                    với thế hệ trẻ.
+                    Dự án cộng đồng được xây dựng với sứ mệnh giúp người trẻ biết thêm về lịch sử dân tộc.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Thông qua những minh họa nhân vật công phu, mang đậm bản sắc
-                    và tính thẩm mỹ hiện đại, dự án hướng tới việc kết nối Gen Z
-                    với lịch sử bằng những hình thức truyền tải gần gũi, trực
-                    quan và cảm xúc hơn.
+                    Đại Việt Kỳ Nhân đã nghiên cứu và minh họa hơn 500 nhân vật lịch sử Việt Nam. Dự án giúp các bạn trẻ hình tượng hóa các nhân vật lịch sử, xây dựng kho tư liệu trực quan đa dạng từ vua chúa, tướng lĩnh cho đến danh nhân văn hóa, nghệ nhân và cả những nhân vật bình dân. Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được sống lại một cách sáng tạo và truyền cảm hứng trong đời sống hiện đại.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác
-                    – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một
-                    không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được
-                    sống lại một cách sáng tạo và truyền cảm hứng trong đời sống
-                    hiện đại.
+                    Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được sống lại một cách sáng tạo và truyền cảm hứng trong đời sống hiện đại.
                   </p>
                 </div>
               </div>
@@ -133,21 +123,13 @@ const AboutUsPage = () => {
                 <div className="space-y-1 md:space-y-2 lg:space-y-3">
                   {/* Font size responsive - tận dụng không gian desktop */}
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Đại Việt Kỳ Nhân được khởi xướng bởi một người trẻ yêu sử –
-                    Tô Quốc Nghi, họa sĩ minh họa và nhà sáng tạo nội dung có
-                    niềm đam mê đặc biệt với lịch sử và bản sắc dân tộc.
+                    Đại Việt Kỳ Nhân được sáng lập bởi một người trẻ yêu sử – Tô Quốc Nghi, một họa sĩ, nhà sáng tạo nội dung có niềm đam mê đặc biệt với lịch sử và bản sắc dân tộc.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Với tư duy thẩm mỹ hiện đại kết hợp tinh thần gìn giữ di
-                    sản, anh là người đứng sau hơn 500 minh họa nhân vật lịch sử
-                    mang phong cách riêng biệt – vừa chỉn chu về sử liệu, vừa
-                    cuốn hút về hình ảnh.
+                    Anh nhận thấy Việt Nam đang thiếu những sản phẩm minh họa hình ảnh các nhân vật lịch sử và quyết định thực hiện dự án Đại Việt Kỳ Nhân, bỏ tiền túi nuôi đam mê.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Từ những nét vẽ đầu tiên, Tô Quốc Nghi đã dần định hình nên
-                    một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm
-                    hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới
-                    mẻ, gần gũi và đầy cảm xúc.
+                    Từ những nét vẽ đầu tiên, anh đã dần định hình nên một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới mẻ, gần gũi và đầy cảm xúc. 
                   </p>
                 </div>
               </div>

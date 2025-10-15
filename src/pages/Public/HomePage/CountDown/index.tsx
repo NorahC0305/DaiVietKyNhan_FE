@@ -1,12 +1,15 @@
+// src/pages/Public/HomePage/CountDown/index.tsx
+
 "use client";
 
 import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
-import ScrollPaper from "../../../../../public/frame1.png"
+import ScrollPaper from "../../../../../public/ScrollPaper.svg"
 import frame from "../../../../../public/frame.svg"
 import ButtonHeight from "../../../../../public/ButtonHeight.svg"
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
 import { getSocket } from '@configs/socket'
+import Loading from '@components/Molecules/Loading'; // 1. Import component Loading
 
 interface CountDownProps {
     activeWithAmountUser?: IGetSystemConfigWithAmountUserResponse
@@ -14,6 +17,9 @@ interface CountDownProps {
 }
 
 const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
+    // 2. Thêm state để quản lý việc tải ảnh
+    const [imagesLoaded, setImagesLoaded] = useState(false);
+
     const { systemConfig, amountUser: initialAmountUser } = activeWithAmountUser || {};
     const launchDate = systemConfig?.launchDate;
 
@@ -27,6 +33,29 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     const launchDateString = launchDate
         ? new Date(launchDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : '';
+
+    // 3. Thêm useEffect để preload 2 ảnh SVG quan trọng
+    useEffect(() => {
+        const imageUrls = [ScrollPaper.src, frame.src];
+        const promises = imageUrls.map((src) => {
+            return new Promise((resolve, reject) => {
+                const img = new window.Image();
+                img.src = src;
+                img.onload = resolve;
+                img.onerror = reject;
+            });
+        });
+
+        // Khi cả 2 ảnh đã tải xong
+        Promise.all(promises)
+            .then(() => {
+                setImagesLoaded(true); // Cập nhật state để hiển thị nội dung
+            })
+            .catch((error) => {
+                console.error("Error loading images:", error);
+                setImagesLoaded(true); // Vẫn hiển thị trang dù có lỗi
+            });
+    }, []);
 
 
     /**
@@ -72,16 +101,20 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         const socket = getSocket('home-page', accessToken);
 
         socket.on('connect', () => {
+            console.log('Socket connected:', socket.id);
         });
 
         socket.on('user-count-updated', (data: { amountUser: number; systemConfig?: { launchDate?: string }; message?: string }) => {
+            console.log('Received user-count-updated:', data);
             if (typeof data?.amountUser === 'number') setUserCount(data.amountUser);
         });
 
         socket.on('disconnect', (reason) => {
+            console.log('Socket disconnected:', reason);
         });
 
         return () => {
+            console.log('Cleaning up socket connection...');
             socket.off('connect');
             socket.off('disconnect');
             socket.off('user-count-updated');
@@ -89,10 +122,17 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         };
     }, [accessToken]);
 
+
+    // 4. Kiểm tra state: nếu ảnh chưa tải xong, hiển thị màn hình Loading
+    if (!imagesLoaded) {
+        return <Loading />;
+    }
+
+    // 5. Nếu ảnh đã tải xong, hiển thị nội dung chính
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
-                <Image src={ScrollPaper} alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" />
+                <Image src={ScrollPaper} alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" priority />
 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] md:w-[80%] flex items-center justify-center flex-col">
                     <div className='flex items-center justify-center flex-col mt-2'>
@@ -108,7 +148,7 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
                     </div>
 
                     <div className='relative w-full flex justify-center'>
-                        <Image src={frame} alt="Frame" className="w-full h-auto max-w-[550px] md:max-w-[800px]" />
+                        <Image src={frame} alt="Frame" className="w-full h-auto max-w-[550px] md:max-w-[800px]" priority />
                         <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] md:w-[90%] flex items-center justify-start flex-col'>
                             {/* --- Title Count Down --- */}
                             <div className='w-full flex items-center justify-center gap-2'>
