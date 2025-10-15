@@ -79,7 +79,6 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
-  console.log(user);
   // Default avatar URL
   const defaultAvatarUrl =
     "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSL6QUqKxXrttERd_g8g1dNcuIwydqok49E6tlwEJWU7TBVSphW3EYy4lJb-bGerm7D2Shzl-KKOPqtu9md2zjHYdIHdmJYWbJRSbipK74";

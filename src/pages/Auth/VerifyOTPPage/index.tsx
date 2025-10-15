@@ -42,7 +42,6 @@ const VerifyOtpPageClient = () => {
             setIsLoading(true)
 
             const res = await authService.verifyOtp(data) as IBackendResponse<any>
-            console.log(res);
 
             if (res.statusCode === 200) {
                 localStorage.setItem('email', data.email)
