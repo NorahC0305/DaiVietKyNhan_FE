@@ -10,7 +10,7 @@ interface VietnameseLoadingProps {
 //cảm ơn vì daden
 
 export default function VietnameseLoading({
-  text = "hsadhsahdsahd",
+  text = "Đang tải dữ liệu",
   className = "",
 }: VietnameseLoadingProps) {
   const [dots, setDots] = useState("");

@@ -34,7 +34,7 @@ const ContactInfo = () => {
           </div>
           <div>
             <div className="text-base font-semibold">Địa chỉ</div>
-            <div className="text-base text-gray-200">FM STUDIO</div>
+            <div className="text-base text-gray-200">56 Phước Hưng, Phường 8, Quận 5, TP. Hồ Chí Minh</div>
           </div>
         </div>
       </div>
