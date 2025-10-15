@@ -17,7 +17,14 @@ export const queryKeys = {
   users: {
     all: ['users'] as const,
     lists: () => [...queryKeys.users.all, 'list'] as const,
-    list: (filters: Record<string, any>) => [...queryKeys.users.lists(), { filters }] as const,
+    list: (params?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      sortBy?: string;
+      sortOrder?: 'asc' | 'desc';
+      status?: string;
+    }) => [...queryKeys.users.lists(), { ...params }] as const,
     details: () => [...queryKeys.users.all, 'detail'] as const,
     detail: (id: string | number) => [...queryKeys.users.details(), id] as const,
   },

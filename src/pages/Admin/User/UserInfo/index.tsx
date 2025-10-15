@@ -3,45 +3,113 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@atoms/ui/card";
 import Toolbar from "./Components/Toolbar";
-import UsersTable from "./Components/UsersTable";
+import UsersTable, { SortField, SortDirection } from "./Components/UsersTable";
 import { IMePaginationResponse } from "@models/user/response";
 import { EnhancedPagination } from "@atoms/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/Atoms/ui/select";
 import { Rows } from "lucide-react";
+import { useUsersList } from "@hooks/useUser";
 
 interface UserInfoPageProps {
   listUsers: IMePaginationResponse['data'];
+  initialUsersResponse?: IMePaginationResponse;
 }
 
-const UserInfoPage = ({ listUsers }: UserInfoPageProps) => {
+const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: UserInfoPageProps) => {
 
-  console.log(listUsers);
-
-  const [itemsPerPage, setItemsPerPage] = useState<number>(15);
+  /**
+   * Use Hooks
+   */
+  const [search, setSearch] = useState<string>("");
+  const [sortField, setSortField] = useState<SortField>('createdAt');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [page, setPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(15);
+
+  const { data: usersResponse, isLoading: loading, error, isPlaceholderData } = useUsersList({
+    search,
+    sortBy: sortField,
+    sortOrder: sortDirection,
+    page,
+    limit: itemsPerPage,
+  }, initialUsersResponse);
+  //-----------------------------End-----------------------------//
+
+  /**
+   * Use Data
+   */
+  const listUsers = usersResponse?.data || initialListUsers;
+  //-----------------------------End-----------------------------//
+
+
+  /**
+   * Handle Search
+   * @param searchValue 
+   */
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+    setPage(1);
+  };
+  //-----------------------------End-----------------------------//
+
+
+  /**
+   * Handle 
+   * @param field 
+   */
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setPage(1);
+  };
+  //-----------------------------End-----------------------------//
+
+
+  /**
+   * Handle Pagination
+   * @param value 
+   */
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(parseInt(value));
     setPage(1);
   };
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
+  //-----------------------------End-----------------------------//
 
   return (
     <div className="space-y-6">
       <Card className="border-gray-300 bg-admin-primary">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg md:text-xl font-semibold text-gray-900">
-            Thông tin khán giả
+            Thông tin người dùng
           </CardTitle>
           <div className="text-sm text-gray-500">
-            Quản lý và theo dõi thông tin khán giả
+            Quản lý và theo dõi thông tin người dùng
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Toolbar />
-          <UsersTable rows={listUsers?.results} />
+          <Toolbar onSearch={handleSearch} />
+          {error ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-red-500">Có lỗi xảy ra khi tải dữ liệu</div>
+            </div>
+          ) : (
+            <UsersTable
+              rows={listUsers?.results}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+              // isLoading={shouldShowLoading}
+              skeletonRowCount={itemsPerPage}
+            />
+          )}
         </CardContent>
 
         <CardFooter className="flex justify-between">
@@ -58,14 +126,14 @@ const UserInfoPage = ({ listUsers }: UserInfoPageProps) => {
               </SelectContent>
             </Select>
           </div>
-          {listUsers && (
+          {listUsers && !loading && !error && (
             <EnhancedPagination
               currentPage={listUsers?.pagination?.current || 1}
               totalPages={listUsers?.pagination?.totalPage || 0}
               totalItems={listUsers?.pagination?.totalItem || 0}
               itemsPerPage={listUsers?.pagination?.pageSize || 0}
               onPageChange={handlePageChange}
-              showItemCount={false}
+            // showItemCount={false}
             />
           )}
         </CardFooter>
