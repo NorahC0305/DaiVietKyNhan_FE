@@ -12,16 +12,13 @@ import {
 import { Button } from "@atoms/ui/button";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
+import { IMePaginationResponse } from "@models/user/response";
+import { USER } from "@constants/user";
 
-export type UserInfoRow = {
-  name: string;
-  email: string;
-  score: number;
-  date: string;
-  active: boolean;
-};
 
-type Props = { rows: UserInfoRow[] };
+interface Props {
+  rows: NonNullable<IMePaginationResponse['data']>['results'] | undefined;
+}
 
 const UsersTable = ({ rows }: Props) => {
   return (
@@ -56,18 +53,18 @@ const UsersTable = ({ rows }: Props) => {
                 <TableCell className="text-gray-900">{u.email}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
-                    {u.score}
+                      {u.point}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-gray-900">{u.date}</TableCell>
+                <TableCell className="text-gray-900">{u.createdAt}</TableCell>
                 <TableCell>
-                  {u.active ? (
+                  {u.status === USER.USER_STATUS.ACTIVE ? (
                     <Badge variant="outline" className="bg-[#d16834] text-white border-0">
-                      Hoạt động
+                      {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="bg-[#F26644] text-white border-0">
-                      Không hoạt động
+                      {USER.USER_STATUS.INACTIVE ? 'Không hoạt động' : 'Hoạt động'}
                     </Badge>
                   )}
                 </TableCell>

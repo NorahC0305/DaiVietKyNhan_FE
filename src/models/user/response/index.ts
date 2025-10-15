@@ -1,7 +1,7 @@
 
 import { USER } from "@constants/user"
 import { roleModel } from "@models/role/model"
-import { BackendResponseModel } from "@models/backend"
+import { BackendResponseModel, BackendPaginationResponseModel } from "@models/backend"
 import z from "zod"
 
 const loginResponse = z.object({
@@ -28,6 +28,7 @@ const meResponseData = z.object({
     birthDate: z.string(),
     avatar: z.string().nullable(),
     coin: z.number(),
+    point: z.number(),
     status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
     roleId: z.number(),
     createdById: z.number().nullable(),
@@ -40,5 +41,8 @@ const meResponseData = z.object({
 })
 
 const meResponse = BackendResponseModel(meResponseData)
+const mePaginationResponse = BackendPaginationResponseModel(meResponseData)
+
 export type IMeResponse = z.infer<typeof meResponse>
+export type IMePaginationResponse = z.infer<typeof mePaginationResponse>
 //----------------------End----------------------//
