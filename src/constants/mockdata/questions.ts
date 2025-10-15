@@ -210,6 +210,115 @@ export const mockQuestions: Question[] = [
     explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
     difficulty: 'hard',
     category: "Lịch sử Việt Nam"
+  },
+  
+  {
+    id: 15,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  
+  {
+    id: 16,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  
+  
+  {
+    id: 17,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  {
+    id: 18,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  {
+    id: 19,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  {
+    id: 20,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
+  },
+  {
+    id: 21,
+    title: "Câu hỏi về Tiên Dung",
+    content: "Tiên Dung là con gái của ai?",
+    options: [
+      { id: 1, text: "Vua Hùng Vương thứ 3" },
+      { id: 2, text: "Vua Hùng Vương thứ 6" },
+      { id: 3, text: "Vua Hùng Vương thứ 9" },
+      { id: 4, text: "Vua Hùng Vương thứ 12" }
+    ],
+    correctAnswer: 1,
+    explanation: "Tiên Dung là con gái của vua Hùng Vương thứ 3, một trong những vị vua đầu tiên của nước Văn Lang.",
+    difficulty: 'hard',
+    category: "Lịch sử Việt Nam"
   }
 ];
 
