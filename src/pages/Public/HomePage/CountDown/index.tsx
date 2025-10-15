@@ -110,20 +110,16 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         const socket = getSocket('home-page', accessToken);
 
         socket.on('connect', () => {
-            console.log('Socket connected:', socket.id);
         });
 
         socket.on('user-count-updated', (data: { amountUser: number; systemConfig?: { launchDate?: string }; message?: string }) => {
-            console.log('Received user-count-updated:', data);
             if (typeof data?.amountUser === 'number') setUserCount(data.amountUser);
         });
 
         socket.on('disconnect', (reason) => {
-            console.log('Socket disconnected:', reason);
         });
 
         return () => {
-            console.log('Cleaning up socket connection...');
             socket.off('connect');
             socket.off('disconnect');
             socket.off('user-count-updated');
