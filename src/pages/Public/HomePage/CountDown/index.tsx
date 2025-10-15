@@ -1,13 +1,15 @@
+// src/pages/Public/HomePage/CountDown/index.tsx
+
 "use client";
 
 import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
-import ScrollPaper from "../../../../../public/frame1.png"
+import ScrollPaper from "../../../../../public/ScrollPaper.svg"
 import frame from "../../../../../public/frame.svg"
 import ButtonHeight from "../../../../../public/ButtonHeight.svg"
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
 import { getSocket } from '@configs/socket'
-import Loading from '@components/Molecules/Loading';
+import Loading from '@components/Molecules/Loading'; // 1. Import component Loading
 
 interface CountDownProps {
     activeWithAmountUser?: IGetSystemConfigWithAmountUserResponse
@@ -24,7 +26,8 @@ const hasImagesLoadedInSession = () => {
 };
 
 const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
-    const [imagesLoaded, setImagesLoaded] = useState(hasImagesLoadedInSession());
+    // 2. Thêm state để quản lý việc tải ảnh
+    const [imagesLoaded, setImagesLoaded] = useState(false);
 
     const { systemConfig, amountUser: initialAmountUser } = activeWithAmountUser || {};
     const launchDate = systemConfig?.launchDate;
@@ -40,11 +43,8 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         ? new Date(launchDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
         : '';
 
+    // 3. Thêm useEffect để preload 2 ảnh SVG quan trọng
     useEffect(() => {
-        if (imagesLoaded) {
-            return;
-        }
-
         const imageUrls = [ScrollPaper.src, frame.src];
         const promises = imageUrls.map((src) => {
             return new Promise((resolve, reject) => {
@@ -55,16 +55,16 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
             });
         });
 
+        // Khi cả 2 ảnh đã tải xong
         Promise.all(promises)
             .then(() => {
-                sessionStorage.setItem('homeImagesLoaded', 'true');
-                setImagesLoaded(true);
+                setImagesLoaded(true); // Cập nhật state để hiển thị nội dung
             })
             .catch((error) => {
                 console.error("Error loading images:", error);
-                setImagesLoaded(true);
+                setImagesLoaded(true); // Vẫn hiển thị trang dù có lỗi
             });
-    }, [imagesLoaded]);
+    }, []);
 
 
     /**
@@ -110,16 +110,20 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         const socket = getSocket('home-page', accessToken);
 
         socket.on('connect', () => {
+            console.log('Socket connected:', socket.id);
         });
 
         socket.on('user-count-updated', (data: { amountUser: number; systemConfig?: { launchDate?: string }; message?: string }) => {
+            console.log('Received user-count-updated:', data);
             if (typeof data?.amountUser === 'number') setUserCount(data.amountUser);
         });
 
         socket.on('disconnect', (reason) => {
+            console.log('Socket disconnected:', reason);
         });
 
         return () => {
+            console.log('Cleaning up socket connection...');
             socket.off('connect');
             socket.off('disconnect');
             socket.off('user-count-updated');
@@ -128,12 +132,12 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     }, [accessToken]);
 
 
-    // Nếu ảnh chưa tải xong, hiển thị màn hình Loading
+    // 4. Kiểm tra state: nếu ảnh chưa tải xong, hiển thị màn hình Loading
     if (!imagesLoaded) {
         return <Loading />;
     }
 
-    // Nếu ảnh đã tải xong, hiển thị nội dung chính
+    // 5. Nếu ảnh đã tải xong, hiển thị nội dung chính
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
