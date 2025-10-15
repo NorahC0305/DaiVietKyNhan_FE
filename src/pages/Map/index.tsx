@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MapRegion from "./Components/MapRegion";
@@ -143,7 +142,7 @@ export default function MapPage() {
 
         {/* Container cho scaled map và regions */}
         <div className="relative w-full h-screen flex items-center justify-center z-10">
-          <motion.div
+          <div
             className="relative"
             style={{
               width: 1920,
@@ -151,9 +150,6 @@ export default function MapPage() {
               transform: `scale(${scale})`,
               transformOrigin: "center center",
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6 }}
           >
             {/* Background Layer 2: Scaled - để regions align chính xác */}
             <div className="absolute inset-0 pointer-events-none opacity-0">
@@ -183,7 +179,7 @@ export default function MapPage() {
                 />
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Mobile regions - vị trí cố định không bị ảnh hưởng bởi scale */}

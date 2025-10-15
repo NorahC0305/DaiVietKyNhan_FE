@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, XCircle } from "lucide-react";
-import { QuestionModalProps } from "@/types/IComponents/Question";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 export default function QuestionModal({
@@ -10,31 +9,17 @@ export default function QuestionModal({
   isOpen,
   onClose,
   onSubmit,
-}: QuestionModalProps) {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
-
-  const handleOptionSelect = (optionId: number) => {
-    if (!showResult) {
-      setSelectedOption(optionId);
-    }
-  };
+}: ICOMPONENTS.QuestionModalProps) {
+  const [answerText, setAnswerText] = useState("");
 
   const handleSubmit = () => {
-    if (selectedOption !== null && question) {
-      const correct =
-        selectedOption === question.options[question.correctAnswer - 1].id;
-      setIsCorrect(correct);
-      setShowResult(true);
-      onSubmit(selectedOption, correct);
+    if (question) {
+      onSubmit(answerText.trim());
     }
   };
 
   const handleClose = () => {
-    setSelectedOption(null);
-    setShowResult(false);
-    setIsCorrect(false);
+    setAnswerText("");
     onClose();
   };
 
@@ -100,13 +85,6 @@ export default function QuestionModal({
                 <h2 className="text-xl font-bold text-gray-800">
                   {question.title}
                 </h2>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
-                    question.difficulty
-                  )}`}
-                >
-                  {getDifficultyText(question.difficulty)}
-                </span>
               </div>
 
               <p className="text-sm text-amber-700 bg-amber-100 px-3 py-1 rounded-full inline-block">
@@ -122,127 +100,40 @@ export default function QuestionModal({
                 </p>
               </div>
 
-              {/* Options */}
-              <div className="space-y-3 mb-6">
-                {question.options.map((option, index) => {
-                  const isSelected = selectedOption === option.id;
-                  const isCorrectOption =
-                    option.id ===
-                    question.options[question.correctAnswer - 1].id;
-                  const showCorrect = showResult && isCorrectOption;
-                  const showIncorrect =
-                    showResult && isSelected && !isCorrectOption;
-
-                  return (
-                    <button
-                      key={option.id}
-                      onClick={() => handleOptionSelect(option.id)}
-                      disabled={showResult}
-                      className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
-                        showResult
-                          ? showCorrect
-                            ? "border-green-500 bg-green-50 text-green-800"
-                            : showIncorrect
-                            ? "border-red-500 bg-red-50 text-red-800"
-                            : isCorrectOption
-                            ? "border-green-500 bg-green-50 text-green-800"
-                            : "border-gray-200 bg-gray-50 text-gray-600"
-                          : isSelected
-                          ? "border-blue-500 bg-blue-50 text-blue-800"
-                          : "border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 text-gray-700"
-                      } ${showResult ? "cursor-default" : "cursor-pointer"}`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
-                              showResult
-                                ? showCorrect
-                                  ? "bg-green-500 text-white"
-                                  : showIncorrect
-                                  ? "bg-red-500 text-white"
-                                  : isCorrectOption
-                                  ? "bg-green-500 text-white"
-                                  : "bg-gray-300 text-gray-600"
-                                : isSelected
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-200 text-gray-600"
-                            }`}
-                          >
-                            {String.fromCharCode(65 + index)}
-                          </div>
-                          <span className="font-medium">{option.text}</span>
-                        </div>
-
-                        {showResult && (
-                          <div className="flex items-center">
-                            {showCorrect && (
-                              <CheckCircle className="w-5 h-5 text-green-500" />
-                            )}
-                            {showIncorrect && (
-                              <XCircle className="w-5 h-5 text-red-500" />
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+              {/* Text input answer */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Câu trả lời của bạn
+                </label>
+                <textarea
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  rows={4}
+                  placeholder="Nhập câu trả lời..."
+                  value={answerText}
+                  onChange={(e) => setAnswerText(e.target.value)}
+                />
               </div>
-
-              {/* Explanation */}
-              {showResult && question.explanation && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl"
-                >
-                  <h4 className="font-semibold text-blue-800 mb-2">
-                    Giải thích:
-                  </h4>
-                  <p className="text-blue-700 leading-relaxed">
-                    {question.explanation}
-                  </p>
-                </motion.div>
-              )}
             </div>
 
             {/* Footer */}
             <div className="p-6 bg-gray-50 border-t border-gray-200">
               <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
-                  {showResult ? (
-                    <span
-                      className={`font-medium ${
-                        isCorrect ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {isCorrect
-                        ? "🎉 Chúc mừng! Bạn đã trả lời đúng!"
-                        : "😔 Chưa đúng rồi, hãy thử lại!"}
-                    </span>
-                  ) : (
-                    "Hãy chọn một đáp án"
-                  )}
-                </div>
+                <div className="text-sm text-gray-600">Nhập câu trả lời và bấm Gửi</div>
 
                 <div className="flex space-x-3">
-                  {!showResult ? (
-                    <button
-                      onClick={handleSubmit}
-                      disabled={selectedOption === null}
-                      className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Trả lời
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleClose}
-                      className="px-6 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
-                    >
-                      Đóng
-                    </button>
-                  )}
+                  <button
+                    onClick={handleSubmit}
+                    disabled={!answerText.trim()}
+                    className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Gửi
+                  </button>
+                  <button
+                    onClick={handleClose}
+                    className="px-6 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                  >
+                    Đóng
+                  </button>
                 </div>
               </div>
             </div>
