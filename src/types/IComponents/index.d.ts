@@ -146,4 +146,31 @@ declare namespace ICOMPONENTS {
     onClose: () => void;
     region: Region | null;
   }
+
+  export interface Question {
+    id: number;
+    title: string;
+    content: string;
+    category: string;
+  }
+
+  export interface QuestionModalProps {
+    question: Question | null;
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (answerText: string) => void;
+  }
+
+  interface ScrollPosition {
+    top: string;
+    left: string;
+    rotate: string;
+  }
+
+  interface MapRegionDetailProps {
+    backgroundImage?: string;
+    scrollPositions: ScrollPosition[];
+    questions: Question[];
+    answeredQuestionIds: number[];
+  }
 }

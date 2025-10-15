@@ -3,6 +3,7 @@
 import CharacterCard from "@pages/Starter/Select-character/Components/CharacterCard";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@routes";
 
 const SelectCharacterPage = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ const SelectCharacterPage = () => {
   };
 
   const handleContinue = () => {
-    router.push("/maps/personality-result");
+    router.push(ROUTES.STARTER.ENTRY_TEST);
   };
 
   return (
