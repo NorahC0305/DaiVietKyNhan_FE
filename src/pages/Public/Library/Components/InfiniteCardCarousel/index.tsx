@@ -29,6 +29,8 @@ interface CardData {
 type PropType = {
   cards: CardData[];
   options?: EmblaOptionsType;
+  scrollToIndex?: number;
+  highlightQuery?: string;
 };
 
 const PrevButton: React.FC<{
@@ -152,7 +154,7 @@ const useDotButton = (emblaApi: EmblaCarouselType | undefined) => {
 };
 
 const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
-  const { cards, options } = props;
+  const { cards, options, scrollToIndex, highlightQuery } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
   const [flippedIndex, setFlippedIndex] = React.useState<number | null>(null);
   const tweenFactor = useRef(0);
@@ -239,13 +241,22 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
       });
   }, [emblaApi, tweenScale]);
 
+  // Programmatic scroll when search requests a specific index
+  useEffect(() => {
+    if (!emblaApi) return;
+    if (typeof scrollToIndex === "number" && !Number.isNaN(scrollToIndex)) {
+      const boundedIndex = numberWithinRange(scrollToIndex, 0, cards.length - 1);
+      emblaApi.scrollTo(boundedIndex);
+    }
+  }, [emblaApi, scrollToIndex, cards.length]);
+
   return (
-    <div className="mx-auto max-w-full sm:max-w-3xl md:max-w-5xl lg:max-w-6xl px-3 sm:px-4">
+    <div className="w-full max-w-none px-4 sm:px-6 lg:px-10">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex touch-pan-y touch-pinch-zoom -ml-3 sm:-ml-6 md:-ml-8">
+        <div className="flex touch-pan-y touch-pinch-zoom -ml-1 sm:-ml-2 md:-ml-3 lg:-ml-4">
           {cards?.map((card, index) => (
             <div
-              className="transform-gpu flex-none w-[200px] sm:w-[240px] md:w-[280px] lg:w-[300px] min-w-0 pl-3 sm:pl-6 md:pl-8 cursor-pointer"
+              className="transform-gpu flex-none w-[240px] sm:w-[300px] md:w-[380px] lg:w-[460px] min-w-0 pl-3 sm:pl-6 md:pl-8 cursor-pointer"
               key={card.id}
               onClick={() => {
                 if (!emblaApi) return;
@@ -263,6 +274,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
                   isCenter={index === selectedIndex}
                   cardNumber={index}
                   isFlipped={flippedIndex === index}
+                  highlightQuery={highlightQuery}
                 />
               </div>
             </div>
