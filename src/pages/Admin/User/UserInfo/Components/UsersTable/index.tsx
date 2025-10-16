@@ -10,12 +10,15 @@ import {
   TableRow,
 } from "@atoms/ui/table";
 import { Button } from "@atoms/ui/button";
+import { Skeleton } from "@atoms/ui/skeleton";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
 import { IMePaginationResponse } from "@models/user/response";
 import { USER } from "@constants/user";
 import { formatDate } from "@utils/Date";
 
+export type SortField = 'name' | 'email' | 'coin' | 'point' | 'createdAt' | 'status';
+export type SortDirection = 'asc' | 'desc';
 
 interface Props {
   rows: NonNullable<IMePaginationResponse['data']>['results'] | undefined;
@@ -155,9 +158,10 @@ const UsersTable = ({ rows, onViewUser, onEditUser, onSort, sortBy, sortOrder }:
                     <Badge variant="outline" className="bg-[#d16834] text-white border-0">
                       {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
                     </Badge>
-                  ) : (
-                    <Badge variant="outline" className="bg-[#F26644] text-white border-0">
-                      {USER.USER_STATUS.INACTIVE ? 'Không hoạt động' : 'Hoạt động'}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
+                      {u.point}
                     </Badge>
                   )}
                 </TableCell>

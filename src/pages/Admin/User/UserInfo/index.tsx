@@ -15,6 +15,7 @@ import useDebounce from "@hooks/useDebounce";
 
 interface UserInfoPageProps {
   listUsers: IMePaginationResponse['data'];
+  initialUsersResponse?: IMePaginationResponse;
 }
 
 const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
@@ -104,16 +105,17 @@ const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
     setPage(1);
     setHasUserInteracted(true);
   };
+  //-----------------------------End-----------------------------//
 
   return (
     <div className="space-y-6">
       <Card className="border-gray-300 bg-admin-primary">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg md:text-xl font-semibold text-gray-900">
-            Thông tin khán giả
+            Thông tin người dùng
           </CardTitle>
           <div className="text-sm text-gray-500">
-            Quản lý và theo dõi thông tin khán giả
+            Quản lý và theo dõi thông tin người dùng
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -152,14 +154,14 @@ const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
               </SelectContent>
             </Select>
           </div>
-          {listUsers && (
+          {listUsers && !error && (
             <EnhancedPagination
               currentPage={listUsers?.pagination?.current || 1}
               totalPages={listUsers?.pagination?.totalPage || 0}
               totalItems={listUsers?.pagination?.totalItem || 0}
               itemsPerPage={listUsers?.pagination?.pageSize || 0}
               onPageChange={handlePageChange}
-              showItemCount={false}
+            // showItemCount={false}
             />
           )}
         </CardFooter>

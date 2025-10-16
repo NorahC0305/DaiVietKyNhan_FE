@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { UserSchema } from "../entity";
-import { USER } from "@constants/user";
 
 /**
  * Login form data request

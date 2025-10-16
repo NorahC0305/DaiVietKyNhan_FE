@@ -7,7 +7,9 @@ export default async function UserInfoServer() {
 
   return (
     <>
-      <UserInfoPage listUsers={listUsers.data} />
+      <UserInfoPage
+        listUsers={listUsers.data}
+      />
     </>
   );
 }
