@@ -154,7 +154,7 @@ const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
               </SelectContent>
             </Select>
           </div>
-          {listUsers && !error && (
+          {listUsers && (
             <EnhancedPagination
               currentPage={listUsers?.pagination?.current || 1}
               totalPages={listUsers?.pagination?.totalPage || 0}

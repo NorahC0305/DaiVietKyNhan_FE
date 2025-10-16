@@ -154,14 +154,9 @@ const UsersTable = ({ rows, onViewUser, onEditUser, onSort, sortBy, sortOrder }:
                 </TableCell>
                 <TableCell className="text-gray-900">{formatDate(u.createdAt)}</TableCell>
                 <TableCell className="text-center">
-                  {u.status === USER.USER_STATUS.ACTIVE ? (
+                  {u.status === USER.USER_STATUS.ACTIVE && (
                     <Badge variant="outline" className="bg-[#d16834] text-white border-0">
                       {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
-                      {u.point}
                     </Badge>
                   )}
                 </TableCell>
