@@ -1,5 +1,6 @@
 "use client";
 
+import { GameFrame } from "@components/Molecules/GameFrame";
 import React from "react";
 
 interface MapsLayoutProps {
@@ -12,12 +13,14 @@ const MapsLayoutClient: React.FC<MapsLayoutProps> = ({
   className = "",
 }) => {
   return (
-    <div
-      className={`relative min-h-screen w-full overflow-hidden bg-teal-900 ${className}`}
-    >
-      {/* Content */}
-      <div className="relative min-h-screen">{children}</div>
-    </div>
+    <GameFrame className="">
+      <div
+        className={`absolute w-full top-0 left-0 overflow-hidden -z-1 ${className}`}
+      >
+        {/* Content */}
+        <div className="relative min-h-screen">{children}</div>
+      </div>
+    </GameFrame>
   );
 };
 
