@@ -9,62 +9,50 @@ import {
 import { Progress } from "@/components/Atoms/ui/progress";
 import { useSetHouseScores } from "@/stores/entry-test/selectors";
 import { ROUTES } from "@routes";
+import { ITestHome } from "@models/test-home/entity";
+import { TEST_ANSWER } from "@constants/test-answer";
+import userTestHomeService from "@services/user-test-home";
+import { toast } from "react-toastify";
 
-// --- DỮ LIỆU GIẢ LẬP CHO BÀI TEST ---
-const TOTAL_QUESTIONS = 16;
-const questions = [
-  { id: 1, text: "Tôi thường cố gắng để có thể vượt qua mọi khó khăn." },
-  { id: 2, text: "Tôi hiếm khi cảm thấy buồn bã." },
-  { id: 3, text: 'Tôi là "linh hồn" của các buổi tiệc.' },
-  // Vui lòng thêm các câu hỏi còn lại vào đây
-  { id: 4, text: "Tôi dễ dàng cảm thông với người khác." },
-  { id: 5, text: "Tôi luôn giữ cho không gian xung quanh gọn gàng, ngăn nắp." },
-  { id: 6, text: "Tôi ít khi lo lắng về những điều tồi tệ có thể xảy ra." },
-  { id: 7, text: "Tôi có trí tưởng tượng phong phú." },
-  { id: 8, text: "Tôi thường không nói nhiều với người lạ." },
-  { id: 9, text: "Tôi tin rằng nghệ thuật và cái đẹp là quan trọng." },
-  { id: 10, text: "Tôi thường né tránh các cuộc tranh luận." },
-  { id: 11, text: "Tôi bị cuốn hút bởi những ý tưởng mới lạ và độc đáo." },
-  { id: 12, text: "Tôi cảm thấy thoải mái khi là trung tâm của sự chú ý." },
-  {
-    id: 13,
-    text: "Tôi có xu hướng lan tỏa niềm vui đến mọi người xung quanh.",
-  },
-  { id: 14, text: "Tôi thường cố gắng làm hài lòng tất cả mọi người." },
-  { id: 15, text: "Tôi không bận tâm nhiều lắm khi bị người khác chỉ trích." },
-  { id: 16, text: "Tôi có một vốn từ vựng phong phú." },
-];
+// --- DỮ LIỆU THỰC TỪ API ---
+// Sử dụng dữ liệu từ testHome prop thay vì hardcode
 
+// Mapping từ API response sang UI display
 const answerOptions = [
   {
     id: 1,
     text: "Hoàn toàn không đồng ý",
     color: "EF493D",
     borderColor: "EF493D",
+    apiValue: TEST_ANSWER.ANSWER_SCALE_TYPE.STRONGLY_DISAGREE,
   },
   {
     id: 2,
     text: "Không đồng ý",
     color: "F08D63",
     borderColor: "F08D63",
+    apiValue: TEST_ANSWER.ANSWER_SCALE_TYPE.DISAGREE,
   },
   {
     id: 3,
     text: "Trung lập",
     color: "DD9800",
     borderColor: "FDBC44",
+    apiValue: TEST_ANSWER.ANSWER_SCALE_TYPE.NEUTRAL,
   },
   {
     id: 4,
     text: "Đồng ý",
     color: "A5C53E",
     borderColor: "A5C53E",
+    apiValue: TEST_ANSWER.ANSWER_SCALE_TYPE.AGREE,
   },
   {
     id: 5,
     text: "Hoàn toàn đồng ý",
     color: "00A63E",
     borderColor: "41821E",
+    apiValue: TEST_ANSWER.ANSWER_SCALE_TYPE.STRONGLY_AGREE,
   },
 ];
 
@@ -102,6 +90,7 @@ const IntroComponent = ({ onStartTest }: { onStartTest: () => void }) => (
 const QuestionComponent = ({
   question,
   currentStep,
+  totalQuestions,
   onNext,
   onBack,
   selectedAnswer,
@@ -110,6 +99,7 @@ const QuestionComponent = ({
 }: {
   question: { id: number; text: string };
   currentStep: number;
+  totalQuestions: number;
   onNext: (answerId: number) => void;
   onBack: () => void;
   selectedAnswer?: number;
@@ -145,11 +135,11 @@ const QuestionComponent = ({
       {/* Header */}
       <div className="flex items-center justify-center gap-4 mb-8">
         <span className="font-bold text-[#835D26] text-lg whitespace-nowrap">
-          Câu hỏi {currentStep}/{TOTAL_QUESTIONS}
+          Câu hỏi {currentStep}/{totalQuestions}
         </span>
         <div>
           <Progress
-            value={(currentStep / TOTAL_QUESTIONS) * 100}
+            value={(currentStep / totalQuestions) * 100}
             className={`w-72 h-2 bg-transparent border border-[#835D26] rounded-full shadow-inner [&>div]:bg-[#835D26] [&>div]:rounded-full [&>div]:transition-all [&>div]:duration-500 ${
               progressPulse ? "[&>div]:animate-pulse" : ""
             }`}
@@ -227,8 +217,14 @@ const QuestionComponent = ({
 };
 
 // --- COMPONENT CHÍNH (ROUTE) ---
-export default function EntryTestPage() {
-  const [currentStep, setCurrentStep] = useState(0); // 0 = intro, 1-16 = questions
+export default function EntryTestPage({ testHome }: { testHome: ITestHome[] }) {
+  console.log("testHome data:", testHome);
+
+  // Sử dụng dữ liệu từ API thay vì hardcode
+  const questions = testHome || [];
+  const TOTAL_QUESTIONS = questions.length;
+
+  const [currentStep, setCurrentStep] = useState(0); // 0 = intro, 1-TOTAL_QUESTIONS = questions
   const answers = useAnswersSelector();
   const setAnswer = useSetAnswer();
   const [showSaved, setShowSaved] = useState(false);
@@ -243,51 +239,34 @@ export default function EntryTestPage() {
   const handleNextQuestion = (answerId: number) => {
     setAnswer(currentStep, answerId);
     setShowSaved(true);
+
+    // Save answer to backend (non-blocking)
+    const currentQuestion = questions[currentStep - 1];
+    const selectedOption = answerOptions.find((opt) => opt.id === answerId);
+    const apiAnswer = selectedOption?.apiValue;
+    if (currentQuestion && apiAnswer) {
+      (async () => {
+        try {
+          const resp = await userTestHomeService.saveAnswer({
+            questionId: currentQuestion.id,
+            answer: apiAnswer,
+          });
+          if (resp.statusCode === 201) {
+            toast.success(resp.message || "Đã lưu câu trả lời");
+          } else {
+            toast.error(resp.message || "Lưu thất bại");
+          }
+        } catch (error) {
+          console.error("Failed to save user test answer", error);
+          toast.error("Không thể lưu câu trả lời. Vui lòng thử lại.");
+        }
+      })();
+    }
     if (currentStep < TOTAL_QUESTIONS) {
       // small delay to allow flash/tick feedback
       setTimeout(() => setCurrentStep(currentStep + 1), 1000);
     } else {
-      const finalAnswers = { ...answers, [currentStep]: answerId } as Record<number, number>;
-
-      // Compute mock scores for four houses from answers
-      // Mapping questions to houses (simple even spread)
-      const questionToHouse: Record<number, "diem-tinh" | "vui-tuoi" | "manh-me" | "uu-tu"> = {} as any;
-      const houseCycle: Array<"diem-tinh" | "vui-tuoi" | "manh-me" | "uu-tu"> = [
-        "diem-tinh",
-        "vui-tuoi",
-        "manh-me",
-        "uu-tu",
-      ];
-      for (let i = 1; i <= TOTAL_QUESTIONS; i++) {
-        questionToHouse[i] = houseCycle[(i - 1) % 4];
-      }
-
-      const baseScores: Record<string, number> = {
-        "diem-tinh": 0,
-        "vui-tuoi": 0,
-        "manh-me": 0,
-        "uu-tu": 0,
-      };
-
-      Object.entries(finalAnswers).forEach(([qidStr, ans]) => {
-        const qid = Number(qidStr);
-        const house = questionToHouse[qid];
-        if (!house) return;
-        // Normalize answer 1..5 -> score 0..4, then scale to 0..6 for nicer totals
-        const normalized = Math.max(1, Math.min(5, Number(ans))) - 1; // 0..4
-        baseScores[house] += normalized + 1; // 1..5 per question
-      });
-
-      // Cap and format to two-digit strings (00..24 etc.)
-      const format = (n: number) => String(Math.max(0, Math.min(99, n))).padStart(2, "0");
-
-      const diemTinh = format(baseScores["diem-tinh"]);
-      const vuiTuoi = format(baseScores["vui-tuoi"]);
-      const manhMe = format(baseScores["manh-me"]);
-      const uuTu = format(baseScores["uu-tu"]);
-
-      // Save scores to zustand store and navigate without URL params
-      setHouseScores({ diemTinh, vuiTuoi, manhMe, uuTu });
+      // BE handles final scoring and result; just navigate to result page
       if (typeof window !== "undefined") {
         window.location.href = ROUTES.STARTER.PERSONALITY_RESULT;
       }
@@ -311,13 +290,17 @@ export default function EntryTestPage() {
       return <IntroComponent onStartTest={handleStartTest} />;
     }
     if (currentStep > 0 && currentStep <= TOTAL_QUESTIONS) {
-      const currentQuestion = questions.find((q) => q.id === currentStep);
+      const currentQuestion = questions[currentStep - 1]; // API data is 0-indexed, but our steps are 1-indexed
       if (!currentQuestion) return null;
 
       return (
         <QuestionComponent
-          question={currentQuestion}
+          question={{
+            id: currentQuestion.id || currentStep,
+            text: currentQuestion.text || "",
+          }}
           currentStep={currentStep}
+          totalQuestions={TOTAL_QUESTIONS}
           onNext={handleNextQuestion}
           onBack={handleBackQuestion}
           selectedAnswer={answers[currentStep]}
@@ -330,8 +313,21 @@ export default function EntryTestPage() {
     return <div className="text-white text-2xl">Hoàn thành bài test!</div>;
   };
 
+  // Safety check for empty testHome data
+  if (!testHome || testHome.length === 0) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 ">
+        <div className="w-full max-w-2xl mx-auto bg-amber-200/50 border-3 border-[#835D26] rounded-2xl p-6 text-center shadow-lg">
+          <p className="text-[#835D26] text-lg font-bold mb-6">
+            Không có dữ liệu câu hỏi. Vui lòng thử lại sau.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 ">
       {/* Sử dụng key để trigger animation mỗi khi step thay đổi */}
       <div key={currentStep} className="w-full">
         {renderContent()}
