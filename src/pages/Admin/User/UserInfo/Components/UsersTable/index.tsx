@@ -19,20 +19,109 @@ import { formatDate } from "@utils/Date";
 
 interface Props {
   rows: NonNullable<IMePaginationResponse['data']>['results'] | undefined;
+  onViewUser?: (user: any) => void;
+  onEditUser?: (user: any) => void;
+  onSort?: (field: string) => void;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
-const UsersTable = ({ rows }: Props) => {
+const UsersTable = ({ rows, onViewUser, onEditUser, onSort, sortBy, sortOrder }: Props) => {
   return (
     <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-left">Người dùng</TableHead>
-            <TableHead className="text-left">Email</TableHead>
-            <TableHead className="text-center">Xu</TableHead>
-            <TableHead className="text-center">Điểm số</TableHead>
-            <TableHead className="text-center">Ngày tham gia</TableHead>
-            <TableHead className="text-center">Trạng thái</TableHead>
+            <TableHead
+              className="text-left cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('name')}
+            >
+              <div className="flex items-center gap-1">
+                Người dùng
+                {sortBy === 'name' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-left cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('email')}
+            >
+              <div className="flex items-center gap-1">
+                Email
+                {sortBy === 'email' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('coin')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Xu
+                {sortBy === 'coin' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('point')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Điểm số
+                {sortBy === 'point' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('createdAt')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Ngày tham gia
+                {sortBy === 'createdAt' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('status')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Trạng thái
+                {sortBy === 'status' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
@@ -74,10 +163,22 @@ const UsersTable = ({ rows }: Props) => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2 text-gray-600">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onViewUser?.(u)}
+                      title="Xem thông tin"
+                    >
                       <LucideIcon name="Eye" iconSize={20} iconColor={COLORS.TEXT.DARK} />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onEditUser?.(u)}
+                      title="Chỉnh sửa"
+                    >
                       <LucideIcon name="Pencil" iconSize={20} iconColor={COLORS.TEXT.DARK} />
                     </Button>
                   </div>

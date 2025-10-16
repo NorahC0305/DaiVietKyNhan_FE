@@ -1,30 +1,108 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@atoms/ui/card";
 import Toolbar from "./Components/Toolbar";
+import ToolbarSkeleton from "./Components/ToolbarSkeleton";
 import UsersTable from "./Components/UsersTable";
+import UsersTableSkeleton from "./Components/UsersTableSkeleton";
 import { IMePaginationResponse } from "@models/user/response";
 import { EnhancedPagination } from "@atoms/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/Atoms/ui/select";
 import { Rows } from "lucide-react";
+import userService from "@services/user";
+import useDebounce from "@hooks/useDebounce";
 
 interface UserInfoPageProps {
   listUsers: IMePaginationResponse['data'];
 }
 
-const UserInfoPage = ({ listUsers }: UserInfoPageProps) => {
-
-
+const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
+  const [listUsers, setListUsers] = useState<IMePaginationResponse['data']>(initialListUsers);
   const [itemsPerPage, setItemsPerPage] = useState<number>(15);
   const [page, setPage] = useState<number>(1);
+  const [search, setSearch] = useState<string>("");
+  const debouncedSearch = useDebounce(search, 500); // 500ms delay
+  const [status, setStatus] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasInitialData, setHasInitialData] = useState<boolean>(!!initialListUsers);
+  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
+
+  // Fetch users data
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    setHasInitialData(false); // Đánh dấu không còn dùng initial data nữa
+    try {
+      const response = await userService.getUsers({
+        page,
+        limit: itemsPerPage,
+        search: debouncedSearch || undefined,
+        status: status || undefined,
+        sortBy,
+        sortOrder,
+      }) as IMePaginationResponse;
+      setListUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    // Chỉ fetch khi user đã tương tác, không fetch lần đầu khi có initialData
+    if (hasUserInteracted) {
+      fetchUsers();
+    }
+  }, [page, itemsPerPage, debouncedSearch, status, sortBy, sortOrder, hasUserInteracted]);
+
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(parseInt(value));
     setPage(1);
+    setHasUserInteracted(true);
   };
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setHasUserInteracted(true);
+  };
+
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+    setPage(1);
+    setHasUserInteracted(true);
+  };
+
+  const handleStatusFilter = (statusValue: string) => {
+    setStatus(statusValue);
+    setPage(1);
+    setHasUserInteracted(true);
+  };
+
+  const handleViewUser = (user: any) => {
+    console.log("View user:", user);
+    // TODO: Implement view user modal/page
+  };
+
+  const handleEditUser = (user: any) => {
+    console.log("Edit user:", user);
+    // TODO: Implement edit user modal/page
+  };
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      // Nếu đang sort field này, đổi thứ tự
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Nếu sort field mới, set field và mặc định desc
+      setSortBy(field);
+      setSortOrder('desc');
+    }
+    setPage(1);
+    setHasUserInteracted(true);
   };
 
   return (
@@ -39,8 +117,25 @@ const UserInfoPage = ({ listUsers }: UserInfoPageProps) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Toolbar />
-          <UsersTable rows={listUsers?.results} />
+
+          <Toolbar
+            onSearch={handleSearch}
+            onStatusFilter={handleStatusFilter}
+            searchValue={search}
+            statusValue={status}
+          />
+          {isLoading && !hasInitialData ? (
+            <UsersTableSkeleton />
+          ) : (
+            <UsersTable
+              rows={listUsers?.results}
+              onViewUser={handleViewUser}
+              onEditUser={handleEditUser}
+              onSort={handleSort}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+            />
+          )}
         </CardContent>
 
         <CardFooter className="flex justify-between">
