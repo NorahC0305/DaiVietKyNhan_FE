@@ -15,6 +15,7 @@ const Toolbar = () => {
             inputMode="search"
             placeholder="Tìm kiếm người dùng..."
             className="bg-transparent hover:bg-transparent"
+            color="black"
           />
         </div>
         <Button variant="outline" size="sm" className="gap-2 border-gray-300">

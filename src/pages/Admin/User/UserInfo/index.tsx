@@ -15,7 +15,6 @@ interface UserInfoPageProps {
 
 const UserInfoPage = ({ listUsers }: UserInfoPageProps) => {
 
-  console.log(listUsers);
 
   const [itemsPerPage, setItemsPerPage] = useState<number>(15);
   const [page, setPage] = useState<number>(1);
