@@ -13,33 +13,17 @@ export interface UserListParams {
 }
 
 export function useUsersList(params?: UserListParams, initialData?: IMePaginationResponse) {
-    // Check if user has applied any filters (search, sort, pagination, etc.)
-    const hasUserInteraction = params && (
-        params.search?.trim() ||
-        (params.sortBy && params.sortBy !== 'createdAt') ||
-        (params.sortOrder && params.sortOrder !== 'desc') ||
-        params.status ||
-        (params.page && params.page > 1) ||
-        (params.limit && params.limit !== 15)
-    );
-
-    // Check if we should use initial data (no user interaction)
-    const shouldUseInitialData = !hasUserInteraction && initialData;
-
-    return useApiQuery<IMePaginationResponse>(
+    const query = useApiQuery<IMePaginationResponse>(
         queryKeys.users.list(params),
-        async () => {
-            return await userService.getUsers(params) as IMePaginationResponse;
-        },
+
+        () => userService.getUsers(params) as Promise<IMePaginationResponse>,
         {
+            initialData: initialData,
+            staleTime: 5 * 60 * 1000,
             refetchOnWindowFocus: false,
-            staleTime: 2 * 60 * 1000, // 2 minutes
-            // Use placeholderData to show initial data immediately without loading state
-            placeholderData: shouldUseInitialData ? initialData : undefined,
-            // Use initialData for caching benefits
-            initialData: shouldUseInitialData ? initialData : undefined,
         }
     );
+    return query;
 }
 
 export function useMe() {

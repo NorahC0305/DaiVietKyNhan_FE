@@ -26,7 +26,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
   const [page, setPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(15);
 
-  const { data: usersResponse, isLoading: loading, error, isPlaceholderData } = useUsersList({
+  const { data: usersResponse, isFetching, error } = useUsersList({
     search,
     sortBy: sortField,
     sortOrder: sortDirection,
@@ -106,7 +106,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
               sortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
-              // isLoading={shouldShowLoading}
+              isLoading={isFetching}
               skeletonRowCount={itemsPerPage}
             />
           )}
@@ -126,7 +126,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
               </SelectContent>
             </Select>
           </div>
-          {listUsers && !loading && !error && (
+          {listUsers && !isFetching && !error && (
             <EnhancedPagination
               currentPage={listUsers?.pagination?.current || 1}
               totalPages={listUsers?.pagination?.totalPage || 0}
