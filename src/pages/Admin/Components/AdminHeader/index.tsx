@@ -4,21 +4,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@atoms/ui/button";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
-import { IUser } from "@models/user/entity";
-import { IRoleModel } from "@models/role/model";
 import { signOut } from "next-auth/react";
 import { ROUTES } from "@routes";
-
-interface UserWithRole extends IUser {
-  role?: IRoleModel;
-}
-
-interface ApiUserResponse {
-  data: UserWithRole;
-}
+import { IMeResponse } from "@models/user/response";
 
 interface AdminHeaderProps {
-  user: ApiUserResponse;
+  user: IMeResponse;
   pageTitle?: string;
 }
 
