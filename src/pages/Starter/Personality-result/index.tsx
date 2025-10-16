@@ -1,24 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useHouseScoresSelector } from "@/stores/entry-test/selectors";
 import Image from "next/image";
 import FrameText from "../Components/FrameText";
 import FrameNumber from "../Components/FrameNumber";
 import { ROUTES } from "@routes";
+import { useGodProfilePointHome } from "@/hooks/useGodProfilePointHome";
+import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
+import godProfileService from "@services/god-profile";
+import { IGodProfileResponseModel } from "@models/god-profile/response";
 
-const PersonalityResultPage = () => {
+const PersonalityResultPage = React.memo(() => {
   const router = useRouter();
-  const storeScores = useHouseScoresSelector();
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
     null
   );
   const [selectedGuardian, setSelectedGuardian] = useState<any>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [showGuardianResult, setShowGuardianResult] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { loading, error, data: profiles } = useGodProfilePointHome();
 
   useEffect(() => {
     // trigger initial slide-in animation
@@ -39,319 +42,341 @@ const PersonalityResultPage = () => {
     };
   }, []);
 
-  // Auto-select personality with highest score
+  // Auto-select first achieved profile and map selection
   useEffect(() => {
-    if (storeScores && !selectedPersonality) {
-      const scores = [
-        { id: "diem-tinh", score: parseInt(storeScores.diemTinh || "0") || 0 },
-        { id: "vui-tuoi", score: parseInt(storeScores.vuiTuoi || "0") || 0 },
-        { id: "manh-me", score: parseInt(storeScores.manhMe || "0") || 0 },
-        { id: "uu-tu", score: parseInt(storeScores.uuTu || "0") || 0 },
-      ];
-
-      const maxScore = Math.max(...scores.map((s) => s.score));
-      const highestScorePersonalities = scores.filter(
-        (s) => s.score === maxScore
-      );
-
-      // If multiple personalities have the same highest score, select the first one
-      // User can still change selection manually
-      if (highestScorePersonalities.length > 0) {
-        setSelectedPersonality(highestScorePersonalities[0].id);
-      }
+    if (!profiles || profiles.length === 0) return;
+    const map: Record<string, string> = {
+      SANGUINE: "diem-tinh",
+      CHOLERIC: "manh-me",
+      MELANCHOLIC: "vui-tuoi",
+      PHLEGMATIC: "uu-tu",
+    };
+    const firstAchieved = profiles.find((p) => p.isAchieved);
+    if (firstAchieved) {
+      setSelectedPersonality(map[firstAchieved.traitType] || null);
     }
-  }, [storeScores?.diemTinh, storeScores?.vuiTuoi, storeScores?.manhMe, storeScores?.uuTu]);
+  }, [profiles]);
 
-  // No URL params; read from zustand store
+  // Memoized utility functions
+  const formatNumber = useCallback(
+    (n: number) => String(Math.max(0, Math.min(99, n))).padStart(2, "0"),
+    []
+  );
 
-  const personalityOptions = [
-    {
-      id: "diem-tinh",
-      title: "ĐIỀM TĨNH, LÝ TRÍ",
-      number: storeScores?.diemTinh ?? "00",
-      color: "#41821E",
-      description:
-        "Bạn là người điềm tĩnh, có khả năng suy nghĩ logic và phân tích sâu sắc. Bạn thường cân nhắc kỹ lưỡng trước khi đưa ra quyết định và luôn tìm kiếm sự chính xác trong mọi việc. Sự kiên nhẫn và khả năng tập trung cao giúp bạn giải quyết những vấn đề phức tạp một cách hiệu quả.",
+  const getProfileById = useCallback(
+    (id: string) => {
+      if (!profiles) return null;
+      const mapIdToTrait: Record<string, string> = {
+        "vui-tuoi": "MELANCHOLIC",
+        "manh-me": "CHOLERIC",
+        "diem-tinh": "SANGUINE",
+        "uu-tu": "PHLEGMATIC",
+      };
+      const trait = mapIdToTrait[id];
+      return profiles.find((p) => p.traitType === trait) || null;
     },
-    {
-      id: "vui-tuoi",
-      title: "VUI TƯ, SẢNG KHOÁI",
-      number: storeScores?.vuiTuoi ?? "05",
-      color: "#2B638F",
-      description:
-        "Bạn là người vui vẻ, tràn đầy năng lượng và luôn nhìn cuộc sống bằng lăng kính lạc quan. Bạn hướng ngoại, cởi mở và dễ dàng hòa nhập với mọi người xung quanh. Ở bất cứ đâu, bạn cũng có thể trở thành tâm điểm mang lại niềm vui, bởi năng lượng sảng khoái và sự nhiệt tình của bạn có sức lan tỏa mạnh mẽ. Sự sáng tạo và trí tưởng tượng phong phú giúp bạn luôn mang lại cảm hứng và niềm vui cho người khác.\n\nBạn sống rất tự phát, đôi khi có phần bốc đồng. Bạn thường tập trung vào hiện tại và tận hưởng từng khoảnh khắc hơn là lo lắng quá nhiều cho tương lai. Điều này giúp bạn linh hoạt, dễ thích nghi và say mê với những gì đang diễn ra. Tuy nhiên, vì quá say mê với những gì đang diễn ra, bạn đôi khi khó đầu tư và tập trung hoàn thiện các kế hoạch.",
-    },
-    {
-      id: "manh-me",
-      title: "MẠNH MẼ, QUYẾT ĐOÁN",
-      number: storeScores?.manhMe ?? "12",
-      color: "#EF493D",
-      description:
-        "Bạn là người mạnh mẽ, quyết đoán và có khả năng lãnh đạo tự nhiên. Bạn không ngại đối mặt với thử thách và luôn sẵn sàng đưa ra những quyết định khó khăn. Sự tự tin và ý chí mạnh mẽ giúp bạn vượt qua mọi khó khăn trong cuộc sống.",
-    },
-    {
-      id: "uu-tu",
-      title: "ƯU TƯ, SÂU SẮC",
-      number: storeScores?.uuTu ?? "24",
-      color: "#8D3BBB",
-      description:
-        "Bạn là người có tâm hồn sâu sắc, thường suy nghĩ về ý nghĩa cuộc sống và những vấn đề lớn lao. Bạn có khả năng cảm nhận và thấu hiểu cảm xúc của người khác một cách tinh tế. Sự nhạy cảm và trí tuệ cảm xúc cao giúp bạn kết nối sâu sắc với mọi người xung quanh.",
-    },
-  ];
+    [profiles]
+  );
+  // Build personality options from BE profiles
+  const personalityOptions = useMemo(() => {
+    const mapTraitToId: Record<string, string> = {
+      SANGUINE: "diem-tinh",
+      CHOLERIC: "manh-me",
+      MELANCHOLIC: "vui-tuoi",
+      PHLEGMATIC: "uu-tu",
+    };
+    return (profiles || []).map((p) => ({
+      id: mapTraitToId[p.traitType],
+      title: p.title,
+      number: formatNumber(p.point || 0),
+      color: p.text_color,
+      description: p.description,
+    }));
+  }, [profiles]);
 
-  // Guardian Deity Data - Updated to match new design
-  const guardianDeities = [
+  // Guardian card meta by traitType
+  const guardianMetaByTrait: Record<
+    string,
     {
+      id: string;
+      title: string;
+      name: string;
+      image: string;
+      borderColor: string;
+      bgColor: string;
+      textColor: string;
+    }
+  > = {
+    SANGUINE: {
       id: "tan-vien-son-thanh",
       title: "TẢN VIÊN SƠN THÁNH",
       name: "SƠN TINH",
-      personalityId: "diem-tinh",
-      description: "Vị thần của sự điềm tĩnh và trí tuệ",
       image: "/Sơn Tinh 1.svg",
       borderColor: "border-green-500",
       bgColor: "bg-green-50",
       textColor: "#10B981",
     },
-    {
+    MELANCHOLIC: {
       id: "chu-dao-to",
       title: "CHỬ ĐẠO TỔ",
       name: "CHỬ ĐỒNG TỬ",
-      personalityId: "vui-tuoi",
-      description: "Vị thần của niềm vui và sự sáng tạo",
       image: "/Chử đồng tử 1.svg",
       borderColor: "border-blue-500",
       bgColor: "bg-blue-50",
       textColor: "#3B82F6",
     },
-    {
+    CHOLERIC: {
       id: "phu-dong-thien-vuong",
       title: "PHÙ ĐỔNG THIÊN VƯƠNG",
       name: "THÁNH GIÓNG",
-      personalityId: "manh-me",
-      description: "Vị thần của sức mạnh và quyết đoán",
       image: "/Thánh Gióng 1.svg",
       borderColor: "border-red-500",
       bgColor: "bg-red-50",
       textColor: "#EF4444",
     },
-    {
+    PHLEGMATIC: {
       id: "mau-thuong-thien",
       title: "MẪU THƯỢNG THIÊN",
       name: "CÔNG CHÚA LIỄU HẠNH",
-      personalityId: "uu-tu",
-      description: "Vị thần của sự sâu sắc và cảm xúc",
       image: "/Liễu Hạnh 1.svg",
       borderColor: "border-purple-500",
       bgColor: "bg-purple-50",
       textColor: "#8B5CF6",
     },
-  ];
+  };
+
+  // Build guardian cards from BE profiles to avoid order/mapping issues
+  const guardianDeities = useMemo(() => {
+    return (profiles || []).map((p) => ({
+      ...guardianMetaByTrait[p.traitType],
+      personalityId:
+        p.traitType === "SANGUINE"
+          ? "diem-tinh"
+          : p.traitType === "CHOLERIC"
+          ? "manh-me"
+          : p.traitType === "MELANCHOLIC"
+          ? "vui-tuoi"
+          : "uu-tu",
+    }));
+  }, [profiles]);
 
   const selectedOption = personalityOptions.find(
     (option) => option.id === selectedPersonality
-  );
-
-  // Calculate highest score for comparison
-  const getHighestScore = () => {
-    if (!storeScores) return 0;
-    const scores = [
-      parseInt(storeScores.diemTinh || "0") || 0,
-      parseInt(storeScores.vuiTuoi || "0") || 0,
-      parseInt(storeScores.manhMe || "0") || 0,
-      parseInt(storeScores.uuTu || "0") || 0,
-    ];
-    return Math.max(...scores);
-  };
-
-  const highestScore = getHighestScore();
-
-  // Find the corresponding guardian deity based on selected personality
-  const defaultGuardian = guardianDeities.find(
-    (guardian) => guardian.personalityId === selectedPersonality
   );
 
   // Auto-select guardian when personality is selected
   useEffect(() => {
     if (selectedPersonality && !selectedGuardian) {
       const guardian = guardianDeities.find(
-        (guardian) => guardian.personalityId === selectedPersonality
+        (g) => g.personalityId === selectedPersonality
       );
-      if (guardian) {
-        setSelectedGuardian(guardian);
-      }
+      const profile = getProfileById(selectedPersonality);
+      if (guardian && profile?.isAchieved) setSelectedGuardian(guardian);
     }
-  }, [selectedPersonality]);
+  }, [selectedPersonality, guardianDeities]);
 
-  const handleOptionSelect = (optionId: string) => {
+  const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedPersonality(optionId);
-  };
+  }, []);
 
-  const handleClose = () => {
-    router.back();
-  };
-
-  const handleNext = () => {
+  const handleNext = useCallback(async () => {
     if (showGuardianResult) {
-      router.replace(ROUTES.PUBLIC.MAP);
+      if (submitting) return;
+      try {
+        setSubmitting(true);
+        const correspondingProfile = getProfileById(
+          selectedGuardian?.personalityId
+        );
+        const profileId = correspondingProfile?.id;
+        if (!profileId) return;
+        const res = (await godProfileService.chooseGodProfile(
+          profileId
+        )) as IGodProfileResponseModel;
+        if (res.statusCode === 200) {
+          router.replace(ROUTES.PUBLIC.MAP);
+        }
+      } finally {
+        setSubmitting(false);
+      }
+      return;
     }
     // Only show guardian result if a personality is selected
     if (selectedPersonality) {
       setShowGuardianResult(true);
     }
-  };
+  }, [
+    showGuardianResult,
+    submitting,
+    selectedGuardian,
+    getProfileById,
+    router,
+    selectedPersonality,
+  ]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowGuardianResult(false);
-  };
+  }, []);
 
   // Guardian Deity Result Component - New Design
-  const GuardianDeityResult = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center space-y-6 px-6">
-      {/* Instruction Box */}
-      <div className="w-full max-w-4xl bg-amber-100 border-3 border-[#835D26] rounded-lg p-5 mb-8">
-        <div className="text-center  text-[#835D26] font-medium">
-          <p className="text-lg md:text-xl font-extrabold mb-2">
-            Tương ứng với khí chất, vị Thần Bảo Hộ của bạn là:
-          </p>
-          <p className="text-sm md:text-base font-extrabold italic text-[#835D26]">
-            (Trong trường hợp bạn có nhiều hơn một khí chất có số điểm ngang
-            nhau, vui lòng chọn một vị Thần Bảo Hộ theo mong muốn của bạn)
-          </p>
+  const GuardianDeityResult = useMemo(
+    () => (
+      <div className="w-full h-full flex flex-col items-center justify-center space-y-6 px-6">
+        {/* Instruction Box */}
+        <div className="w-full max-w-4xl bg-amber-200/50 border-3 border-[#835D26] rounded-lg p-5 mb-8">
+          <div className="text-center  text-[#835D26] font-medium">
+            <p className="text-lg md:text-xl font-extrabold mb-2">
+              Tương ứng với khí chất, vị Thần Bảo Hộ của bạn là:
+            </p>
+            <p className="text-sm md:text-base font-extrabold italic text-[#835D26]">
+              (Trong trường hợp bạn có nhiều hơn một khí chất có số điểm ngang
+              nhau, vui lòng chọn một vị Thần Bảo Hộ theo mong muốn của bạn)
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Guardian Selection Cards */}
-      <div className="w-full max-w-8xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
-          {guardianDeities.map((guardian) => {
-            const isSelected = selectedGuardian?.id === guardian.id;
-            const hasSelection = selectedGuardian !== null;
-            // Find the corresponding personality score for this guardian
-            const correspondingPersonality = personalityOptions.find(
-              (p) => p.id === guardian.personalityId
-            );
-            const currentScore =
-              parseInt(correspondingPersonality?.number || "0") || 0;
-            const isHighestScore = currentScore === highestScore;
-            const shouldDim = hasSelection && !isSelected && !isHighestScore;
-            const isClickable = !hasSelection || isSelected || isHighestScore;
-            // Split title into lines of max 2 words per line
-            const titleWords = guardian.title.split(" ");
-            const titleLines: string[] = [];
-            for (let i = 0; i < titleWords.length; i += 2) {
-              titleLines.push(titleWords.slice(i, i + 2).join(" "));
-            }
-            // Split name into lines of max 2 words per line
-            const nameWords = guardian.name.split(" ");
-            const nameLines: string[] = [];
-            for (let i = 0; i < nameWords.length; i += 2) {
-              nameLines.push(nameWords.slice(i, i + 2).join(" "));
-            }
-            return (
-              <div
-                key={guardian.id}
-                onClick={
-                  isClickable ? () => setSelectedGuardian(guardian) : undefined
-                }
-                className={`relative transition-all duration-300 transform ${
-                  isClickable
-                    ? "cursor-pointer hover:scale-105"
-                    : "cursor-not-allowed"
-                } ${isSelected ? "scale-105" : "scale-100"} ${
-                  shouldDim ? "opacity-40" : "opacity-100"
-                }`}
-              >
-                {/* Guardian Card */}
+        {/* Guardian Selection Cards */}
+        <div className="w-full max-w-8xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
+            {guardianDeities.map((guardian) => {
+              const isSelected = selectedGuardian?.id === guardian.id;
+              // Use BE flag to determine availability
+              const correspondingProfile = getProfileById(
+                guardian.personalityId
+              );
+              const isAchieved = Boolean(correspondingProfile?.isAchieved);
+              const shouldDim = !isAchieved;
+              const isClickable = isAchieved || isSelected;
+              // Split title into lines of max 2 words per line
+              const titleWords = guardian.title.split(" ");
+              const titleLines: string[] = [];
+              for (let i = 0; i < titleWords.length; i += 2) {
+                titleLines.push(titleWords.slice(i, i + 2).join(" "));
+              }
+              // Split name into lines of max 2 words per line
+              const nameWords = guardian.name.split(" ");
+              const nameLines: string[] = [];
+              for (let i = 0; i < nameWords.length; i += 2) {
+                nameLines.push(nameWords.slice(i, i + 2).join(" "));
+              }
+              return (
                 <div
-                  className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-amber-200/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                  key={guardian.id}
+                  onClick={
+                    isClickable
+                      ? () => setSelectedGuardian(guardian)
+                      : undefined
+                  }
+                  className={`relative transition-all duration-300 transform ${
+                    isClickable
+                      ? "cursor-pointer hover:scale-105"
+                      : "cursor-not-allowed"
+                  } ${isSelected ? "scale-105" : "scale-100"} ${
+                    shouldDim ? "opacity-40" : "opacity-100"
+                  }`}
                 >
-                  {/* Large Image aligned left */}
-                  <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">
-                    <Image
-                      src={guardian.image}
-                      alt={guardian.name}
-                      fill
-                      sizes="(max-width: 768px) 68vw, (max-width: 1024px) 72vw, 74vw"
-                      className="object-contain object-right"
-                    />
-                  </div>
-
-                  {/* Overlay Text */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-3 text-left">
-                      <div
-                        className="text-sm md:text-base font-extrabold uppercase tracking-wide mb-2 leading-tight text-center"
-                        style={{ color: guardian.textColor }}
-                      >
-                        {titleLines.map((line, idx) => (
-                          <div key={`${guardian.id}-title-${idx}`}>{line}</div>
-                        ))}
-                      </div>
-                      <div
-                        className="mx-auto rounded-sm"
-                        style={{
-                          height: "6px",
-                          width: "120px",
-                          backgroundColor: guardian.textColor,
-                        }}
+                  {/* Guardian Card */}
+                  <div
+                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-amber-200/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                  >
+                    {/* Large Image aligned left */}
+                    <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">
+                      <Image
+                        src={guardian.image}
+                        alt={guardian.name}
+                        fill
+                        sizes="(max-width: 768px) 68vw, (max-width: 1024px) 72vw, 74vw"
+                        className="object-contain object-right"
                       />
-                      <div
-                        className="mt-2 text-2xl md:text-3xl font-bd-street-sign leading-tight text-center"
-                        style={{ color: guardian.textColor }}
-                      >
-                        {nameLines.map((line, idx) => (
-                          <div key={`${guardian.id}-name-${idx}`}>{line}</div>
-                        ))}
+                    </div>
+
+                    {/* Overlay Text */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-3 text-left">
+                        <div
+                          className="text-sm md:text-base font-extrabold uppercase tracking-wide mb-2 leading-tight text-center"
+                          style={{ color: guardian.textColor }}
+                        >
+                          {titleLines.map((line, idx) => (
+                            <div key={`${guardian.id}-title-${idx}`}>
+                              {line}
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          className="mx-auto rounded-sm"
+                          style={{
+                            height: "6px",
+                            width: "120px",
+                            backgroundColor: guardian.textColor,
+                          }}
+                        />
+                        <div
+                          className="mt-2 text-2xl md:text-3xl font-bd-street-sign leading-tight text-center"
+                          style={{ color: guardian.textColor }}
+                        >
+                          {nameLines.map((line, idx) => (
+                            <div key={`${guardian.id}-name-${idx}`}>{line}</div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Action Buttons Container */}
-      <div className="flex justify-center items-center gap-4 mt-8">
-        {!isMobile && (
-          <button
-            onClick={handleBack}
-            className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
-            aria-label="Back"
-          >
-            <Image src="/Back.svg" alt="Back" width={50} height={50} />
-          </button>
-        )}
-        <div className="flex items-center justify-center">
-          <button
-            onClick={handleNext}
-            disabled={!selectedGuardian}
-            className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${
-              selectedGuardian
-                ? "hover:scale-105"
-                : "opacity-50 cursor-not-allowed"
-            }`}
-            style={{ width: "180px", height: "50px" }}
-          >
-            <Image
-              src="/Button.svg"
-              alt="Tiếp tục"
-              layout="fill"
-              objectFit="contain"
-              className="absolute"
-            />
-            <p className="relative z-10 text-[#835D26] font-semibold">
-              Tiếp tục
-            </p>
-          </button>
+        {/* Action Buttons Container */}
+        <div className="flex justify-center items-center gap-4 mt-8">
+          {!isMobile && (
+            <button
+              onClick={handleBack}
+              className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
+              aria-label="Back"
+            >
+              <Image src="/Back.svg" alt="Back" width={50} height={50} />
+            </button>
+          )}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={handleNext}
+              disabled={!selectedGuardian || submitting}
+              className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${
+                selectedGuardian
+                  ? "hover:scale-105"
+                  : "opacity-50 cursor-not-allowed"
+              }`}
+              style={{ width: "180px", height: "50px" }}
+            >
+              <Image
+                src="/Button.svg"
+                alt="Tiếp tục"
+                layout="fill"
+                objectFit="contain"
+                className="absolute"
+              />
+              <p className="relative z-10 text-[#835D26] font-semibold">
+                Tiếp tục
+              </p>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    ),
+    [
+      guardianDeities,
+      selectedGuardian,
+      isMobile,
+      handleBack,
+      handleNext,
+      submitting,
+      getProfileById,
+    ]
   );
 
   // Personality Selection Component
-  const PersonalitySelection = () => {
+  const PersonalitySelection = useMemo(() => {
     // Check if it's mobile landscape (width > height and width < 1024)
     const isMobileLandscape =
       isMobile && window.innerWidth > window.innerHeight;
@@ -376,7 +401,12 @@ const PersonalityResultPage = () => {
               className={`${
                 isMobileLandscape ? "text-lg" : "text-3xl lg:text-4xl"
               } font-extrabold uppercase`}
-              style={{ color: selectedOption?.color || "#2B638F" }}
+              style={{
+                color:
+                  getProfileById(selectedPersonality || "")?.text_color ||
+                  selectedOption?.color ||
+                  "#2B638F",
+              }}
             >
               KHÍ CHẤT CỦA BẠN CÓ THIÊN HƯỚNG:
             </h1>
@@ -388,11 +418,10 @@ const PersonalityResultPage = () => {
           >
             {personalityOptions.map((option) => {
               const isSelected = selectedPersonality === option.id;
-              const hasSelection = selectedPersonality !== null;
-              const currentScore = parseInt(option.number) || 0;
-              const isHighestScore = currentScore === highestScore;
-              const shouldDim = hasSelection && !isSelected && !isHighestScore;
-              const isClickable = !hasSelection || isSelected || isHighestScore;
+              const correspondingProfile = getProfileById(option.id);
+              const isAchieved = Boolean(correspondingProfile?.isAchieved);
+              const shouldDim = !isAchieved;
+              const isClickable = isAchieved || isSelected;
 
               return (
                 <div
@@ -411,7 +440,9 @@ const PersonalityResultPage = () => {
                   <div className="flex items-center">
                     {/* Left Frame - Text */}
                     <FrameText
-                      text={option.title}
+                      text={
+                        getProfileById(option.id)?.textEmotion || option.title
+                      }
                       className={`text-base lg:text-lg transition-all duration-300 ${
                         isSelected ? "scale-105" : "scale-100"
                       }`}
@@ -419,7 +450,8 @@ const PersonalityResultPage = () => {
                       textStyle={{
                         fontSize: isMobile ? "22px" : "36px",
                         fontFamily: "var(--font-bd-street-sign)",
-                        color: option.color,
+                        color:
+                          getProfileById(option.id)?.text_color || option.color,
                       }}
                       width={isMobile ? 220 : 320}
                       height={isMobile ? 50 : 70}
@@ -435,7 +467,8 @@ const PersonalityResultPage = () => {
                       textStyle={{
                         fontSize: isMobile ? "20px" : "30px",
                         fontFamily: "var(--font-bd-street-sign)",
-                        color: option.color,
+                        color:
+                          getProfileById(option.id)?.text_color || option.color,
                       }}
                       width={isMobile ? 70 : 120}
                       height={isMobile ? 60 : 80}
@@ -468,7 +501,7 @@ const PersonalityResultPage = () => {
         >
           {selectedOption && (
             <div
-              className={`bg-gray-300/20 rounded-xl ${
+              className={`bg-gray-400/40 rounded-xl ${
                 isMobileLandscape ? "p-3" : "p-8 lg:p-10"
               } border border-gray-300 ${
                 isMobileLandscape
@@ -480,24 +513,55 @@ const PersonalityResultPage = () => {
                 className={`${
                   isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
                 } leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2`}
-                style={{ color: selectedOption.color }}
+                style={{
+                  color:
+                    getProfileById(selectedPersonality || "")?.text_color ||
+                    selectedOption.color,
+                }}
               >
-                {selectedOption.description}
+                {getProfileById(selectedPersonality || "")?.description ||
+                  selectedOption.description}
               </div>
             </div>
           )}
         </div>
       </div>
     );
-  };
+  }, [
+    isMobile,
+    personalityOptions,
+    selectedPersonality,
+    handleOptionSelect,
+    getProfileById,
+    selectedOption,
+  ]);
+
+  if (loading) {
+    return <VietnameseHistoryLoading />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-3 ">
+        <div className="bg-red-50 border-3 border-red-500 rounded-xl px-6 py-4 text-red-700 font-bold">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen p-3 ">
       {/* When not showing guardian, keep content inside framed container */}
       {!showGuardianResult && (
         <div
-          className="relative bg-amber-100/80 border-3 rounded-2xl max-w-5xl md:max-w-6xl w-full shadow-2xl"
-          style={{ borderColor: selectedOption?.color || "#2B638F" }}
+          className="relative bg-amber-200/50 border-3 rounded-2xl max-w-5xl md:max-w-6xl w-full shadow-2xl"
+          style={{
+            borderColor:
+              getProfileById(selectedPersonality || "")?.text_color ||
+              selectedOption?.color ||
+              "#2B638F",
+          }}
         >
           {/* Padded content wrapper */}
           <div className="p-5 md:p-8 lg:p-10">
@@ -515,7 +579,7 @@ const PersonalityResultPage = () => {
                   mounted ? "translate-x-0" : "-translate-x-full"
                 }`}
               >
-                <PersonalitySelection />
+                {PersonalitySelection}
               </div>
             </div>
           </div>
@@ -544,12 +608,10 @@ const PersonalityResultPage = () => {
 
       {/* Guardian section rendered independently and full-width */}
       {showGuardianResult && (
-        <div className="w-full">
-          <GuardianDeityResult />
-        </div>
+        <div className="w-full">{GuardianDeityResult}</div>
       )}
     </div>
   );
-};
+});
 
 export default PersonalityResultPage;

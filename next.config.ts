@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
         port: "",
         pathname: "/a/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },
