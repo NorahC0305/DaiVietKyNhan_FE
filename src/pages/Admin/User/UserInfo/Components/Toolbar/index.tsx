@@ -8,9 +8,10 @@ import { useState, useEffect } from "react";
 
 interface ToolbarProps {
   onSearch?: (search: string) => void;
+  color?: "default" | "black";
 }
 
-const Toolbar = ({ onSearch }: ToolbarProps) => {
+const Toolbar = ({ onSearch, color = "default" }: ToolbarProps) => {
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
@@ -29,8 +30,9 @@ const Toolbar = ({ onSearch }: ToolbarProps) => {
             size="sm"
             inputMode="search"
             placeholder="Tìm kiếm người dùng..."
-            className="text-black placeholder:text-black bg-transparent hover:bg-transparent"
+            className="bg-transparent hover:bg-transparent"
             value={searchValue}
+            color={color}
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>

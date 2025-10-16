@@ -95,7 +95,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Toolbar onSearch={handleSearch} />
+          <Toolbar onSearch={handleSearch} color="black" />
           {error ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-red-500">Có lỗi xảy ra khi tải dữ liệu</div>
@@ -106,7 +106,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
               sortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
-              isLoading={isFetching}
+              // isLoading={shouldShowLoading}
               skeletonRowCount={itemsPerPage}
             />
           )}
@@ -126,7 +126,7 @@ const UserInfoPage = ({ listUsers: initialListUsers, initialUsersResponse }: Use
               </SelectContent>
             </Select>
           </div>
-          {listUsers && !isFetching && !error && (
+          {listUsers && !error && (
             <EnhancedPagination
               currentPage={listUsers?.pagination?.current || 1}
               totalPages={listUsers?.pagination?.totalPage || 0}
