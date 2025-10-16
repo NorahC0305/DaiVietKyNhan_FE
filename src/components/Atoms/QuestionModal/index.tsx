@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
+import { GameFrame } from "@components/Molecules/GameFrame";
 
 export default function QuestionModal({
   question,
@@ -64,76 +66,82 @@ export default function QuestionModal({
             onClick={handleClose}
           />
 
-          {/* Modal */}
+          {/* Modal with parchment background */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 50 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden"
+            className="relative w-full max-w-4xl sm:max-w-5xl mx-2 sm:mx-4"
           >
-            {/* Header */}
-            <div className="relative bg-gradient-to-r from-amber-50 to-orange-50 p-6 border-b border-amber-200">
-              <button
-                onClick={handleClose}
-                className="absolute top-4 right-4 p-2 hover:bg-white/50 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-bold text-gray-800">
-                  {question.title}
-                </h2>
-              </div>
-
-              <p className="text-sm text-amber-700 bg-amber-100 px-3 py-1 rounded-full inline-block">
-                {question.category}
-              </p>
-            </div>
-
-            {/* Content */}
-            <div className="p-6 max-h-[60vh] overflow-y-auto">
-              <div className="mb-6">
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  {question.content}
-                </p>
-              </div>
-
-              {/* Text input answer */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Câu trả lời của bạn
-                </label>
-                <textarea
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  rows={4}
-                  placeholder="Nhập câu trả lời..."
-                  value={answerText}
-                  onChange={(e) => setAnswerText(e.target.value)}
+            {/* Parchment frame container */}
+            <div className="relative w-full overflow-hidden">
+              {/* Maintain 16:9 aspect ratio and render frame image */}
+              <div className="relative aspect-[16/9] w-full">
+                <Image
+                  src="/frame1.png"
+                  alt="Khung giấy"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 95vw, (max-width: 1280px) 100vw, 1280px"
+                  style={{ objectFit: "contain" }}
                 />
               </div>
-            </div>
 
-            {/* Footer */}
-            <div className="p-6 bg-gray-50 border-t border-gray-200">
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">Nhập câu trả lời và bấm Gửi</div>
+              {/* Content overlay INSIDE a safe area (debug border visible) */}
+              <div
+                className="absolute flex flex-col items-center justify-between py-2 sm:py-4"
+                style={{
+                  top: "12%",
+                  right: "8%",
+                  bottom: "15%",
+                  left: "8%",
+                }}
+              >
+                {/* Debug border for the safe content region */}
+                <div className="absolute inset-0 border-2 border-rose-500/70 pointer-events-none rounded-sm" />
 
-                <div className="flex space-x-3">
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!answerText.trim()}
-                    className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Gửi
-                  </button>
-                  <button
-                    onClick={handleClose}
-                    className="px-6 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors"
-                  >
-                    Đóng
-                  </button>
+                <div className="w-full max-w-3xl mx-auto text-center space-y-2 sm:space-y-4 overflow-y-auto px-2 sm:px-4">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#835D26] font-bd-street-sign leading-tight">
+                    CÂU HỎI
+                  </h2>
+                  <p className="text-gray-700 text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mx-auto max-w-full sm:max-w-2xl md:max-w-3xl px-1">
+                    {question.content}
+                  </p>
+                </div>
+
+                {/* Answer area using InputAnswer.png */}
+                <div className="w-full flex flex-col items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
+                  <div className="relative w-[min(320px,70%)] sm:w-[min(420px,50%)] md:w-[min(420px,45%)]">
+                    {/* Height approximates the visual input area on the image */}
+                    <div className="relative aspect-[26/9] w-full">
+                      <Image
+                        src="/InputAnswer.png"
+                        alt="Khung nhập đáp án"
+                        fill
+                        sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 640px"
+                        style={{ objectFit: "contain" }}
+                      />
+                      <input
+                        className="absolute inset-[18%] w-[64%] h-[50%] bg-transparent text-gray-800 outline-none text-base sm:text-lg md:text-xl lg:text-2xl placeholder:text-gray-500"
+                        value={answerText}
+                        onChange={(e) => setAnswerText(e.target.value)}
+                        placeholder="Nhập đáp án..."
+                      />
+                      {/* Debug border for input region */}
+                      {/* <div className="absolute inset-[22%] w-[56%] h-[40%] border-2 border-blue-500/70 pointer-events-none rounded-sm" /> */}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!answerText.trim()}
+                      className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+                    >
+                      Gửi
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -21,7 +21,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
 }) => {
 
     return (
-        <div className={cn('relative w-full h-full', className)}>
+        <div className={cn('relative w-full h-full z-50', className)}>
             {/* Avatar */}
             <div className='absolute top-0 left-0 flex items-center justify-center'>
                 <Avartar>
