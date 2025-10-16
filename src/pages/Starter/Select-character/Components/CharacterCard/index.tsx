@@ -8,35 +8,38 @@ interface CharacterCardProps {
   onClick?: () => void;
 }
 
-const CharacterCard: React.FC<CharacterCardProps> = ({
-  characterImage,
-  alt,
-  isSelected = false,
-  onClick,
-}) => {
-  return (
-    <div
-      className={`
+const CharacterCard: React.FC<CharacterCardProps> = React.memo(
+  ({ characterImage, alt, isSelected = false, onClick }) => {
+    return (
+      <div
+        className={`
         relative cursor-pointer transition-all duration-300
-        ${isSelected ? 'scale-105' : 'hover:scale-102'}
+        ${isSelected ? "scale-105" : "hover:scale-102"}
       `}
-      onClick={onClick}
-    >
-      <div className={`
+        onClick={onClick}
+      >
+        <div
+          className={`
         relative w-full h-auto rounded-lg transition-all duration-300
-        ${isSelected ? 'border-2 border-[#835D26] shadow-md' : 'border border-transparent'}
-      `}>
-        <Image
-          src={characterImage}
-          alt={alt}
-          width={400}
-          height={400}
-          className="object-contain rounded-lg"
-          priority
-        />
+        ${
+          isSelected
+            ? "border-2 border-[#835D26] shadow-md"
+            : "border border-transparent"
+        }
+      `}
+        >
+          <Image
+            src={characterImage}
+            alt={alt}
+            width={400}
+            height={400}
+            className="object-contain rounded-lg"
+            priority
+          />
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default CharacterCard;

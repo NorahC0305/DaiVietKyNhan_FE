@@ -10,66 +10,68 @@ interface FrameNumberProps {
   height?: number;
 }
 
-const FrameNumber: React.FC<FrameNumberProps> = ({
-  text,
-  className = "",
-  textClassName = "",
-  textStyle,
-  width = 60,
-  height = 60,
-}) => {
-  return (
-    <div
-      className={`relative inline-flex items-center justify-center ${className}`}
-    >
-      {/* Background frame image */}
-      <div className="relative">
-        <Image
-          src="/khung mạng_xu_điểm_ngan.svg"
-          alt="Number frame"
-          width={width}
-          height={height}
-          className="object-contain"
-          style={{
-            width: `${width}px`,
-            height: `${height}px`,
-          }}
-        />
+const FrameNumber: React.FC<FrameNumberProps> = React.memo(
+  ({
+    text,
+    className = "",
+    textClassName = "",
+    textStyle,
+    width = 60,
+    height = 60,
+  }) => {
+    return (
+      <div
+        className={`relative inline-flex items-center justify-center ${className}`}
+      >
+        {/* Background frame image */}
+        <div className="relative">
+          <Image
+            src="/khung mạng_xu_điểm_ngan.svg"
+            alt="Number frame"
+            width={width}
+            height={height}
+            className="object-contain"
+            style={{
+              width: `${width}px`,
+              height: `${height}px`,
+            }}
+          />
 
-        {/* Text overlay positioned in the center */}
-        <div
-          className={`
+          {/* Text overlay positioned in the center */}
+          <div
+            className={`
             absolute inset-0 
             flex items-center justify-center
             px-2 py-1
             ${textClassName}
           `}
-          style={{
-            left: "10%",
-            right: "10%",
-            top: "15%",
-            bottom: "15%",
-          }}
-        >
-          <span
-            className={`
+            style={{
+              left: "10%",
+              right: "10%",
+              top: "15%",
+              bottom: "15%",
+            }}
+          >
+            <span
+              className={`
               text-center text-green-800
               leading-none
               max-w-full
             `}
-            style={{
-              wordWrap: "break-word",
-              overflowWrap: "break-word",
-              lineHeight: "1",
-              ...textStyle,
-            }}
-          >
-            {text}
-          </span>
+              style={{
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                lineHeight: "1",
+                ...textStyle,
+              }}
+            >
+              {text}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default FrameNumber;

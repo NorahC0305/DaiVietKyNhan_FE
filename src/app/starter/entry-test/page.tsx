@@ -7,12 +7,7 @@ async function getTestHome() {
   return testHome;
 }
 
-export default async function PersonalityResult() {
+export default async function EntryTest() {
   const testHome = (await getTestHome()) as ITestHomeResponseModel;
-  console.log(testHome.data?.results);
-  return (
-    <>
-      <EntryTestPage testHome={testHome.data?.results || []} />
-    </>
-  );
+  return <EntryTestPage testHome={testHome.data?.results || []} />;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import FrameText from "../Components/FrameText";
@@ -11,7 +11,7 @@ import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import godProfileService from "@services/god-profile";
 import { IGodProfileResponseModel } from "@models/god-profile/response";
 
-const PersonalityResultPage = () => {
+const PersonalityResultPage = React.memo(() => {
   const router = useRouter();
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
     null
@@ -57,21 +57,26 @@ const PersonalityResultPage = () => {
     }
   }, [profiles]);
 
-  // No URL params; read from zustand store
+  // Memoized utility functions
+  const formatNumber = useCallback(
+    (n: number) => String(Math.max(0, Math.min(99, n))).padStart(2, "0"),
+    []
+  );
 
-  const formatNumber = (n: number) =>
-    String(Math.max(0, Math.min(99, n))).padStart(2, "0");
-  const getProfileById = (id: string) => {
-    if (!profiles) return null;
-    const mapIdToTrait: Record<string, string> = {
-      "vui-tuoi": "MELANCHOLIC",
-      "manh-me": "CHOLERIC",
-      "diem-tinh": "SANGUINE",
-      "uu-tu": "PHLEGMATIC",
-    };
-    const trait = mapIdToTrait[id];
-    return profiles.find((p) => p.traitType === trait) || null;
-  };
+  const getProfileById = useCallback(
+    (id: string) => {
+      if (!profiles) return null;
+      const mapIdToTrait: Record<string, string> = {
+        "vui-tuoi": "MELANCHOLIC",
+        "manh-me": "CHOLERIC",
+        "diem-tinh": "SANGUINE",
+        "uu-tu": "PHLEGMATIC",
+      };
+      const trait = mapIdToTrait[id];
+      return profiles.find((p) => p.traitType === trait) || null;
+    },
+    [profiles]
+  );
   // Build personality options from BE profiles
   const personalityOptions = useMemo(() => {
     const mapTraitToId: Record<string, string> = {
@@ -170,11 +175,11 @@ const PersonalityResultPage = () => {
     }
   }, [selectedPersonality, guardianDeities]);
 
-  const handleOptionSelect = (optionId: string) => {
+  const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedPersonality(optionId);
-  };
+  }, []);
 
-  const handleNext = async () => {
+  const handleNext = useCallback(async () => {
     if (showGuardianResult) {
       if (submitting) return;
       try {
@@ -199,155 +204,179 @@ const PersonalityResultPage = () => {
     if (selectedPersonality) {
       setShowGuardianResult(true);
     }
-  };
+  }, [
+    showGuardianResult,
+    submitting,
+    selectedGuardian,
+    getProfileById,
+    router,
+    selectedPersonality,
+  ]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setShowGuardianResult(false);
-  };
+  }, []);
 
   // Guardian Deity Result Component - New Design
-  const GuardianDeityResult = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center space-y-6 px-6">
-      {/* Instruction Box */}
-      <div className="w-full max-w-4xl bg-amber-100 border-3 border-[#835D26] rounded-lg p-5 mb-8">
-        <div className="text-center  text-[#835D26] font-medium">
-          <p className="text-lg md:text-xl font-extrabold mb-2">
-            Tương ứng với khí chất, vị Thần Bảo Hộ của bạn là:
-          </p>
-          <p className="text-sm md:text-base font-extrabold italic text-[#835D26]">
-            (Trong trường hợp bạn có nhiều hơn một khí chất có số điểm ngang
-            nhau, vui lòng chọn một vị Thần Bảo Hộ theo mong muốn của bạn)
-          </p>
+  const GuardianDeityResult = useMemo(
+    () => (
+      <div className="w-full h-full flex flex-col items-center justify-center space-y-6 px-6">
+        {/* Instruction Box */}
+        <div className="w-full max-w-4xl bg-amber-200/50 border-3 border-[#835D26] rounded-lg p-5 mb-8">
+          <div className="text-center  text-[#835D26] font-medium">
+            <p className="text-lg md:text-xl font-extrabold mb-2">
+              Tương ứng với khí chất, vị Thần Bảo Hộ của bạn là:
+            </p>
+            <p className="text-sm md:text-base font-extrabold italic text-[#835D26]">
+              (Trong trường hợp bạn có nhiều hơn một khí chất có số điểm ngang
+              nhau, vui lòng chọn một vị Thần Bảo Hộ theo mong muốn của bạn)
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Guardian Selection Cards */}
-      <div className="w-full max-w-8xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
-          {guardianDeities.map((guardian) => {
-            const isSelected = selectedGuardian?.id === guardian.id;
-            // Use BE flag to determine availability
-            const correspondingProfile = getProfileById(guardian.personalityId);
-            const isAchieved = Boolean(correspondingProfile?.isAchieved);
-            const shouldDim = !isAchieved;
-            const isClickable = isAchieved || isSelected;
-            // Split title into lines of max 2 words per line
-            const titleWords = guardian.title.split(" ");
-            const titleLines: string[] = [];
-            for (let i = 0; i < titleWords.length; i += 2) {
-              titleLines.push(titleWords.slice(i, i + 2).join(" "));
-            }
-            // Split name into lines of max 2 words per line
-            const nameWords = guardian.name.split(" ");
-            const nameLines: string[] = [];
-            for (let i = 0; i < nameWords.length; i += 2) {
-              nameLines.push(nameWords.slice(i, i + 2).join(" "));
-            }
-            return (
-              <div
-                key={guardian.id}
-                onClick={
-                  isClickable ? () => setSelectedGuardian(guardian) : undefined
-                }
-                className={`relative transition-all duration-300 transform ${
-                  isClickable
-                    ? "cursor-pointer hover:scale-105"
-                    : "cursor-not-allowed"
-                } ${isSelected ? "scale-105" : "scale-100"} ${
-                  shouldDim ? "opacity-40" : "opacity-100"
-                }`}
-              >
-                {/* Guardian Card */}
+        {/* Guardian Selection Cards */}
+        <div className="w-full max-w-8xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
+            {guardianDeities.map((guardian) => {
+              const isSelected = selectedGuardian?.id === guardian.id;
+              // Use BE flag to determine availability
+              const correspondingProfile = getProfileById(
+                guardian.personalityId
+              );
+              const isAchieved = Boolean(correspondingProfile?.isAchieved);
+              const shouldDim = !isAchieved;
+              const isClickable = isAchieved || isSelected;
+              // Split title into lines of max 2 words per line
+              const titleWords = guardian.title.split(" ");
+              const titleLines: string[] = [];
+              for (let i = 0; i < titleWords.length; i += 2) {
+                titleLines.push(titleWords.slice(i, i + 2).join(" "));
+              }
+              // Split name into lines of max 2 words per line
+              const nameWords = guardian.name.split(" ");
+              const nameLines: string[] = [];
+              for (let i = 0; i < nameWords.length; i += 2) {
+                nameLines.push(nameWords.slice(i, i + 2).join(" "));
+              }
+              return (
                 <div
-                  className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-amber-200/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                  key={guardian.id}
+                  onClick={
+                    isClickable
+                      ? () => setSelectedGuardian(guardian)
+                      : undefined
+                  }
+                  className={`relative transition-all duration-300 transform ${
+                    isClickable
+                      ? "cursor-pointer hover:scale-105"
+                      : "cursor-not-allowed"
+                  } ${isSelected ? "scale-105" : "scale-100"} ${
+                    shouldDim ? "opacity-40" : "opacity-100"
+                  }`}
                 >
-                  {/* Large Image aligned left */}
-                  <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">
-                    <Image
-                      src={guardian.image}
-                      alt={guardian.name}
-                      fill
-                      sizes="(max-width: 768px) 68vw, (max-width: 1024px) 72vw, 74vw"
-                      className="object-contain object-right"
-                    />
-                  </div>
-
-                  {/* Overlay Text */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-3 text-left">
-                      <div
-                        className="text-sm md:text-base font-extrabold uppercase tracking-wide mb-2 leading-tight text-center"
-                        style={{ color: guardian.textColor }}
-                      >
-                        {titleLines.map((line, idx) => (
-                          <div key={`${guardian.id}-title-${idx}`}>{line}</div>
-                        ))}
-                      </div>
-                      <div
-                        className="mx-auto rounded-sm"
-                        style={{
-                          height: "6px",
-                          width: "120px",
-                          backgroundColor: guardian.textColor,
-                        }}
+                  {/* Guardian Card */}
+                  <div
+                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-amber-200/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                  >
+                    {/* Large Image aligned left */}
+                    <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">
+                      <Image
+                        src={guardian.image}
+                        alt={guardian.name}
+                        fill
+                        sizes="(max-width: 768px) 68vw, (max-width: 1024px) 72vw, 74vw"
+                        className="object-contain object-right"
                       />
-                      <div
-                        className="mt-2 text-2xl md:text-3xl font-bd-street-sign leading-tight text-center"
-                        style={{ color: guardian.textColor }}
-                      >
-                        {nameLines.map((line, idx) => (
-                          <div key={`${guardian.id}-name-${idx}`}>{line}</div>
-                        ))}
+                    </div>
+
+                    {/* Overlay Text */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-3 text-left">
+                        <div
+                          className="text-sm md:text-base font-extrabold uppercase tracking-wide mb-2 leading-tight text-center"
+                          style={{ color: guardian.textColor }}
+                        >
+                          {titleLines.map((line, idx) => (
+                            <div key={`${guardian.id}-title-${idx}`}>
+                              {line}
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          className="mx-auto rounded-sm"
+                          style={{
+                            height: "6px",
+                            width: "120px",
+                            backgroundColor: guardian.textColor,
+                          }}
+                        />
+                        <div
+                          className="mt-2 text-2xl md:text-3xl font-bd-street-sign leading-tight text-center"
+                          style={{ color: guardian.textColor }}
+                        >
+                          {nameLines.map((line, idx) => (
+                            <div key={`${guardian.id}-name-${idx}`}>{line}</div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Action Buttons Container */}
-      <div className="flex justify-center items-center gap-4 mt-8">
-        {!isMobile && (
-          <button
-            onClick={handleBack}
-            className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
-            aria-label="Back"
-          >
-            <Image src="/Back.svg" alt="Back" width={50} height={50} />
-          </button>
-        )}
-        <div className="flex items-center justify-center">
-          <button
-            onClick={handleNext}
-            disabled={!selectedGuardian || submitting}
-            className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${
-              selectedGuardian
-                ? "hover:scale-105"
-                : "opacity-50 cursor-not-allowed"
-            }`}
-            style={{ width: "180px", height: "50px" }}
-          >
-            <Image
-              src="/Button.svg"
-              alt="Tiếp tục"
-              layout="fill"
-              objectFit="contain"
-              className="absolute"
-            />
-            <p className="relative z-10 text-[#835D26] font-semibold">
-              Tiếp tục
-            </p>
-          </button>
+        {/* Action Buttons Container */}
+        <div className="flex justify-center items-center gap-4 mt-8">
+          {!isMobile && (
+            <button
+              onClick={handleBack}
+              className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
+              aria-label="Back"
+            >
+              <Image src="/Back.svg" alt="Back" width={50} height={50} />
+            </button>
+          )}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={handleNext}
+              disabled={!selectedGuardian || submitting}
+              className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${
+                selectedGuardian
+                  ? "hover:scale-105"
+                  : "opacity-50 cursor-not-allowed"
+              }`}
+              style={{ width: "180px", height: "50px" }}
+            >
+              <Image
+                src="/Button.svg"
+                alt="Tiếp tục"
+                layout="fill"
+                objectFit="contain"
+                className="absolute"
+              />
+              <p className="relative z-10 text-[#835D26] font-semibold">
+                Tiếp tục
+              </p>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    ),
+    [
+      guardianDeities,
+      selectedGuardian,
+      isMobile,
+      handleBack,
+      handleNext,
+      submitting,
+      getProfileById,
+    ]
   );
 
   // Personality Selection Component
-  const PersonalitySelection = () => {
+  const PersonalitySelection = useMemo(() => {
     // Check if it's mobile landscape (width > height and width < 1024)
     const isMobileLandscape =
       isMobile && window.innerWidth > window.innerHeight;
@@ -472,7 +501,7 @@ const PersonalityResultPage = () => {
         >
           {selectedOption && (
             <div
-              className={`bg-gray-300/20 rounded-xl ${
+              className={`bg-gray-400/40 rounded-xl ${
                 isMobileLandscape ? "p-3" : "p-8 lg:p-10"
               } border border-gray-300 ${
                 isMobileLandscape
@@ -498,7 +527,14 @@ const PersonalityResultPage = () => {
         </div>
       </div>
     );
-  };
+  }, [
+    isMobile,
+    personalityOptions,
+    selectedPersonality,
+    handleOptionSelect,
+    getProfileById,
+    selectedOption,
+  ]);
 
   if (loading) {
     return <VietnameseHistoryLoading />;
@@ -519,7 +555,7 @@ const PersonalityResultPage = () => {
       {/* When not showing guardian, keep content inside framed container */}
       {!showGuardianResult && (
         <div
-          className="relative bg-amber-100/80 border-3 rounded-2xl max-w-5xl md:max-w-6xl w-full shadow-2xl"
+          className="relative bg-amber-200/50 border-3 rounded-2xl max-w-5xl md:max-w-6xl w-full shadow-2xl"
           style={{
             borderColor:
               getProfileById(selectedPersonality || "")?.text_color ||
@@ -543,7 +579,7 @@ const PersonalityResultPage = () => {
                   mounted ? "translate-x-0" : "-translate-x-full"
                 }`}
               >
-                <PersonalitySelection />
+                {PersonalitySelection}
               </div>
             </div>
           </div>
@@ -572,12 +608,10 @@ const PersonalityResultPage = () => {
 
       {/* Guardian section rendered independently and full-width */}
       {showGuardianResult && (
-        <div className="w-full">
-          <GuardianDeityResult />
-        </div>
+        <div className="w-full">{GuardianDeityResult}</div>
       )}
     </div>
   );
-};
+});
 
 export default PersonalityResultPage;

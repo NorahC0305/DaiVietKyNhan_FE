@@ -2,10 +2,11 @@ import http from "@configs/fetch";
 import { IFigureResponseModel } from "@models/figure/repsonse";
 
 const figureService = {
-  // Fetch all figures
+  // Fetch all figures with optimized caching
   getAllFigures: async () => {
     return await http.get<IFigureResponseModel>(`/figure`, {
-      cache: "no-store",
+      cache: "force-cache",
+      next: { revalidate: 7200 }, // Cache for 2 hours
     });
   },
   chooseFigure: async (figureId: number) => {
