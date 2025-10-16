@@ -2,26 +2,19 @@
 
 import { Button } from "@atoms/ui/button";
 import { Input } from "@atoms/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@atoms/ui/select";
 import LucideIcon from "@atoms/LucideIcon";
 import { COLORS } from "@constants/colors";
-import { useState, useEffect } from "react";
+import { USER } from "@constants/user";
 
 interface ToolbarProps {
-  onSearch?: (search: string) => void;
-  color?: "default" | "black";
+  onSearch: (value: string) => void;
+  onStatusFilter: (value: string) => void;
+  searchValue: string;
+  statusValue: string;
 }
 
-const Toolbar = ({ onSearch, color = "default" }: ToolbarProps) => {
-  const [searchValue, setSearchValue] = useState("");
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      onSearch?.(searchValue);
-    }, 300); // Debounce search
-
-    return () => clearTimeout(timeoutId);
-  }, [searchValue, onSearch]);
-
+const Toolbar = ({ onSearch, onStatusFilter, searchValue, statusValue }: ToolbarProps) => {
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div className="flex-1 flex items-center gap-2">
@@ -31,11 +24,21 @@ const Toolbar = ({ onSearch, color = "default" }: ToolbarProps) => {
             inputMode="search"
             placeholder="Tìm kiếm người dùng..."
             className="bg-transparent hover:bg-transparent"
+            color="black"
             value={searchValue}
-            color={color}
-            onChange={(e) => setSearchValue(e.target.value)}
+            onChange={(e) => onSearch(e.target.value)}
           />
         </div>
+        <Select value={statusValue || "all"} onValueChange={(value) => onStatusFilter(value === "all" ? "" : value)}>
+          <SelectTrigger className="w-[140px] bg-background border-border text-foreground h-9">
+            <SelectValue placeholder="Trạng thái" />
+          </SelectTrigger>
+          <SelectContent className="bg-card border-border">
+            <SelectItem value="all">Tất cả</SelectItem>
+            <SelectItem value={USER.USER_STATUS.ACTIVE}>Hoạt động</SelectItem>
+            <SelectItem value={USER.USER_STATUS.INACTIVE}>Không hoạt động</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Button
         size="sm"

@@ -1,7 +1,7 @@
 import http from "@configs/fetch"
-import qs from "qs";
 import { IQueryRequest } from "@models/common/request";
 import { IUpdateMeBodySchema } from "@models/user/request";
+import qs from "qs";
 
 const userService = {
     getMe: async () => {
