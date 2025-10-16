@@ -122,7 +122,7 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                 className="h-auto p-0 font-semibold hover:bg-transparent"
                 onClick={() => handleSort('coin')}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-center">
                   Xu
                   {getSortIcon('coin')}
                 </div>
@@ -135,7 +135,7 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                 className="h-auto p-0 font-semibold hover:bg-transparent"
                 onClick={() => handleSort('point')}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-center">
                   Điểm số
                   {getSortIcon('point')}
                 </div>
@@ -161,7 +161,7 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                 className="h-auto p-0 font-semibold hover:bg-transparent"
                 onClick={() => handleSort('status')}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 justify-center">
                   Trạng thái
                   {getSortIcon('status')}
                 </div>
@@ -186,25 +186,22 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                 <TableRow key={u.email}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-semibold">
-                        {initials[0]}
-                      </div>
                       <div className="font-medium text-gray-900">{u.name}</div>
                     </div>
                   </TableCell>
                   <TableCell className="text-gray-900">{u.email}</TableCell>
-                  <TableCell className="text-gray-900">
+                  <TableCell className="text-gray-900 text-center">
                     <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
                       {u.coin}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
                       {u.point}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-gray-900">{formatDate(u.createdAt)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     {u.status === USER.USER_STATUS.ACTIVE ? (
                       <Badge variant="outline" className="bg-[#d16834] text-white border-0">
                         {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
@@ -218,7 +215,7 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2 text-gray-600">
                       <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <LucideIcon name="Eye" spin iconSize={20} iconColor={COLORS.TEXT.DARK} />
+                        <LucideIcon name="Eye" iconSize={20} iconColor={COLORS.TEXT.DARK} />
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <LucideIcon name="Pencil" iconSize={20} iconColor={COLORS.TEXT.DARK} />
