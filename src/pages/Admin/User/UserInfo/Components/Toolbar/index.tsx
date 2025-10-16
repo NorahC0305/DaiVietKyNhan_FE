@@ -31,9 +31,7 @@ const Toolbar = ({ onSearch, color = "default" }: ToolbarProps) => {
             inputMode="search"
             placeholder="Tìm kiếm người dùng..."
             className="bg-transparent hover:bg-transparent"
-            value={searchValue}
-            color={color}
-            onChange={(e) => setSearchValue(e.target.value)}
+            color="black"
           />
         </div>
       </div>

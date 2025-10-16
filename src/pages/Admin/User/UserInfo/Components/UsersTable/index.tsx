@@ -89,143 +89,64 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('name')}
-              >
-                <div className="flex items-center gap-2">
-                  Người dùng
-                  {getSortIcon('name')}
-                </div>
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('email')}
-              >
-                <div className="flex items-center gap-2">
-                  Email
-                  {getSortIcon('email')}
-                </div>
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('coin')}
-              >
-                <div className="flex items-center gap-2 justify-center">
-                  Xu
-                  {getSortIcon('coin')}
-                </div>
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('point')}
-              >
-                <div className="flex items-center gap-2 justify-center">
-                  Điểm số
-                  {getSortIcon('point')}
-                </div>
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('createdAt')}
-              >
-                <div className="flex items-center gap-2">
-                  Ngày tham gia
-                  {getSortIcon('createdAt')}
-                </div>
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-semibold hover:bg-transparent"
-                onClick={() => handleSort('status')}
-              >
-                <div className="flex items-center gap-2 justify-center">
-                  Trạng thái
-                  {getSortIcon('status')}
-                </div>
-              </Button>
-            </TableHead>
+            <TableHead className="text-left">Người dùng</TableHead>
+            <TableHead className="text-left">Email</TableHead>
+            <TableHead className="text-center">Xu</TableHead>
+            <TableHead className="text-center">Điểm số</TableHead>
+            <TableHead className="text-center">Ngày tham gia</TableHead>
+            <TableHead className="text-center">Trạng thái</TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isLoading ? (
-            // Show skeleton rows when loading
-            Array.from({ length: skeletonRowCount }).map((_, index) => (
-              <SkeletonRow key={`skeleton-${index}`} />
-            ))
-          ) : (
-            rows?.map((u) => {
-              const initials = u.name
-                ?.split(" ")
-                ?.map((w) => w[0])
-                ?.join("");
-              return (
-                <TableRow key={u.email}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="font-medium text-gray-900">{u.name}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-gray-900">{u.email}</TableCell>
-                  <TableCell className="text-gray-900 text-center">
-                    <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
-                      {u.coin}
+          {rows?.map((u) => {
+            const initials = u.name
+              ?.split(" ")
+              ?.map((w) => w[0])
+              ?.join("");
+            return (
+              <TableRow key={u.email}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="font-medium text-gray-900">{u.name}</div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-gray-900">{u.email}</TableCell>
+                <TableCell className="text-center">
+                  <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
+                    {u.coin}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
+                    {u.point}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-gray-900">{formatDate(u.createdAt)}</TableCell>
+                <TableCell className="text-center">
+                  {u.status === USER.USER_STATUS.ACTIVE ? (
+                    <Badge variant="outline" className="bg-[#d16834] text-white border-0">
+                      {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="outline" className="bg-[#D86D38]/20 text-white border-0">
-                      {u.point}
+                  ) : (
+                    <Badge variant="outline" className="bg-[#F26644] text-white border-0">
+                      {USER.USER_STATUS.INACTIVE ? 'Không hoạt động' : 'Hoạt động'}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-gray-900">{formatDate(u.createdAt)}</TableCell>
-                  <TableCell className="text-center">
-                    {u.status === USER.USER_STATUS.ACTIVE ? (
-                      <Badge variant="outline" className="bg-[#d16834] text-white border-0">
-                        {USER.USER_STATUS.ACTIVE ? 'Hoạt động' : 'Không hoạt động'}
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="bg-[#F26644] text-white border-0">
-                        {USER.USER_STATUS.INACTIVE ? 'Không hoạt động' : 'Hoạt động'}
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2 text-gray-600">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <LucideIcon name="Eye" iconSize={20} iconColor={COLORS.TEXT.DARK} />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <LucideIcon name="Pencil" iconSize={20} iconColor={COLORS.TEXT.DARK} />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2 text-gray-600">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <LucideIcon name="Eye" iconSize={20} iconColor={COLORS.TEXT.DARK} />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <LucideIcon name="Pencil" iconSize={20} iconColor={COLORS.TEXT.DARK} />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
