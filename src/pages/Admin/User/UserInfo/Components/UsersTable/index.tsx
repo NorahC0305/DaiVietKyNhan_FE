@@ -22,79 +22,109 @@ export type SortDirection = 'asc' | 'desc';
 
 interface Props {
   rows: NonNullable<IMePaginationResponse['data']>['results'] | undefined;
-  sortField?: SortField;
-  sortDirection?: SortDirection;
-  onSort?: (field: SortField) => void;
-  isLoading?: boolean;
-  skeletonRowCount?: number;
+  onViewUser?: (user: any) => void;
+  onEditUser?: (user: any) => void;
+  onSort?: (field: string) => void;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
-const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false, skeletonRowCount = 5 }: Props) => {
-  /**
-   * Get Sort Icon
-   * @param field 
-   * @returns 
-   */
-  const handleSort = (field: SortField) => {
-    onSort?.(field);
-  };
-
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) {
-      return <LucideIcon name="ArrowUpDown" iconSize={14} className="text-gray-400" />;
-    }
-    return sortDirection === 'asc'
-      ? <LucideIcon name="ArrowUp" iconSize={14} className="text-gray-600" />
-      : <LucideIcon name="ArrowDown" iconSize={14} className="text-gray-600" />;
-  };
-
-  /**
-   * Skeleton Row Component
-   */
-  const SkeletonRow = () => (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-8 w-8 rounded-full bg-gray-300/50" />
-          <Skeleton className="h-4 w-32 bg-gray-300/50" />
-        </div>
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-4 w-48 bg-gray-300/50" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-6 w-12 rounded-full bg-gray-300/50" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-6 w-12 rounded-full bg-gray-300/50" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-4 w-24 bg-gray-300/50" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="h-6 w-20 rounded-full bg-gray-300/50" />
-      </TableCell>
-      <TableCell className="text-right">
-        <div className="flex items-center justify-end gap-2">
-          <Skeleton className="h-8 w-8 rounded bg-gray-300/50" />
-          <Skeleton className="h-8 w-8 rounded bg-gray-300/50" />
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-  //-----------------------------End-----------------------------//
-
+const UsersTable = ({ rows, onViewUser, onEditUser, onSort, sortBy, sortOrder }: Props) => {
   return (
     <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-left">Người dùng</TableHead>
-            <TableHead className="text-left">Email</TableHead>
-            <TableHead className="text-center">Xu</TableHead>
-            <TableHead className="text-center">Điểm số</TableHead>
-            <TableHead className="text-center">Ngày tham gia</TableHead>
-            <TableHead className="text-center">Trạng thái</TableHead>
+            <TableHead
+              className="text-left cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('name')}
+            >
+              <div className="flex items-center gap-1">
+                Người dùng
+                {sortBy === 'name' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-left cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('email')}
+            >
+              <div className="flex items-center gap-1">
+                Email
+                {sortBy === 'email' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('coin')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Xu
+                {sortBy === 'coin' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('point')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Điểm số
+                {sortBy === 'point' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('createdAt')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Ngày tham gia
+                {sortBy === 'createdAt' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
+            <TableHead
+              className="text-center cursor-pointer hover:bg-gray-50 select-none"
+              onClick={() => onSort?.('status')}
+            >
+              <div className="flex items-center justify-center gap-1">
+                Trạng thái
+                {sortBy === 'status' && (
+                  <LucideIcon
+                    name={sortOrder === 'asc' ? 'ChevronUp' : 'ChevronDown'}
+                    iconSize={16}
+                    iconColor={COLORS.TEXT.DARK}
+                  />
+                )}
+              </div>
+            </TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
@@ -136,10 +166,22 @@ const UsersTable = ({ rows, sortField, sortDirection, onSort, isLoading = false,
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2 text-gray-600">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onViewUser?.(u)}
+                      title="Xem thông tin"
+                    >
                       <LucideIcon name="Eye" iconSize={20} iconColor={COLORS.TEXT.DARK} />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => onEditUser?.(u)}
+                      title="Chỉnh sửa"
+                    >
                       <LucideIcon name="Pencil" iconSize={20} iconColor={COLORS.TEXT.DARK} />
                     </Button>
                   </div>
