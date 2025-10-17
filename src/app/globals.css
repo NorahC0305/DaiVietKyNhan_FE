@@ -16,6 +16,7 @@
 
 @theme inline {
   --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
   --color-admin-primary: var(--admin-primary);
   --color-map-primary: var(--map-primary);
   --color-title: var(--title);

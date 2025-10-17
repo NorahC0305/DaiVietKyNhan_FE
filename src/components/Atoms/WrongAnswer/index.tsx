@@ -50,10 +50,10 @@ export default function WrongAnswer({
             className="relative mx-3 w-full max-w-3xl"
           >
             {/* Card */}
-            <div className="relative bg-[#ECDEB0] border-4 border-secondary rounded-2xl p-4 sm:p-6 md:p-8">
+            <div className="relative bg-primary-light border-4 border-secondary rounded-2xl p-4 sm:p-6 md:p-8">
               {/* Content */}
               <div className="text-center">
-                <p className="mt-3 text-[#835D26] text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
+                <p className="mt-3 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
                   Đây chưa phải là danh tính của vị Kỵ Nhân này. Bạn bị trừ
                   {penaltyPoints} điểm. Bạn có muốn sử dụng {coinCost} xu để
                   vượt qua thử thách này không?
