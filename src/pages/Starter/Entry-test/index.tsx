@@ -80,7 +80,8 @@ const IntroComponent = React.memo(
             layout="fill"
             objectFit="contain"
             className="absolute"
-            priority
+            width={180}
+            height={50}
           />
           <p className="relative z-10 text-[#835D26] font-bold">Tiếp tục</p>
         </button>

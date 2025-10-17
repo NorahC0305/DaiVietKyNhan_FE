@@ -355,6 +355,8 @@ const PersonalityResultPage = React.memo(() => {
                 layout="fill"
                 objectFit="contain"
                 className="absolute"
+                width={180}
+                height={50}
               />
               <p className="relative z-10 text-[#835D26] font-semibold">
                 Tiếp tục

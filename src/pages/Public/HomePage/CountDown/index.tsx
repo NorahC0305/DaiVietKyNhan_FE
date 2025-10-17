@@ -140,7 +140,7 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
-                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg' alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" priority />
+                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg' alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" priority width={1000} height={1000} />
 
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] md:w-[80%] flex items-center justify-center flex-col">
                     <div className='flex items-center justify-center flex-col mt-2'>

@@ -56,7 +56,7 @@ const DetailInfo = () => {
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
-                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg' alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" />
+                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg' alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" width={1000} height={1000} />
 
                 <form
                     onSubmit={handleSubmit(onSubmit)}
@@ -105,7 +105,7 @@ const DetailInfo = () => {
                                     NĂM SINH
                                 </p>
                                 <div className='relative flex items-center justify-center hover:opacity-95 ml-3 md:justify-self-start'>
-                                    <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt='Button' className='cursor-pointer w-[100px] h-auto sm:w-[130px]' />
+                                    <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt='Button' className='cursor-pointer w-[100px] h-auto sm:w-[130px]' width={100} height={130} />
                                     <select
                                         {...register("birthDate")}
                                         className='absolute left-1/2 -translate-x-1/2 w-[80%] h-full text-center text-sm font-dfvn-graphit bg-transparent border-none outline-none cursor-pointer'
@@ -123,7 +123,7 @@ const DetailInfo = () => {
                     </div>
 
                     <button type="submit" disabled={isSubmitting} className='relative flex justify-center cursor-pointer mt-4'>
-                        <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt="button" className="w-full h-auto max-w-[130px] md:max-w-[150px]" />
+                        <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt="button" className="w-full h-auto max-w-[130px] md:max-w-[150px]" width={130} height={150} />
                         <div className='absolute w-full h-full flex items-center justify-start flex-col'>
                             <p className='flex items-center justify-center text-center font-dfvn-graphit h-full text-md'>
                                 {isSubmitting ? "Đang xử lý..." : "Xác Nhận"}
