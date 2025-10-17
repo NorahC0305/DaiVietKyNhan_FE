@@ -350,7 +350,7 @@ const PersonalityResultPage = React.memo(() => {
               style={{ width: "180px", height: "50px" }}
             >
               <Image
-                src="/Button.svg"
+                src="https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg"
                 alt="Tiếp tục"
                 layout="fill"
                 objectFit="contain"

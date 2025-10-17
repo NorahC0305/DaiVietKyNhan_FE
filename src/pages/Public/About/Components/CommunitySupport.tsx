@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import ButtonImage from "../../../../../public/Button.svg";
 import Link from "next/link";
 
 const CommunitySupport = () => {
@@ -14,7 +13,7 @@ const CommunitySupport = () => {
       </p>
 
       <Link href="https://www.facebook.com/groups/1084277652036931" target="_blank" className="relative mt-5 flex flex-col gap-3 justify-center items-center">
-        <Image src={ButtonImage} alt="Button" className="w-[40%]" />
+        <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt="Button" className="w-[40%]" />
         <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center">
           <p className="text-secondary text-xl font-semibold">Nhóm Facebook</p>
         </div>

@@ -75,7 +75,7 @@ const IntroComponent = React.memo(
           style={{ width: "180px", height: "50px" }}
         >
           <Image
-            src="/Button.svg"
+            src="https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg"
             alt="Tiếp tục"
             layout="fill"
             objectFit="contain"
@@ -150,9 +150,8 @@ const QuestionComponent = React.memo(
           <div>
             <Progress
               value={(currentStep / totalQuestions) * 100}
-              className={`w-72 h-2 bg-transparent border border-[#835D26] rounded-full shadow-inner [&>div]:bg-[#835D26] [&>div]:rounded-full [&>div]:transition-all [&>div]:duration-500 ${
-                progressPulse ? "[&>div]:animate-pulse" : ""
-              }`}
+              className={`w-72 h-2 bg-transparent border border-[#835D26] rounded-full shadow-inner [&>div]:bg-[#835D26] [&>div]:rounded-full [&>div]:transition-all [&>div]:duration-500 ${progressPulse ? "[&>div]:animate-pulse" : ""
+                }`}
             />
           </div>
           <button
@@ -180,9 +179,8 @@ const QuestionComponent = React.memo(
             <div key={option.id} className="flex flex-col items-center w-24">
               {/* Label above the box */}
               <div
-                className={`text-sm font-medium mb-3 text-center leading-tight max-w-[110px] h-10 flex items-end justify-center ${
-                  option.id === 2 || option.id === 4 ? "opacity-0" : ""
-                }`}
+                className={`text-sm font-medium mb-3 text-center leading-tight max-w-[110px] h-10 flex items-end justify-center ${option.id === 2 || option.id === 4 ? "opacity-0" : ""
+                  }`}
                 style={{ color: `#${option.color}` }}
               >
                 {option.text}
@@ -191,23 +189,19 @@ const QuestionComponent = React.memo(
               <button
                 onClick={() => handleClick(option.id)}
                 disabled={optionsDisabled}
-                className={`w-12 h-12 rounded-lg border-2 transition-all duration-200 ${
-                  optionsDisabled ? `opacity-60 cursor-not-allowed` : ``
-                } ${
-                  currentSelected === option.id || clickedId === option.id
+                className={`w-12 h-12 rounded-lg border-2 transition-all duration-200 ${optionsDisabled ? `opacity-60 cursor-not-allowed` : ``
+                  } ${currentSelected === option.id || clickedId === option.id
                     ? `shadow-md scale-110`
-                    : `bg-white ${
-                        optionsDisabled ? `` : `hover:shadow-md hover:scale-105`
-                      }`
-                }`}
+                    : `bg-white ${optionsDisabled ? `` : `hover:shadow-md hover:scale-105`
+                    }`
+                  }`}
                 style={{ borderColor: `#${option.borderColor}` }}
               >
                 {(currentSelected === option.id || clickedId === option.id) && (
                   <div className="w-full h-full flex items-center justify-center">
                     <div
-                      className={`w-6 h-6 rounded ${
-                        isFlashing && clickedId === option.id ? "ring-2" : ""
-                      }`}
+                      className={`w-6 h-6 rounded ${isFlashing && clickedId === option.id ? "ring-2" : ""
+                        }`}
                       style={{
                         backgroundColor: `#${option.borderColor}`,
                         boxShadow:

@@ -6,7 +6,6 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ScrollPaper from "../../../../../public/ScrollPaper.svg";
 import frame from "../../../../../public/frame.svg";
-import ButtonImage from "../../../../../public/Button.svg";
 import { years } from '@utils/Date';
 import userService from '@services/user';
 import { UpdateMeBodySchema, IUpdateMeBodySchema } from '@models/user/request';
@@ -107,7 +106,7 @@ const DetailInfo = () => {
                                     NĂM SINH
                                 </p>
                                 <div className='relative flex items-center justify-center hover:opacity-95 ml-3 md:justify-self-start'>
-                                    <Image src={ButtonImage} alt='Button' className='cursor-pointer w-[100px] h-auto sm:w-[130px]' />
+                                    <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt='Button' className='cursor-pointer w-[100px] h-auto sm:w-[130px]' />
                                     <select
                                         {...register("birthDate")}
                                         className='absolute left-1/2 -translate-x-1/2 w-[80%] h-full text-center text-sm font-dfvn-graphit bg-transparent border-none outline-none cursor-pointer'
@@ -125,7 +124,7 @@ const DetailInfo = () => {
                     </div>
 
                     <button type="submit" disabled={isSubmitting} className='relative flex justify-center cursor-pointer mt-4'>
-                        <Image src={ButtonImage} alt="button" className="w-full h-auto max-w-[130px] md:max-w-[150px]" />
+                        <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg' alt="button" className="w-full h-auto max-w-[130px] md:max-w-[150px]" />
                         <div className='absolute w-full h-full flex items-center justify-start flex-col'>
                             <p className='flex items-center justify-center text-center font-dfvn-graphit h-full text-md'>
                                 {isSubmitting ? "Đang xử lý..." : "Xác Nhận"}
