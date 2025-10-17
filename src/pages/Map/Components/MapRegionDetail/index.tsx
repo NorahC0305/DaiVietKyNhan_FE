@@ -7,6 +7,7 @@ import { Check, Circle } from "lucide-react";
 import QuestionModal from "@/components/Atoms/QuestionModal";
 import { toast } from "react-toastify";
 import RedeemModal from "@components/Atoms/RedeemModal";
+import AchievementsModal from "@components/Atoms/AchievementsModal";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -175,7 +176,7 @@ export default function FixedScrollsPageResponsive({
           )}
         </div>
       </div>
-      <RedeemModal  isOpen={true}
+      {/* <RedeemModal  isOpen={true}
         onClose={() => setOpen(false)}
         onRedeem={(tierId) => {
           // call API here
@@ -201,7 +202,45 @@ export default function FixedScrollsPageResponsive({
             cost: { unit: "COIN", amount: 6000 },
             reward: { unit: "TEXT", label: "Combo quà tặng đặc biệt" },
           },
-        ]} />
+        ]} /> */}
+
+        <AchievementsModal
+          isOpen={true}
+          onClose={() => setOpen(false)}
+          onClaim={(achievementId) => {
+            // call API here
+            console.log("claim", achievementId);
+            setOpen(false);
+          }}
+        achievements={[
+          {
+            id: "a1",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a2",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a3",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a4",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: false,
+          },
+        ]}
+        />
+
+
       {/* Question Modal */}
       <QuestionModal
         question={selectedQuestion}
