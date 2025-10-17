@@ -50,12 +50,12 @@ export default function WrongAnswer({
             className="relative mx-3 w-full max-w-3xl"
           >
             {/* Card */}
-            <div className="relative bg-primary-light border-4 border-secondary rounded-2xl p-4 sm:p-6 md:p-8">
+            <div className="relative bg-primary-light border-4 border-secondary rounded-2xl px-4 sm:px-6 md:px-8 py-6 sm:py-8 md:py-10">
               {/* Content */}
               <div className="text-center">
                 <p className="mt-3 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
                   Đây chưa phải là danh tính của vị Kỵ Nhân này. Bạn bị trừ
-                  {penaltyPoints} điểm. Bạn có muốn sử dụng {coinCost} xu để
+                   {penaltyPoints} điểm. Bạn có muốn sử dụng {coinCost} xu để
                   vượt qua thử thách này không?
                 </p>
                 <button
@@ -80,24 +80,7 @@ export default function WrongAnswer({
                 {/* Use coins */}
                 <button
                   onClick={handleUseCoins}
-                  className="relative cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center gap-2"
-                >
-                  <span className="text-secondary text-lg sm:text-xl font-semibold">
-                    -{coinCost}
-                  </span>
-                  <Image
-                    src="/DVKN coin.svg"
-                    alt="coin"
-                    width={28}
-                    height={28}
-                    className="w-6 h-6 sm:w-7 sm:h-7"
-                  />
-                </button>
-
-                {/* Retry */}
-                <button
-                  onClick={handleRetry}
-                  className="relative overflow-hidden cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl text-[#6B4B1E] font-semibold text-lg"
+                  className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center"
                 >
                   <Image
                     src="/Button.svg"
@@ -107,7 +90,36 @@ export default function WrongAnswer({
                     className="object-cover pointer-events-none"
                     priority
                   />
-                  <span className="relative z-10">Trả lời lại</span>
+                  <span className="relative z-10 flex items-center gap-2">
+                    <span className="text-secondary text-lg sm:text-xl font-semibold">
+                      -{coinCost}
+                    </span>
+                    <Image
+                      src="/DVKN coin.svg"
+                      alt="coin"
+                      width={48}
+                      height={48}
+                      className="relative z-10 w-6 h-6 sm:w-7 sm:h-7"
+                    />
+                  </span>
+                </button>
+
+                {/* Retry */}
+                <button
+                  onClick={handleRetry}
+                  className="relative  hover:scale-105 transition-all duration-300 overflow-hidden cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl text-secondary font-semibold text-lg"
+                >
+                  <Image
+                    src="/Button.svg"
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 180px, 220px"
+                    className="object-cover pointer-events-none"
+                    priority
+                  />
+                  <span className="relative z-10 text-secondary">
+                    Trả lời lại
+                  </span>
                 </button>
               </div>
             </div>
