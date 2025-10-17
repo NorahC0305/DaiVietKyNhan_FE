@@ -127,7 +127,7 @@ export default function RedeemModal({
               </div>
 
               <div
-                className="absolute flex flex-col items-center justify-between py-2 sm:py-6 border-2"
+                className="absolute flex flex-col items-center justify-between py-2 sm:py-6"
                 style={{ top: "14%", right: "10%", bottom: "14%", left: "10%" }}
               >
                 <div className="w-full max-w-3xl mx-auto text-center space-y-2 sm:space-y-4 px-2 sm:px-4">

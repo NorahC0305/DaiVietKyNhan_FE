@@ -187,7 +187,7 @@ export default function FixedScrollsPageResponsive({
           )}
         </div>
       </div>
-      {/* <RedeemModal  isOpen={true}
+      <RedeemModal  isOpen={true}
         onClose={() => setOpen(false)}
         onRedeem={(tierId) => {
           // call API here
@@ -213,7 +213,7 @@ export default function FixedScrollsPageResponsive({
             cost: { unit: "COIN", amount: 6000 },
             reward: { unit: "TEXT", label: "Combo quà tặng đặc biệt" },
           },
-        ]} /> */}
+        ]} />
 
       {/* <AchievementsModal
           isOpen={true}
