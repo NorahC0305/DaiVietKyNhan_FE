@@ -42,7 +42,7 @@ const SelectCharacterPage = React.memo(
 
           {/* Character Selection */}
           <div className="flex justify-center gap-8 mb-6">
-            {figures.map((figure, index) => (
+            {figures?.map((figure, index) => (
               <CharacterCard
                 key={figure.id}
                 characterImage={figure.imageUrl}

@@ -75,11 +75,10 @@ const DotButton: React.FC<{
     onClick={onClick}
   >
     <div
-      className={`w-3 h-3 rounded-full transition-all duration-200 ${
-        className?.includes("embla__dot--selected")
+      className={`w-3 h-3 rounded-full transition-all duration-200 ${className?.includes("embla__dot--selected")
           ? "bg-white scale-125"
           : "bg-white/40 hover:bg-white/60"
-      }`}
+        }`}
     />
   </button>
 );
@@ -176,7 +175,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
   }, []);
 
   const setTweenFactor = useCallback((emblaApi: EmblaCarouselType) => {
-    tweenFactor.current = TWEEN_FACTOR_BASE * emblaApi.scrollSnapList().length;
+    tweenFactor.current = TWEEN_FACTOR_BASE * emblaApi.scrollSnapList()?.length;
   }, []);
 
   const tweenScale = useCallback(

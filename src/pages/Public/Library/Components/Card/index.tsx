@@ -114,7 +114,7 @@ export default function Card({
               {isLocked ? (
                 <>
                   <Image
-                    src="/Group 104.svg"
+                    src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
                     alt="Hidden framed card"
                     fill
                     sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
@@ -136,8 +136,8 @@ export default function Card({
                 </>
               ) : (
                 <Image
-                  src={imageSrc || "/HiddenCard.svg"}
-                  alt={`Unlocked card #${cardNumber}`}
+                  src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
+                  alt="Hidden framed card"
                   fill
                   sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
                   className="object-contain"

@@ -16,7 +16,7 @@ const AboutUsPage = () => {
         <div className="relative w-full max-w-5xl mx-auto">
           {/* Scroll Paper Background */}
           <Image
-            src="/ScrollPaper.svg"
+            src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg"
             alt="Scroll Paper"
             width={1000}
             height={1000}
@@ -86,7 +86,7 @@ const AboutUsPage = () => {
         <div className="relative w-full max-w-5xl mx-auto">
           {/* Scroll Paper Background */}
           <Image
-            src="/ScrollPaper.svg"
+            src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg"
             alt="Scroll Paper"
             width={1000}
             height={1000}
@@ -129,7 +129,7 @@ const AboutUsPage = () => {
                     Anh nhận thấy Việt Nam đang thiếu những sản phẩm minh họa hình ảnh các nhân vật lịch sử và quyết định thực hiện dự án Đại Việt Kỳ Nhân.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Từ những nét vẽ đầu tiên, anh đã dần định hình nên một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới mẻ, gần gũi và đầy cảm xúc. 
+                    Từ những nét vẽ đầu tiên, anh đã dần định hình nên một dự án không chỉ tôn vinh lịch sử Việt, mà còn truyền cảm hứng sáng tạo cho thế hệ trẻ thông qua những góc nhìn mới mẻ, gần gũi và đầy cảm xúc.
                   </p>
                 </div>
               </div>

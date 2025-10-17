@@ -12,7 +12,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "phu-tay-ho",
     name: "Phủ Tây Hồ",
-    imageSrc: "/Phủ Tây Hồ 1.svg",
+    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722471/Phu%CC%89_Ta%CC%82y_Ho%CC%82%CC%80_1_iqoem3.svg',
     position: { top: "-13%", right: "-2.5%" },
     size: { width: 1200, height: 660 },
     hitboxScale: 0.55,
@@ -22,7 +22,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "nui-tan-vien",
     name: "Núi Tản Viên",
-    imageSrc: "/Núi Tản Viên 1.svg",
+    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722470/Nu%CC%81i_Ta%CC%89n_Vie%CC%82n_1_yaa5yf.svg',
     position: { top: "-9%", left: "-9.5%" },
     size: { width: 1300, height: 760 },
     zIndex: 15,
@@ -33,7 +33,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "ky-linh-viet-hoa",
     name: "Kỳ Linh Việt Hỏa",
-    imageSrc: "/Kỳ Linh Việt Hỏa 1.svg",
+    imageSrc: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722420/Ky%CC%80_Linh_Vie%CC%A3%CC%82t_Ho%CC%89a_1_mvwrlg.svg",
     position: { top: "26%", left: "33.7%" },
     size: { width: 766, height: 490 },
     zIndex: 20,
@@ -44,7 +44,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "dam-da-trach",
     name: "Đầm Dạ Trạch",
-    imageSrc: "/Đầm Dạ Trạch 1.svg",
+    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722555/%C4%90a%CC%82%CC%80m_Da%CC%A3_Tra%CC%A3ch_1_bbfigz.svg',
     position: { bottom: "-8%", left: "0.2%" },
     size: { width: 1100, height: 620 },
     hitboxScale: 0.8,
@@ -54,7 +54,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "lang-phu-dong",
     name: "Làng Phù Đổng",
-    imageSrc: "/Làng Phù Đổng 1.svg",
+    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722422/La%CC%80ng_Phu%CC%80_%C4%90o%CC%82%CC%89ng_1_e7tht5.svg',
     position: { bottom: "-8%", right: "-11.5%" },
     size: { width: 1300, height: 720 },
     hitboxScale: 0.6,
@@ -141,7 +141,7 @@ export default function MapPage() {
             {baseRegions.map((region) => {
               const mobileConfig =
                 mobileRegionsConfig[
-                  region.id as keyof typeof mobileRegionsConfig
+                region.id as keyof typeof mobileRegionsConfig
                 ];
               return (
                 <MobileRegion

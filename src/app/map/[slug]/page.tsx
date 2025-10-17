@@ -6,11 +6,11 @@ import { mockQuestions } from "@constants/mockdata/questions";
 const regionSlugs = {
   "phu-tay-ho": {
     id: "phu-tay-ho",
-    backgroundImage: "/Thánh Gióng 1.png",
+    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722781/Map_Tha%CC%81nh_Gio%CC%81ng_1_x9yqi3.svg",
   },
   "nui-tan-vien": {
     id: "nui-tan-vien",
-    backgroundImage: "/Map Sơn Tinh 2.svg",
+    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722789/Map_So%CC%9Bn_Tinh_2_pq7v2w.svg",
   },
   "ky-linh-viet-hoa": {
     id: "ky-linh-viet-hoa",
@@ -18,7 +18,7 @@ const regionSlugs = {
   },
   "dam-da-trach": {
     id: "dam-da-trach",
-    backgroundImage: "/Map Chử Đồng Tử 1.svg", // Sử dụng ảnh Thánh Gióng cho Đầm Dạ Trạch
+    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722758/Map_Chu%CC%9B%CC%89_%C4%90o%CC%82%CC%80ng_Tu%CC%9B%CC%89_1_nypmqj.svg", // Sử dụng ảnh Thánh Gióng cho Đầm Dạ Trạch
   },
   "lang-phu-dong": {
     id: "lang-phu-dong",

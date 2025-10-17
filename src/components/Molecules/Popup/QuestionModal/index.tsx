@@ -116,7 +116,7 @@ export default function QuestionModal({
                     {/* Height approximates the visual input area on the image */}
                     <div className="relative aspect-[26/9] w-full">
                       <Image
-                        src="/InputAnswer.png"
+                        src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722651/InputAnswer_vqetjd.png"
                         alt="Khung nhập đáp án"
                         fill
                         sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 640px"

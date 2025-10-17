@@ -26,7 +26,7 @@ const FrameNumber: React.FC<FrameNumberProps> = React.memo(
         {/* Background frame image */}
         <div className="relative">
           <Image
-            src="/khung mạng_xu_điểm_ngan.svg"
+            src='https://res.cloudinary.com/dznt9yias/image/upload/v1760722372/khung_ma%CC%A3ng_xu_%C4%91ie%CC%82%CC%89m_ngan_p10yq9.svg'
             alt="Number frame"
             width={width}
             height={height}

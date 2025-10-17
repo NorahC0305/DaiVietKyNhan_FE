@@ -4,7 +4,6 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import ScrollPaper from "../../../../../public/ScrollPaper.svg";
 import frame from "../../../../../public/frame.svg";
 import { years } from '@utils/Date';
 import userService from '@services/user';
@@ -57,7 +56,7 @@ const DetailInfo = () => {
     return (
         <div className='w-full flex items-center justify-center'>
             <div className='relative w-full max-w-5xl mx-auto'>
-                <Image src={ScrollPaper} alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" />
+                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg' alt="Scroll Paper" className="w-full h-auto max-w-[1000px]" />
 
                 <form
                     onSubmit={handleSubmit(onSubmit)}
