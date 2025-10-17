@@ -6,6 +6,9 @@ import { useState } from "react";
 import { Check, Circle } from "lucide-react";
 import QuestionModal from "@/components/Atoms/QuestionModal";
 import { toast } from "react-toastify";
+import RedeemModal from "@components/Atoms/RedeemModal";
+import AchievementsModal from "@components/Atoms/AchievementsModal";
+import WrongAnswer from "@components/Atoms/WrongAnswer";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -15,7 +18,7 @@ export default function FixedScrollsPageResponsive({
 }: ICOMPONENTS.MapRegionDetailProps) {
   // Đặt thành `false` để ẩn đường viền và nhãn gỡ lỗi
   const DEBUG_HOTSPOTS = false;
-
+  const [open, setOpen] = useState(false);
   // State cho question modal
   const [selectedQuestion, setSelectedQuestion] =
     useState<ICOMPONENTS.Question | null>(null);
@@ -174,6 +177,86 @@ export default function FixedScrollsPageResponsive({
           )}
         </div>
       </div>
+      {/* <RedeemModal  isOpen={true}
+        onClose={() => setOpen(false)}
+        onRedeem={(tierId) => {
+          // call API here
+          console.log("redeem", tierId);
+          setOpen(false);
+        }}
+        tiers={[
+          {
+            id: "t1",
+            canRedeem: true,
+            cost: { unit: "POINT", amount: 300 },
+            reward: { unit: "COIN", amount: 150 },
+          },
+          {
+            id: "t2",
+            canRedeem: true,
+            cost: { unit: "POINT", amount: 500 },
+            reward: { unit: "COIN", amount: 250 },
+          },
+          {
+            id: "t3",
+            canRedeem: false,
+            cost: { unit: "COIN", amount: 6000 },
+            reward: { unit: "TEXT", label: "Combo quà tặng đặc biệt" },
+          },
+        ]} /> */}
+
+      {/* <AchievementsModal
+          isOpen={true}
+          onClose={() => setOpen(false)}
+          onClaim={(achievementId) => {
+            // call API here
+            console.log("claim", achievementId);
+            setOpen(false);
+          }}
+        achievements={[
+          {
+            id: "a1",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a2",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a3",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: true,
+          },
+          {
+            id: "a4",
+            title: "Đạt được 100 xu",
+            description: "Đạt được 100 xu",
+            canClaim: false,
+          },
+        ]}
+        /> */}
+
+      <WrongAnswer
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        onRetry={() => {
+          /* reopen question */
+          console.log("retry");
+        }}
+        onUseCoins={() => {
+          console.log("use coins");
+          /* spend coins */
+        }}
+        coinCost={500}
+        penaltyPoints={20}
+      />
 
       {/* Question Modal */}
       <QuestionModal
