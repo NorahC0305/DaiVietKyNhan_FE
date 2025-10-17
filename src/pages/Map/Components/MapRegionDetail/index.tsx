@@ -8,6 +8,7 @@ import QuestionModal from "@/components/Atoms/QuestionModal";
 import { toast } from "react-toastify";
 import RedeemModal from "@components/Atoms/RedeemModal";
 import AchievementsModal from "@components/Atoms/AchievementsModal";
+import WrongAnswer from "@components/Atoms/WrongAnswer";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -204,7 +205,7 @@ export default function FixedScrollsPageResponsive({
           },
         ]} /> */}
 
-        <AchievementsModal
+      {/* <AchievementsModal
           isOpen={true}
           onClose={() => setOpen(false)}
           onClaim={(achievementId) => {
@@ -238,8 +239,24 @@ export default function FixedScrollsPageResponsive({
             canClaim: false,
           },
         ]}
-        />
+        /> */}
 
+      <WrongAnswer
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        onRetry={() => {
+          /* reopen question */
+          console.log("retry");
+        }}
+        onUseCoins={() => {
+          console.log("use coins");
+          /* spend coins */
+        }}
+        coinCost={500}
+        penaltyPoints={20}
+      />
 
       {/* Question Modal */}
       <QuestionModal
