@@ -1,10 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-import { GameFrame } from "@components/Molecules/GameFrame";
+import InputAnswer from "@components/Molecules/Popup/InputAnswer";
 
 export default function QuestionModal({
   question,
@@ -99,7 +98,7 @@ export default function QuestionModal({
                 }}
               >
                 {/* Debug border for the safe content region */}
-                <div className="absolute inset-0 border-2 border-rose-500/70 pointer-events-none rounded-sm" />
+                {/* <div className="absolute inset-0 border-2 border-rose-500/70 pointer-events-none rounded-sm" /> */}
 
                 <div className="w-full max-w-3xl mx-auto text-center space-y-2 sm:space-y-4 overflow-y-auto px-2 sm:px-4">
                   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#835D26] font-bd-street-sign leading-tight">
@@ -110,28 +109,9 @@ export default function QuestionModal({
                   </p>
                 </div>
 
-                {/* Answer area using InputAnswer.png */}
+                {/* Answer area using InputAnswer component */}
                 <div className="w-full flex flex-col items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-                  <div className="relative w-[min(320px,70%)] sm:w-[min(420px,50%)] md:w-[min(420px,45%)]">
-                    {/* Height approximates the visual input area on the image */}
-                    <div className="relative aspect-[26/9] w-full">
-                      <Image
-                        src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722651/InputAnswer_vqetjd.png"
-                        alt="Khung nhập đáp án"
-                        fill
-                        sizes="(max-width: 640px) 90vw, (max-width: 768px) 70vw, 640px"
-                        style={{ objectFit: "contain" }}
-                      />
-                      <input
-                        className="absolute inset-[18%] w-[64%] h-[50%] bg-transparent text-gray-800 outline-none text-base sm:text-lg md:text-xl lg:text-2xl placeholder:text-gray-500"
-                        value={answerText}
-                        onChange={(e) => setAnswerText(e.target.value)}
-                        placeholder="Nhập đáp án..."
-                      />
-                      {/* Debug border for input region */}
-                      {/* <div className="absolute inset-[22%] w-[56%] h-[40%] border-2 border-blue-500/70 pointer-events-none rounded-sm" /> */}
-                    </div>
-                  </div>
+                  <InputAnswer value={answerText} onChange={setAnswerText} />
 
                   <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                     <button

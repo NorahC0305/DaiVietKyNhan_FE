@@ -14,6 +14,11 @@ import BuyMoreLife from "@components/Molecules/Popup/BuyMoreLife";
 import WaitingOthers from "@components/Molecules/Popup/WaitingOthers";
 import IncompleteRegion from "@components/Molecules/Popup/IncompleteRegion";
 import FutureEvent from "@components/Molecules/Popup/FutureEvent";
+import InputGiftCode from "@components/Molecules/Popup/InputGiftCode";
+import AirEvent from "@components/Molecules/Popup/AirEvent";
+import CorrectGiftCode from "@components/Molecules/Popup/CorrectGiftCode";
+import IncorrectGiftCode from "@components/Molecules/Popup/IncorrectGiftCode";
+import LimitGiftCode from "@components/Molecules/Popup/LimitGiftCode";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -292,6 +297,44 @@ export default function FixedScrollsPageResponsive({
         onClose={() => {
           console.log("close");
         }}
+      /> */}
+
+      {/* <InputGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <AirEvent
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <CorrectGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
+      /> */}
+
+      {/* <IncorrectGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
+      /> */}
+
+      {/* <LimitGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
       /> */}
 
       {/* Question Modal */}
