@@ -26,7 +26,7 @@ const StarterLayoutClient: React.FC<StarterLayoutProps> = ({
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/background web 1.svg"
+          src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721580/background_web_1_mq9ehy.svg  "
           alt="Background"
           fill
           className="object-cover"
@@ -40,7 +40,7 @@ const StarterLayoutClient: React.FC<StarterLayoutProps> = ({
         className="absolute top-4 right-4 z-30 hover:scale-110 transition-transform duration-200"
       >
         <Image
-          src="/X.svg"
+          src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg"
           alt="X"
           width={40}
           height={40}

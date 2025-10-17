@@ -6,7 +6,6 @@ import frame from "../../../../public/frame.svg";
 import heart from "../../../../public/Heart.svg";
 import heart2 from "../../../../public/Heart (1).svg";
 import frameCoin from "../../../../public/FrameCoin.svg";
-import exit from "../../../../public/X.svg";
 import { Plus } from 'lucide-react';
 interface GameFrameProps {
     children: React.ReactNode;
@@ -56,12 +55,12 @@ export const GameFrame: React.FC<GameFrameProps> = ({
                     </div>
                 </div>
                 <button className='relative top-0 left-0 flex items-center justify-center ml-3 cursor-pointer'>
-                    <Image src={exit} alt='exit' width={70} height={70} className='mt-3' />
+                    <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg' alt='exit' width={70} height={70} className='mt-3' />
                 </button>
             </div>
 
-{/* Gift */}
-<></>
+            {/* Gift */}
+            <></>
             <div className={cn('relative w-full h-full', padding)}>
                 {children}
             </div>

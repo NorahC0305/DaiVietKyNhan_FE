@@ -49,7 +49,7 @@ export default function ModalBackdrop({
                 >
                   <span className="block relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
                     <Image
-                      src="/X.svg"
+                      src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg"
                       alt="Đóng"
                       fill
                       sizes="(max-width: 640px) 32px, (max-width: 768px) 40px, 48px"

@@ -335,7 +335,7 @@ const PersonalityResultPage = React.memo(() => {
               className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
               aria-label="Back"
             >
-              <Image src="/Back.svg" alt="Back" width={50} height={50} />
+              <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721544/Back_cwp7tx.svg" alt="Back" width={50} height={50} />
             </button>
           )}
           <div className="flex items-center justify-center">
