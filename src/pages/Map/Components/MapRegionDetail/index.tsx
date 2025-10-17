@@ -4,11 +4,11 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Check, Circle } from "lucide-react";
-import QuestionModal from "@/components/Atoms/QuestionModal";
+import QuestionModal from "@components/Molecules/Popup/QuestionModal";
 import { toast } from "react-toastify";
-import RedeemModal from "@components/Atoms/RedeemModal";
-import AchievementsModal from "@components/Atoms/AchievementsModal";
-import WrongAnswer from "@components/Atoms/WrongAnswer";
+import RedeemModal from "@components/Molecules/Popup/RedeemModal";
+import AchievementsModal from "@components/Molecules/Popup/AchievementsModal";
+import WrongAnswer from "@components/Molecules/Popup/WrongAnswer";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
