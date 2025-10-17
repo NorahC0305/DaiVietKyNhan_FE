@@ -76,8 +76,8 @@ const DotButton: React.FC<{
   >
     <div
       className={`w-3 h-3 rounded-full transition-all duration-200 ${className?.includes("embla__dot--selected")
-          ? "bg-white scale-125"
-          : "bg-white/40 hover:bg-white/60"
+        ? "bg-white scale-125"
+        : "bg-white/40 hover:bg-white/60"
         }`}
     />
   </button>
@@ -244,10 +244,10 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
   useEffect(() => {
     if (!emblaApi) return;
     if (typeof scrollToIndex === "number" && !Number.isNaN(scrollToIndex)) {
-      const boundedIndex = numberWithinRange(scrollToIndex, 0, cards.length - 1);
+      const boundedIndex = numberWithinRange(scrollToIndex, 0, cards?.length - 1);
       emblaApi.scrollTo(boundedIndex);
     }
-  }, [emblaApi, scrollToIndex, cards.length]);
+  }, [emblaApi, scrollToIndex, cards?.length]);
 
   return (
     <div className="w-full max-w-none px-4 sm:px-6 lg:px-10">
