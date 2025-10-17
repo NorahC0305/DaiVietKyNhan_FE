@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Check, Circle } from "lucide-react";
 import QuestionModal from "@/components/Atoms/QuestionModal";
 import { toast } from "react-toastify";
+import RedeemModal from "@components/Atoms/RedeemModal";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -15,7 +16,7 @@ export default function FixedScrollsPageResponsive({
 }: ICOMPONENTS.MapRegionDetailProps) {
   // Đặt thành `false` để ẩn đường viền và nhãn gỡ lỗi
   const DEBUG_HOTSPOTS = false;
-
+  const [open, setOpen] = useState(false);
   // State cho question modal
   const [selectedQuestion, setSelectedQuestion] =
     useState<ICOMPONENTS.Question | null>(null);
@@ -174,7 +175,33 @@ export default function FixedScrollsPageResponsive({
           )}
         </div>
       </div>
-
+      <RedeemModal  isOpen={true}
+        onClose={() => setOpen(false)}
+        onRedeem={(tierId) => {
+          // call API here
+          console.log("redeem", tierId);
+          setOpen(false);
+        }}
+        tiers={[
+          {
+            id: "t1",
+            canRedeem: true,
+            cost: { unit: "POINT", amount: 300 },
+            reward: { unit: "COIN", amount: 150 },
+          },
+          {
+            id: "t2",
+            canRedeem: true,
+            cost: { unit: "POINT", amount: 500 },
+            reward: { unit: "COIN", amount: 250 },
+          },
+          {
+            id: "t3",
+            canRedeem: false,
+            cost: { unit: "COIN", amount: 6000 },
+            reward: { unit: "TEXT", label: "Combo quà tặng đặc biệt" },
+          },
+        ]} />
       {/* Question Modal */}
       <QuestionModal
         question={selectedQuestion}
