@@ -10,9 +10,10 @@ const TestPageClient = () => {
         setIsOpenCompleteLand(false)
     }
 
+    const land = 'Chử Đồng Tử' as 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
     return (
         <>
-            <CompleteLand isOpen={isOpenCompleteLand} onClose={handleCloseCompleteLand} />
+            <CompleteLand isOpen={isOpenCompleteLand} onClose={handleCloseCompleteLand} land={land} />
         </>
 
     )
