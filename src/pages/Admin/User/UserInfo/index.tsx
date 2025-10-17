@@ -156,12 +156,11 @@ const UserInfoPage = ({ listUsers: initialListUsers }: UserInfoPageProps) => {
           </div>
           {listUsers && (
             <EnhancedPagination
-              currentPage={listUsers?.pagination?.current || 1}
-              totalPages={listUsers?.pagination?.totalPage || 0}
+              currentPage={page}
+              totalPages={Math.max(1, Math.ceil((listUsers?.pagination?.totalItem || 0) / (itemsPerPage || 1)))}
               totalItems={listUsers?.pagination?.totalItem || 0}
-              itemsPerPage={listUsers?.pagination?.pageSize || 0}
+              itemsPerPage={itemsPerPage}
               onPageChange={handlePageChange}
-            // showItemCount={false}
             />
           )}
         </CardFooter>
