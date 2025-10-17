@@ -173,4 +173,9 @@ declare namespace ICOMPONENTS {
     questions: Question[];
     answeredQuestionIds: number[];
   }
+
+  interface CommonModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+  }
 }

@@ -9,6 +9,16 @@ import { toast } from "react-toastify";
 import RedeemModal from "@components/Molecules/Popup/RedeemModal";
 import AchievementsModal from "@components/Molecules/Popup/AchievementsModal";
 import WrongAnswer from "@components/Molecules/Popup/WrongAnswer";
+import RunOutOfLife from "@components/Molecules/Popup/RunOutOfLife";
+import BuyMoreLife from "@components/Molecules/Popup/BuyMoreLife";
+import WaitingOthers from "@components/Molecules/Popup/WaitingOthers";
+import IncompleteRegion from "@components/Molecules/Popup/IncompleteRegion";
+import FutureEvent from "@components/Molecules/Popup/FutureEvent";
+import InputGiftCode from "@components/Molecules/Popup/InputGiftCode";
+import AirEvent from "@components/Molecules/Popup/AirEvent";
+import CorrectGiftCode from "@components/Molecules/Popup/CorrectGiftCode";
+import IncorrectGiftCode from "@components/Molecules/Popup/IncorrectGiftCode";
+import LimitGiftCode from "@components/Molecules/Popup/LimitGiftCode";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -241,22 +251,91 @@ export default function FixedScrollsPageResponsive({
         ]}
         /> */}
 
-      <WrongAnswer
+      {/* <WrongAnswer
         isOpen={true}
         onClose={() => {
           console.log("close");
         }}
         onRetry={() => {
-          /* reopen question */
           console.log("retry");
         }}
         onUseCoins={() => {
           console.log("use coins");
-          /* spend coins */
         }}
         coinCost={500}
         penaltyPoints={20}
-      />
+      /> */}
+
+      {/* <BuyMoreLife
+        coinCost={500}
+        onBuy={() => {
+          console.log("buy");
+        }}
+        isBuying={false}
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <WaitingOthers
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <IncompleteRegion
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <FutureEvent
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <InputGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <AirEvent
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+      /> */}
+
+      {/* <CorrectGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
+      /> */}
+
+      {/* <IncorrectGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
+      /> */}
+
+      {/* <LimitGiftCode
+        isOpen={true}
+        onClose={() => {
+          console.log("close");
+        }}
+        coinsReward={500}
+      /> */}
 
       {/* Question Modal */}
       <QuestionModal
