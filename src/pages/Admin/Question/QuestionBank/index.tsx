@@ -32,7 +32,7 @@ import {
 } from "@hooks/use-question-queries";
 import questionService from "@services/question";
 import { IDeleteQuestionResponse } from "@models/question/response";
-import { ILandEntity } from "@models/land/entity";
+import { ILandEntity } from "@models/Land/entity";
 
 interface QuestionData {
   text: string;
@@ -74,15 +74,15 @@ const QuestionBankPage = ({
 
   // Calculate summary statistics based on query data directly
   const totalQuestions = allQuestions.length;
-  const activeQuestions = useMemo(() => 
+  const activeQuestions = useMemo(() =>
     allQuestions.filter((q) => q.status === "active").length,
     [allQuestions]
   );
-  const draftQuestions = useMemo(() => 
+  const draftQuestions = useMemo(() =>
     allQuestions.filter((q) => q.status === "draft").length,
     [allQuestions]
   );
-  const averageCorrectRate = useMemo(() => 
+  const averageCorrectRate = useMemo(() =>
     totalQuestions > 0
       ? allQuestions.reduce((sum, q) => sum + q.correctRate, 0) / totalQuestions
       : 0,
