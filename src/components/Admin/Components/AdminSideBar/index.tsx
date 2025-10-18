@@ -75,6 +75,11 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     id: "manage-library",
     label: "Quản lý thư viện",
     icon: "BookOpen",
+    subItems: [
+      { id: "card", label: "Thư viện card", icon: "BookOpen" },
+      { id: "card-story", label: "Thư viện card story", icon: "BookOpen" },
+      { id: "lib-card", label: "Thư viện lib card", icon: "BookOpen" },
+    ],
   },
   {
     id: "statistics-reports",
@@ -139,6 +144,9 @@ const AdminSideBar = () => {
       "content-edit": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
       "question-bank": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "question-statistics": ROUTES.ADMIN_DASHBOARD.QUESTION.STATISTICS,
+      card: ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD,
+      "card-story": ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD_STORY,
+      "lib-card": ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD,
       "statistics-overview": ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW,
       "statistics-user": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
@@ -152,7 +160,7 @@ const AdminSideBar = () => {
       "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
-      "manage-library": ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO,
+      "manage-library": ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD,
     }),
     []
   );
@@ -200,8 +208,17 @@ const AdminSideBar = () => {
         parentId: "system-config",
         subId: "release-date",
       },
-      [ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO]: {
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD]: {
         parentId: "manage-library",
+        subId: "card",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD_STORY]: {
+        parentId: "manage-library",
+        subId: "card-story",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD]: {
+        parentId: "manage-library",
+        subId: "lib-card",
       },
     }),
     []

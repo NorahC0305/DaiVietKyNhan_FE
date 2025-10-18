@@ -6,26 +6,26 @@ import { Loader2 } from "lucide-react"
 import { cn } from "@/utils/CN"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-holder hover:bg-primary/90",
+        default: "bg-primary text-holder hover:bg-primary/90 rounded-md",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-md",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md",
+        ghost: "hover:bg-accent hover:text-accent-foreground rounded-md",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        full: "h-12 w-full px-4 py-2",
-        icon: "h-10 w-10",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+        full: "h-12 w-full px-4 py-2 rounded-md",
+        icon: "h-10 w-10 rounded-md",
       },
     },
     defaultVariants: {
@@ -45,9 +45,17 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, isLoading = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const baseClasses = buttonVariants({ variant, size })
+    
+    // If rounded-full is passed in className, we need to override the default rounded classes
+    const shouldUseFull = className?.includes('rounded-full')
+    const finalClasses = shouldUseFull 
+      ? baseClasses.replace(/rounded-\w+/g, '') + ' rounded-full'
+      : baseClasses
+    
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size }), 'cursor-pointer', className)}
+        className={cn(finalClasses, 'cursor-pointer', className)}
         ref={ref}
         disabled={isLoading || props.disabled}
         {...props}
