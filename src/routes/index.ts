@@ -6,6 +6,7 @@ const BASE_PATHS = {
   STARTER: "/starter",
   MANAGE_USER: "/admin/manage-user",
   MANAGE_QUESTION: "/admin/manage-question",
+  MANAGE_LIBRARY: "/admin/manage-library",
   MANAGE_STATISTICS: "/admin/manage-statistic",
   MANAGE_SYSTEM: "/admin/manage-system",
 } as const;
@@ -56,6 +57,9 @@ const ADMIN_DASHBOARD = {
   QUESTION: {
     BANK: `${BASE_PATHS.MANAGE_QUESTION}/question-bank`,
     STATISTICS: `${BASE_PATHS.MANAGE_QUESTION}/question-statistics`,
+  },
+  LIBRARY: {
+    INFO: `${BASE_PATHS.MANAGE_LIBRARY}`,
   },
   STATISTICS: {
     OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/overview`,

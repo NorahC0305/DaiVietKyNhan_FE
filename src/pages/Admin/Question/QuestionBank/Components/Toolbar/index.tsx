@@ -14,34 +14,21 @@ import { Plus } from "lucide-react";
 
 interface SearchFiltersProps {
   searchTerm: string;
-  selectedCategory: string;
-  selectedDifficulty: string;
+  selectedLandId?: number;
   onSearchChange: (value: string) => void;
-  onCategoryChange: (value: string) => void;
-  onDifficultyChange: (value: string) => void;
+  onLandIdChange: (value: string) => void;
   onAddQuestion: () => void;
+  lands?: any[];
 }
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({
   searchTerm,
-  selectedCategory,
-  selectedDifficulty,
+  selectedLandId,
   onSearchChange,
-  onCategoryChange,
-  onDifficultyChange,
+  onLandIdChange,
   onAddQuestion,
+  lands = [],
 }) => {
-  const categories = [
-    "Tất cả",
-    "Địa lý",
-    "Văn học",
-    "Lịch sử",
-    "Toán học",
-    "Khoa học",
-  ];
-
-  const difficulties = ["Tất cả", "Dễ", "Trung bình", "Khó"];
-
   return (
     <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
       <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -51,44 +38,32 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             placeholder="Tìm kiếm câu hỏi..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="bg-transparent hover:bg-transparent "
+            className="bg-transparent hover:bg-transparent"
+            color="black"
           />
         </div>
         <div className="flex gap-4">
-          <Select value={selectedCategory} onValueChange={onCategoryChange}>
+          <Select
+            value={selectedLandId ? selectedLandId.toString() : "all"}
+            onValueChange={onLandIdChange}
+          >
             <SelectTrigger
               style={{ width: "200px" }}
               className="border-gray-300"
             >
-              <SelectValue placeholder="Danh mục" />
+              <SelectValue placeholder="Chọn vùng đất" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
+              <SelectItem value="all" className="bg-admin-primary">
+                Tất cả
+              </SelectItem>
+              {lands.map((land) => (
                 <SelectItem
-                  key={category}
-                  value={category}
+                  key={land.id}
+                  value={land.id.toString()}
                   className="bg-admin-primary"
                 >
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedDifficulty} onValueChange={onDifficultyChange}>
-            <SelectTrigger
-              style={{ width: "200px" }}
-              className="border-gray-300"
-            >
-              <SelectValue placeholder="Độ khó" />
-            </SelectTrigger>
-            <SelectContent>
-              {difficulties.map((difficulty) => (
-                <SelectItem
-                  key={difficulty}
-                  value={difficulty}
-                  className="bg-admin-primary"
-                >
-                  {difficulty}
+                  {land.name || `Land ${land.id}`}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -1,4 +1,4 @@
-import AdminHeader from "@pages/Admin/Components/AdminHeader";
+import AdminHeader from "@components/Admin/Components/AdminHeader";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@lib/authOptions";
 import userService from "@services/user";

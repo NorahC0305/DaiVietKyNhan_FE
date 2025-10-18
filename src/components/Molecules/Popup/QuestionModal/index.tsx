@@ -1,17 +1,54 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import InputAnswer from "@components/Molecules/Popup/InputAnswer";
+import { Loader2 } from "lucide-react";
 
 export default function QuestionModal({
   question,
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
+  isAnswered = false,
 }: ICOMPONENTS.QuestionModalProps) {
   const [answerText, setAnswerText] = useState("");
+
+  // Kiểm tra câu hỏi đã trả lời đúng chưa
+  const isQuestionAnswered = (question: any) => {
+    return (
+      question?.userAnswerLogs &&
+      question.userAnswerLogs.length > 0 &&
+      question.userAnswerLogs.some((log: any) => log.isCorrect === true)
+    );
+  };
+
+  // Lấy câu trả lời cũ của người dùng
+  const getPreviousAnswer = (question: any) => {
+    if (question?.userAnswerLogs && question.userAnswerLogs.length > 0) {
+      const correctAnswer = question.userAnswerLogs.find(
+        (log: any) => log.isCorrect === true
+      );
+      return correctAnswer?.text || "";
+    }
+    return "";
+  };
+
+  // Sử dụng prop isAnswered từ parent thay vì chỉ dựa vào server data
+  const isQuestionAnsweredFromServer = question ? isQuestionAnswered(question) : false;
+  const finalIsAnswered = isAnswered || isQuestionAnsweredFromServer;
+  const previousAnswer = question ? getPreviousAnswer(question) : "";
+
+  // Set câu trả lời cũ khi modal mở và câu hỏi đã được trả lời
+  useEffect(() => {
+    if (isOpen && question && finalIsAnswered) {
+      setAnswerText(previousAnswer);
+    } else if (isOpen && question && !finalIsAnswered) {
+      setAnswerText("");
+    }
+  }, [isOpen, question, finalIsAnswered, previousAnswer]);
 
   const handleSubmit = () => {
     if (question) {
@@ -105,22 +142,36 @@ export default function QuestionModal({
                     CÂU HỎI
                   </h2>
                   <p className="text-gray-700 text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mx-auto max-w-full sm:max-w-2xl md:max-w-3xl px-1">
-                    {question.content}
+                    {question.text || question.content}
                   </p>
                 </div>
 
                 {/* Answer area using InputAnswer component */}
                 <div className="w-full flex flex-col items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-                  <InputAnswer value={answerText} onChange={setAnswerText} />
+                  <InputAnswer
+                    value={answerText}
+                    onChange={setAnswerText}
+                    disabled={finalIsAnswered}
+                  />
 
                   <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
-                    <button
-                      onClick={handleSubmit}
-                      disabled={!answerText.trim()}
-                      className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
-                    >
-                      Gửi
-                    </button>
+                    {finalIsAnswered ? (
+                      <button
+                        onClick={onClose}
+                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                      >
+                        Đóng
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleSubmit}
+                        disabled={!answerText.trim() || isSubmitting}
+                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
+                      >
+                        {isSubmitting && <Loader2 className="animate-spin" />}
+                        {isSubmitting ? "Đang gửi..." : "Gửi"}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

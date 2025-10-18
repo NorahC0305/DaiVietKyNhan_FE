@@ -2,12 +2,16 @@
 
 import ButtonImage from "../../../Atoms/ButtonImage";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
+import userAnswerLogService from "@services/user-answer-log";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 type WrongAnswerProps = {
   isOpen: boolean;
   onClose: () => void;
   onRetry?: () => void;
-  onUseCoins?: () => void;
+  onUseCoins?: (questionId: number) => Promise<void>;
+  questionId?: number;
   coinCost?: number; // default 500
   penaltyPoints?: number; // default 20
 };
@@ -17,24 +21,47 @@ export default function WrongAnswer({
   onClose,
   onRetry,
   onUseCoins,
+  questionId,
   coinCost = 500,
   penaltyPoints = 20,
 }: WrongAnswerProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleRetry = () => {
     onRetry?.();
     onClose();
   };
 
-  const handleUseCoins = () => {
-    onUseCoins?.();
-    onClose();
+  const handleUseCoins = async () => {
+    if (!questionId) {
+      toast.error("Không tìm thấy ID câu hỏi");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Call the skip service directly here if no custom handler provided
+      if (!onUseCoins) {
+        await userAnswerLogService.skipQuestionByCoins({ questionId });
+        toast.success(`Đã sử dụng ${coinCost} xu để vượt qua câu hỏi`);
+        onClose();
+      } else {
+        // Use custom handler if provided
+        await onUseCoins(questionId);
+      }
+    } catch (error) {
+      console.error("Error skipping question with coins:", error);
+      toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
       {/* Content */}
       <div className="text-center">
-        <p className="mt-3 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
+        <p className="mt-8 sm:mt-10 md:mt-12 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
           Đây chưa phải là danh tính của vị Kỳ Nhân này. Bạn bị trừ {""}
           {penaltyPoints} điểm. Bạn có muốn sử dụng {coinCost} xu để vượt qua
           thử thách này không?
@@ -46,7 +73,10 @@ export default function WrongAnswer({
         {/* Use coins */}
         <button
           onClick={handleUseCoins}
-          className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center"
+          disabled={isSubmitting}
+          className={`relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center ${
+            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
           <ButtonImage width={180} height={48}>
             <span className="relative z-10 flex items-center gap-2">

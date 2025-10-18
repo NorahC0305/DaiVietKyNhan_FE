@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@atoms/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/Atoms/ui/card";
 import SummaryCards from "./Components/SummaryCards";
 import EditForm from "./Components/EditForm";
 import PointsTable from "./Components/PointsTable";

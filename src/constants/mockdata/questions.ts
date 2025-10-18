@@ -149,5 +149,5 @@ export const mockQuestions: ICOMPONENTS.Question[] = [
 ];
 
 export const getQuestionById = (id: number): ICOMPONENTS.Question | undefined => {
-  return mockQuestions.find((question) => question.id === id);
+  return mockQuestions?.find((question) => question.id === id);
 };

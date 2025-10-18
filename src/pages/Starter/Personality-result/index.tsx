@@ -10,6 +10,7 @@ import { useGodProfilePointHome } from "@/hooks/useGodProfilePointHome";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import godProfileService from "@services/god-profile";
 import { IGodProfileResponseModel } from "@models/god-profile/response";
+import userLandService from "@services/user-land";
 
 const PersonalityResultPage = React.memo(() => {
   const router = useRouter();
@@ -51,7 +52,7 @@ const PersonalityResultPage = React.memo(() => {
       MELANCHOLIC: "vui-tuoi",
       PHLEGMATIC: "uu-tu",
     };
-    const firstAchieved = profiles.find((p) => p.isAchieved);
+    const firstAchieved = profiles?.find((p) => p.isAchieved);
     if (firstAchieved) {
       setSelectedPersonality(map[firstAchieved.traitType] || null);
     }
@@ -73,7 +74,7 @@ const PersonalityResultPage = React.memo(() => {
         "uu-tu": "PHLEGMATIC",
       };
       const trait = mapIdToTrait[id];
-      return profiles.find((p) => p.traitType === trait) || null;
+      return profiles?.find((p) => p.traitType === trait) || null;
     },
     [profiles]
   );
@@ -160,14 +161,14 @@ const PersonalityResultPage = React.memo(() => {
     }));
   }, [profiles]);
 
-  const selectedOption = personalityOptions.find(
+  const selectedOption = personalityOptions?.find(
     (option) => option.id === selectedPersonality
   );
 
   // Auto-select guardian when personality is selected
   useEffect(() => {
     if (selectedPersonality && !selectedGuardian) {
-      const guardian = guardianDeities.find(
+      const guardian = guardianDeities?.find(
         (g) => g.personalityId === selectedPersonality
       );
       const profile = getProfileById(selectedPersonality);
@@ -193,6 +194,7 @@ const PersonalityResultPage = React.memo(() => {
           profileId
         )) as IGodProfileResponseModel;
         if (res.statusCode === 200) {
+          await userLandService.createUserLand();
           router.replace(ROUTES.PUBLIC.MAP);
         }
       } finally {
@@ -335,7 +337,12 @@ const PersonalityResultPage = React.memo(() => {
               className="cursor-pointer flex items-center justify-center hover:opacity-80 transition-opacity duration-300"
               aria-label="Back"
             >
-              <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721544/Back_cwp7tx.svg" alt="Back" width={50} height={50} />
+              <Image
+                src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721544/Back_cwp7tx.svg"
+                alt="Back"
+                width={50}
+                height={50}
+              />
             </button>
           )}
           <div className="flex items-center justify-center">
@@ -352,7 +359,6 @@ const PersonalityResultPage = React.memo(() => {
               <Image
                 src="https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg"
                 alt="Tiếp tục"
-                layout="fill"
                 objectFit="contain"
                 className="absolute"
                 width={180}

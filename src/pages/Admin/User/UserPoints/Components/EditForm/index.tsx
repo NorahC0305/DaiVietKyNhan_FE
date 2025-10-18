@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@atoms/ui/button";
-import { Input } from "@atoms/ui/input";
-import { Label } from "@atoms/ui/label";
+import { Button } from "@/components/Atoms/ui/button";
+import { Input } from "@/components/Atoms/ui/input";
+import { Label } from "@/components/Atoms/ui/label";
 import { COLORS } from "@constants/colors";
 
 const EditForm = () => {

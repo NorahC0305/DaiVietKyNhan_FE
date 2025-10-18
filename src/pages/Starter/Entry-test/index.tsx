@@ -77,11 +77,9 @@ const IntroComponent = React.memo(
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760718877/Button_bb7ywk.svg"
             alt="Tiếp tục"
-            layout="fill"
-            objectFit="contain"
+            fill
+            style={{ objectFit: "contain" }}
             className="absolute"
-            width={180}
-            height={50}
           />
           <p className="relative z-10 text-[#835D26] font-bold">Tiếp tục</p>
         </button>
@@ -246,7 +244,7 @@ export default function EntryTestPage({ testHome }: { testHome: ITestHome[] }) {
 
       // Save answer to backend (non-blocking)
       const currentQuestion = questions[currentStep - 1];
-      const selectedOption = ANSWER_OPTIONS.find((opt) => opt.id === answerId);
+      const selectedOption = ANSWER_OPTIONS?.find((opt) => opt.id === answerId);
       const apiAnswer = selectedOption?.apiValue;
 
       if (currentQuestion && apiAnswer) {
