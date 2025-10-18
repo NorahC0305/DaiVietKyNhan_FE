@@ -1,7 +1,7 @@
 import {z} from "zod";
-import { LandSchema } from "../entity";
 import { BackendPaginationResponseModel, BackendResponseModel } from "@models/backend";
 import { QuestionSchema } from "@models/question/entity";
+import { LandSchema } from "../entity";
 
 export const LandResponseModel = BackendPaginationResponseModel(LandSchema);
 export type ILandResponseModel = z.infer<typeof LandResponseModel>;
