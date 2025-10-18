@@ -6,13 +6,18 @@ import { useRouter } from "next/navigation";
 import MapRegion from "./Components/MapRegion";
 import MobileRegion from "./Components/MobileRegion";
 import ForceLandscape from "@/components/Atoms/ForceLandscape";
+import IncompleteRegion from "@/components/Molecules/Popup/IncompleteRegion";
+import { IUserLandWithLandEntity } from "@models/user-land/entity";
+import { IUserLandWithLandResponseModel } from "@models/user-land/response";
+import { LAND } from "@constants/land";
 
 // --- Dữ liệu gốc của các regions, bao gồm `position` ---
 const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "phu-tay-ho",
     name: "Phủ Tây Hồ",
-    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722471/Phu%CC%89_Ta%CC%82y_Ho%CC%82%CC%80_1_iqoem3.svg',
+    imageSrc:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722471/Phu%CC%89_Ta%CC%82y_Ho%CC%82%CC%80_1_iqoem3.svg",
     position: { top: "-13%", right: "-2.5%" },
     size: { width: 1200, height: 660 },
     hitboxScale: 0.55,
@@ -22,7 +27,8 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "nui-tan-vien",
     name: "Núi Tản Viên",
-    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722470/Nu%CC%81i_Ta%CC%89n_Vie%CC%82n_1_yaa5yf.svg',
+    imageSrc:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722470/Nu%CC%81i_Ta%CC%89n_Vie%CC%82n_1_yaa5yf.svg",
     position: { top: "-9%", left: "-9.5%" },
     size: { width: 1300, height: 760 },
     zIndex: 15,
@@ -33,7 +39,8 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "ky-linh-viet-hoa",
     name: "Kỳ Linh Việt Hỏa",
-    imageSrc: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722420/Ky%CC%80_Linh_Vie%CC%A3%CC%82t_Ho%CC%89a_1_mvwrlg.svg",
+    imageSrc:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722420/Ky%CC%80_Linh_Vie%CC%A3%CC%82t_Ho%CC%89a_1_mvwrlg.svg",
     position: { top: "26%", left: "33.7%" },
     size: { width: 766, height: 490 },
     zIndex: 20,
@@ -44,7 +51,8 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "dam-da-trach",
     name: "Đầm Dạ Trạch",
-    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722555/%C4%90a%CC%82%CC%80m_Da%CC%A3_Tra%CC%A3ch_1_bbfigz.svg',
+    imageSrc:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722555/%C4%90a%CC%82%CC%80m_Da%CC%A3_Tra%CC%A3ch_1_bbfigz.svg",
     position: { bottom: "-8%", left: "0.2%" },
     size: { width: 1100, height: 620 },
     hitboxScale: 0.8,
@@ -54,7 +62,8 @@ const baseRegions: ICOMPONENTS.Region[] = [
   {
     id: "lang-phu-dong",
     name: "Làng Phù Đổng",
-    imageSrc: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760722422/La%CC%80ng_Phu%CC%80_%C4%90o%CC%82%CC%89ng_1_e7tht5.svg',
+    imageSrc:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722422/La%CC%80ng_Phu%CC%80_%C4%90o%CC%82%CC%89ng_1_e7tht5.svg",
     position: { bottom: "-8%", right: "-11.5%" },
     size: { width: 1300, height: 720 },
     hitboxScale: 0.6,
@@ -67,33 +76,98 @@ const baseRegions: ICOMPONENTS.Region[] = [
 const mobileRegionsConfig = {
   "phu-tay-ho": {
     position: { top: "0%", right: "0%" },
-    size: { width: 260, height: 100 },
+    size: { width: 480, height: 100 },
   },
   "nui-tan-vien": {
     position: { top: "0%", left: "0%" },
-    size: { width: 280, height: 150 },
+    size: { width: 380, height: 220 },
   },
   "ky-linh-viet-hoa": {
-    position: { top: "50%", left: "53%", transform: "translate(-50%, -50%)" },
-    size: { width: 100, height: 100 },
+    position: { top: "48%", left: "53%", transform: "translate(-50%, -50%)" },
+    size: { width: 120, height: 120 },
   },
   "dam-da-trach": {
     position: { bottom: "0%", left: "0%" },
-    size: { width: 320, height: 120 },
+    size: { width: 460, height: 140 },
   },
   "lang-phu-dong": {
     position: { bottom: "0%", right: "0%" },
-    size: { width: 280, height: 150 },
+    size: { width: 360, height: 200 },
   },
 };
 
 const mainMapImage = "/Trang map Kỳ Giới.svg";
 
-export default function MapPage() {
+// Mapping từ region ID đến land ID dựa trên userLand data
+// Dựa trên userLand response:
+// - land ID 1="Sơn Tinh" (PENDING)
+// - land ID 2="Chử Đồng Tử" (LOCKED)
+// - land ID 3="Thánh Gióng" (LOCKED)
+// - land ID 4="Liễu Hạnh" (LOCKED)
+// - "ky-linh-viet-hoa" là vùng đất đặc biệt, chỉ mở khi 4 vùng trước hoàn thành
+const regionToLandIdMap: Record<string, number | null> = {
+  "phu-tay-ho": 4, // Phủ Tây Hồ -> Liễu Hạnh (land ID 4) - LOCKED
+  "nui-tan-vien": 1, // Núi Tản Viên -> Sơn Tinh (land ID 1) - PENDING
+  "ky-linh-viet-hoa": null, // Kỳ Linh Việt Hỏa -> vùng đặc biệt, logic riêng trong isRegionUnlocked
+  "dam-da-trach": 2, // Đầm Dạ Trạch -> Chử Đồng Tử (land ID 2) - LOCKED
+  "lang-phu-dong": 3, // Làng Phù Đổng -> Thánh Gióng (land ID 3) - LOCKED
+};
+
+export default function MapPageClient({
+  userLand,
+}: {
+  userLand: IUserLandWithLandResponseModel[];
+}) {
   const router = useRouter();
+  const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] = useState(false);
+  console.log(userLand);
+
+  // Function to check if all previous 4 lands are completed
+  const areAllPreviousLandsCompleted = (): boolean => {
+    // Check if lands 1, 2, 3, 4 are all completed
+    // For "Kỳ Linh Việt Hỏa" to unlock, all 4 previous lands should be unlocked (not locked)
+    const requiredLandIds = [1, 2, 3, 4];
+    
+    return requiredLandIds.every(landId => {
+      const userLandData = userLand.find((item) => item.landId === landId);
+      // Land is considered "completed" if it exists and is not LOCKED
+      // This means PENDING or UNLOCKED status both allow progression
+      return userLandData && userLandData.status !== LAND.LAND_STATUS.LOCKED;
+    });
+  };
+
+  // Function to check if a region is unlocked based on userLand status
+  const isRegionUnlocked = (regionId: string): boolean => {
+    const landId = regionToLandIdMap[regionId];
+
+    // Special case for "Kỳ Linh Việt Hỏa" - only unlock when all 4 previous lands are completed
+    if (regionId === "ky-linh-viet-hoa") {
+      return areAllPreviousLandsCompleted();
+    }
+
+    // If region doesn't have a corresponding landId, it's locked
+    if (landId === null || landId === undefined) return false;
+
+    const userLandData = userLand.find((item) => item.landId === landId);
+
+    // If no userLand data found, consider it locked
+    if (!userLandData) return false;
+
+    // Region is unlocked if status is PENDING or UNLOCKED
+    return (
+      userLandData.status === LAND.LAND_STATUS.PENDING ||
+      userLandData.status === LAND.LAND_STATUS.UNLOCKED
+    );
+  };
 
   const handleRegionClick = (regionId: string) => {
-    router.push(`/map/${regionId}`);
+    // Only allow navigation if region is unlocked
+    if (isRegionUnlocked(regionId)) {
+      router.push(`/map/${regionId}`);
+    } else {
+      // If locked, show the incomplete region popup
+      setIsIncompleteRegionModalOpen(true);
+    }
   };
 
   return (
@@ -121,6 +195,7 @@ export default function MapPage() {
                 onClick={() => handleRegionClick(region.id)}
                 zIndex={region.zIndex || 10 + index}
                 isFullscreen={true}
+                isLocked={!isRegionUnlocked(region.id)}
               />
             ))}
           </div>
@@ -141,10 +216,11 @@ export default function MapPage() {
             {baseRegions.map((region) => {
               const mobileConfig =
                 mobileRegionsConfig[
-                region.id as keyof typeof mobileRegionsConfig
+                  region.id as keyof typeof mobileRegionsConfig
                 ];
               return (
                 <MobileRegion
+                  // debug={true}
                   key={`mobile-${region.id}`}
                   id={region.id}
                   name={region.name}
@@ -154,12 +230,19 @@ export default function MapPage() {
                   mobileSize={mobileConfig?.size}
                   onClick={() => handleRegionClick(region.id)}
                   zIndex={region.zIndex || 10}
+                  isLocked={!isRegionUnlocked(region.id)}
                 />
               );
             })}
           </div>
         </div>
       </div>
+
+      {/* Popup for locked regions */}
+      <IncompleteRegion
+        isOpen={isIncompleteRegionModalOpen}
+        onClose={() => setIsIncompleteRegionModalOpen(false)}
+      />
     </ForceLandscape>
   );
 }

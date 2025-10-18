@@ -41,6 +41,7 @@ interface MobileRegionProps {
   };
   // Prop để bật/tắt debug mode
   debug?: boolean;
+  isLocked?: boolean; // Whether the region is locked
 }
 
 export default function MobileRegion({
@@ -54,6 +55,7 @@ export default function MobileRegion({
   mobilePosition,
   mobileSize,
   debug = false,
+  isLocked = false,
 }: MobileRegionProps) {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -73,7 +75,7 @@ export default function MobileRegion({
     >
       {/* Vùng tương tác cho mobile - hoàn toàn ẩn nhưng có thể bấm */}
       <div
-        className="absolute inset-0 cursor-pointer"
+        className={`absolute inset-0 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         style={{
           backgroundColor: "transparent !important",
           border: "none !important",
@@ -85,10 +87,30 @@ export default function MobileRegion({
           backgroundPosition: "initial !important",
           backgroundRepeat: "initial !important",
         }}
-        onTouchStart={() => setIsPressed(true)}
+        onTouchStart={() => !isLocked && setIsPressed(true)}
         onTouchEnd={() => setIsPressed(false)}
-        onClick={onClick}
+        onClick={() => onClick?.()}
       />
+
+      {/* Lock overlay khi region bị khóa */}
+      {isLocked && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="bg-black bg-opacity-50 rounded-full p-2">
+            <svg
+              className="w-6 h-6 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
+      )}
 
       {/* Debug mode - chỉ hiện khi debug = true */}
       {debug && (
