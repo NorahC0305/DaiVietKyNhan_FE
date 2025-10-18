@@ -1,5 +1,4 @@
-import { useApiQuery } from '../use-queries';
-import { queryKeys } from '@lib/QueryKey';
+import { useState, useEffect, useCallback } from 'react';
 import userService from '@services/user';
 import { IMePaginationResponse } from '@models/user/response';
 
@@ -13,27 +12,71 @@ export interface UserListParams {
 }
 
 export function useUsersList(params?: UserListParams, initialData?: IMePaginationResponse) {
-    const query = useApiQuery<IMePaginationResponse>(
-        queryKeys.users.list(params),
+    const [data, setData] = useState<IMePaginationResponse | undefined>(initialData);
+    const [isLoading, setIsLoading] = useState(!initialData);
+    const [error, setError] = useState<Error | null>(null);
 
-        () => userService.getUsers(params) as Promise<IMePaginationResponse>,
-        {
-            initialData: initialData,
-            staleTime: 5 * 60 * 1000,
-            refetchOnWindowFocus: false,
+    const fetchUsers = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await userService.getUsers(params) as IMePaginationResponse;
+            setData(response);
+        } catch (err) {
+            setError(err as Error);
+        } finally {
+            setIsLoading(false);
         }
-    );
-    return query;
+    }, [params]);
+
+    useEffect(() => {
+        if (!initialData) {
+            fetchUsers();
+        }
+    }, [fetchUsers, initialData]);
+
+    const refetch = useCallback(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
+    return {
+        data,
+        isLoading,
+        error,
+        refetch,
+    };
 }
 
 export function useMe() {
-    return useApiQuery(
-        queryKeys.auth.user(),
-        async () => {
-            return await userService.getMe();
-        },
-        {
-            staleTime: 5 * 60 * 1000,
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+
+    const fetchMe = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await userService.getMe();
+            setData(response);
+        } catch (err) {
+            setError(err as Error);
+        } finally {
+            setIsLoading(false);
         }
-    );
+    }, []);
+
+    useEffect(() => {
+        fetchMe();
+    }, [fetchMe]);
+
+    const refetch = useCallback(() => {
+        fetchMe();
+    }, [fetchMe]);
+
+    return {
+        data,
+        isLoading,
+        error,
+        refetch,
+    };
 }

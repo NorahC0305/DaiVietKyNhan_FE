@@ -155,15 +155,16 @@ export default async function MapRegionPage({ params }: PageProps) {
   const scrollPositions =
     regionScrollPositions[region.id] ?? defaultScrollPositions;
 
-
   // Xác định câu hỏi đã trả lời dựa trên userAnswerLogs với isCorrect: true
-  const answeredQuestionIds = questionsWithUser.data?.questions
-    ?.filter((question: any) => 
-      question.userAnswerLogs && 
-      question.userAnswerLogs.length > 0 && 
-      question.userAnswerLogs.some((log: any) => log.isCorrect === true)
-    )
-    .map((question: any) => question.id) ?? [];
+  const answeredQuestionIds =
+    questionsWithUser.data?.questions
+      ?.filter(
+        (question: any) =>
+          question.userAnswerLogs &&
+          question.userAnswerLogs.length > 0 &&
+          question.userAnswerLogs.some((log: any) => log.isCorrect === true)
+      )
+      .map((question: any) => question.id) ?? [];
 
   return (
     <MapRegionDetail

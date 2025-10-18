@@ -25,7 +25,6 @@ import SearchFilters from "./Components/Toolbar";
 import AddQuestionForm from "./Components/AddQuestionForm";
 import QuestionsTable from "./Components/QuestionsTable";
 import { IKyNhanSummary } from "@models/ky-nhan/entity";
-import { ILandEntity } from "@models/land/entity";
 import {
   useCreateQuestion,
   useQuestions,
@@ -33,6 +32,7 @@ import {
 } from "@hooks/use-question-queries";
 import questionService from "@services/question";
 import { IDeleteQuestionResponse } from "@models/question/response";
+import { ILandEntity } from "@models/land/entity";
 
 interface QuestionData {
   text: string;
@@ -93,18 +93,21 @@ const QuestionBankPage = ({
   useEffect(() => {
     if (createQuestionMutation.error) {
       console.error("Failed to create question:", createQuestionMutation.error);
-      toast.error("Không thể tạo câu hỏi");
     }
   }, [createQuestionMutation.error]);
 
-  const handleAddQuestion = (questionData: QuestionData) => {
-    createQuestionMutation.mutate(questionData, {
-      onSuccess: () => {
-        setShowAddForm(false);
-        // Refetch data để cập nhật UI với câu hỏi mới
-        refetch();
-      },
-    });
+  const handleAddQuestion = async (questionData: QuestionData) => {
+    try {
+      await createQuestionMutation.mutate(questionData, {
+        onSuccess: () => {
+          setShowAddForm(false);
+          // Refetch data để cập nhật UI với câu hỏi mới
+          refetch();
+        },
+      });
+    } catch (error) {
+      // Error handling is done in the hook
+    }
   };
 
   const handleView = (id: string) => {
