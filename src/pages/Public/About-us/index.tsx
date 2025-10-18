@@ -44,7 +44,7 @@ const AboutUsPage = () => {
                     Dự án cộng đồng được xây dựng với sứ mệnh giúp người trẻ biết thêm về lịch sử dân tộc.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
-                    Đại Việt Kỳ Nhân đã nghiên cứu và minh họa hơn 500 nhân vật lịch sử Việt Nam. Dự án giúp các bạn trẻ hình tượng hóa các nhân vật lịch sử, xây dựng kho tư liệu trực quan đa dạng từ vua chúa, tướng lĩnh cho đến danh nhân văn hóa, nghệ nhân và cả những nhân vật bình dân. Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được sống lại một cách sáng tạo và truyền cảm hứng trong đời sống hiện đại.
+                    Đại Việt Kỳ Nhân đã nghiên cứu và minh họa hơn 500 nhân vật lịch sử Việt Nam. Dự án giúp các bạn trẻ hình tượng hóa các nhân vật lịch sử, xây dựng kho tư liệu trực quan đa dạng từ vua chúa, tướng lĩnh cho đến danh nhân văn hóa, nghệ nhân và cả những nhân vật bình dân.
                   </p>
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
                     Với ba giá trị cốt lõi: tôn trọng sử liệu – thẩm mỹ thị giác – kết nối cộng đồng, Đại Việt Kỳ Nhân mong muốn tạo nên một không gian nơi lịch sử không chỉ được ghi nhớ, mà còn được sống lại một cách sáng tạo và truyền cảm hứng trong đời sống hiện đại.
