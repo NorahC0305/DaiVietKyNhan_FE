@@ -16,7 +16,7 @@ const PUBLIC = {
   HOME: BASE_PATHS.ROOT,
   LIBRARY: "/library", //TODO: Change to '/library'
   MAP: "/map",
-  KYGIOI: '/ky-gioi', //TODO: Change to '/ky-gioi'
+  KYGIOI: "/ky-gioi", //TODO: Change to '/ky-gioi'
   ABOUT: "/about-us",
   PRODUCTS: "/products", //TODO: Change to '/products'
   CONTACT: "/contact",
@@ -59,7 +59,9 @@ const ADMIN_DASHBOARD = {
     STATISTICS: `${BASE_PATHS.MANAGE_QUESTION}/question-statistics`,
   },
   LIBRARY: {
-    INFO: `${BASE_PATHS.MANAGE_LIBRARY}`,
+    CARD: `${BASE_PATHS.MANAGE_LIBRARY}/card`,
+    CARD_STORY: `${BASE_PATHS.MANAGE_LIBRARY}/card-story`,
+    LIB_CARD: `${BASE_PATHS.MANAGE_LIBRARY}/lib-card`,
   },
   STATISTICS: {
     OVERVIEW: `${BASE_PATHS.MANAGE_STATISTICS}/overview`,

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -37,7 +37,17 @@ type InputProps = Omit<React.ComponentProps<"input">, "size"> & {
 };
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, size = "default", togglePassword = false, color = "default", ...props }, ref) => {
+  (
+    {
+      className,
+      type,
+      size = "default",
+      togglePassword = false,
+      color = "default",
+      ...props
+    },
+    ref
+  ) => {
     const [showPassword, setShowPassword] = React.useState<boolean>(true);
     const isPasswordType = type === "password";
 
@@ -45,12 +55,50 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       setShowPassword(!showPassword);
     };
 
+    // Helper function to handle custom class overrides
+    const getInputClasses = (baseVariants: string) => {
+      if (!className) return baseVariants;
+
+      let modifiedClasses = baseVariants;
+
+      // Remove default rounded classes if custom rounded classes are provided
+      const hasCustomRounded = /rounded-[\w-]+/.test(className);
+      if (hasCustomRounded) {
+        modifiedClasses = modifiedClasses.replace(/rounded-[\w-]+/g, "");
+      }
+
+      // Remove default border color classes if custom border classes are provided
+      const hasCustomBorder =
+        className.includes("border-") &&
+        (/border-[a-z]+-\d+/.test(className) ||
+          /focus:border-[a-z]+-\d+/.test(className) ||
+          /hover:border-[a-z]+-\d+/.test(className));
+
+      if (hasCustomBorder) {
+        // Remove specific border-gray-900 and focus:border-black that are hardcoded in inputVariants
+        modifiedClasses = modifiedClasses.replace(/\bborder-gray-900\b/g, "");
+        modifiedClasses = modifiedClasses.replace(
+          /\bfocus:border-black\b/g,
+          ""
+        );
+        modifiedClasses = modifiedClasses.replace(/\s+/g, " ").trim(); // Clean up extra spaces
+      }
+
+      return modifiedClasses;
+    };
+
     if (isPasswordType && togglePassword) {
+      const baseClasses = inputVariants({
+        size: size as InputSize,
+        color: color as "default" | "black",
+      });
+      const finalClasses = getInputClasses(baseClasses);
+
       return (
         <div className="relative">
           <input
             type={showPassword ? "password" : "text"}
-            className={cn(inputVariants({ size: size as InputSize, color: color as "default" | "black" }), "pr-10", className)}
+            className={cn(finalClasses, "pr-10", className)}
             ref={ref}
             {...props}
           />
@@ -69,16 +117,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       );
     }
 
+    const baseClasses = inputVariants({
+      size: size as InputSize,
+      color: (color as "default" | "black") ?? "default",
+    });
+    const finalClasses = getInputClasses(baseClasses);
+
     return (
       <input
         type={type}
-        className={cn(
-          inputVariants({
-            size: size as InputSize,
-            color: (color as "default" | "black") ?? "default",
-          }),
-          className
-        )}
+        className={cn(finalClasses, className)}
         ref={ref}
         {...props}
       />
