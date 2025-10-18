@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import QueryProviderWrapper from "@components/providers/QueryProviderWrapper";
 import AntdProvider from "@components/providers/AntdRegistry";
+import SessionProviderWrapper from "@components/providers/SessionProviderWrapper";
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
