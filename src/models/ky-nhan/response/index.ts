@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { KyNhanSummarySchema } from "../entity";
+import { KyNhanSummarySchema, KyNhanSchema } from "../entity";
 import { BackendPaginationResponseModel } from "@models/backend";
 
 /**
@@ -10,3 +10,12 @@ export const KyNhanSummaryResponseModel =
 export type IKyNhanSummaryResponseModel = z.infer<
   typeof KyNhanSummaryResponseModel
 >; //-----------------End-KyNhanSummaryResponseModel-----------------//
+
+/**
+ * KyNhan response model
+ */
+export const KyNhanResponseModel =
+  BackendPaginationResponseModel(KyNhanSchema);
+export type IKyNhanResponseModel = z.infer<
+  typeof KyNhanResponseModel
+>; //-----------------End-KyNhanResponseModel-----------------//

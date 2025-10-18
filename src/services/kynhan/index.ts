@@ -1,14 +1,7 @@
 import http from "@configs/fetch";
-import { IKyNhanSummaryResponseModel } from "@models/ky-nhan/response";
+import { IKyNhanSummaryResponseModel, IKyNhanResponseModel } from "@models/ky-nhan/response";
+import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
-interface CreateKyNhanRequest {
-  imgUrl: File;
-  name: string;
-  thoiky: string;
-  chienCong: string;
-  active: boolean;
-  landId: number;
-}
 
 const kynhanService = {
   getKyNhanSummary: async () => {
@@ -16,20 +9,16 @@ const kynhanService = {
       cache: "no-store",
     });
   },
-  createKyNhan: async (data: CreateKyNhanRequest) => {
-    const formData = new FormData();
-    formData.append('imgUrl', data.imgUrl);
-    formData.append('name', data.name);
-    formData.append('thoiky', data.thoiky);
-    formData.append('chienCong', data.chienCong);
-    formData.append('active', data.active.toString());
-    formData.append('landId', data.landId.toString());
-    
-    return await http.post('/kynhan', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  getKyNhan: async () => {
+    return await http.get<IKyNhanResponseModel>(`/kynhan`, {
+      cache: "no-store",
     });
+  },
+  createKyNhan: async (formData: FormData) => {
+    return await http.post("/kynhan", formData);
+  },
+  updateKyNhan: async (kyNhanId: number, formData: FormData) => {
+    return await http.put(`/kynhan/${kyNhanId}`, formData);
   },
 };
 

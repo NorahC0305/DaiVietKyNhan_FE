@@ -76,9 +76,10 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     label: "Quản lý thư viện",
     icon: "BookOpen",
     subItems: [
-      { id: "card", label: "Thư viện card", icon: "BookOpen" },
-      { id: "card-story", label: "Thư viện card story", icon: "BookOpen" },
-      { id: "lib-card", label: "Thư viện lib card", icon: "BookOpen" },
+      { id: "card", label: "Thư viện card", icon: "CreditCard" },
+      { id: "card-story", label: "Thư viện card story", icon: "ScrollText" },
+      { id: "lib-card", label: "Thư viện lib card", icon: "Library" },
+      { id: "ky-nhan-list", label: "Danh sách kỳ nhân", icon: "Users" },
     ],
   },
   {
@@ -147,6 +148,7 @@ const AdminSideBar = () => {
       card: ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD,
       "card-story": ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD_STORY,
       "lib-card": ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD,
+      "ky-nhan-list": ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_LIST,
       "statistics-overview": ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW,
       "statistics-user": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
@@ -219,6 +221,10 @@ const AdminSideBar = () => {
       [ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD]: {
         parentId: "manage-library",
         subId: "lib-card",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_LIST]: {
+        parentId: "manage-library",
+        subId: "ky-nhan-list",
       },
     }),
     []
