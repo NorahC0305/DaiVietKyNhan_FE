@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/Atoms/ui/input";
 import { Button } from "@/components/Atoms/ui/button";
 import { Badge } from "@/components/Atoms/ui/badge";
-import { useToast } from "@/components/Atoms/ui/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -20,12 +19,13 @@ import {
 } from "@/components/Atoms/ui/dialog";
 import { Label } from "@/components/Atoms/ui/label";
 import { Textarea } from "@/components/Atoms/ui/textarea";
-import { Search, Filter, Eye, Edit, Trash2, RefreshCw, X, Upload, Image } from "lucide-react";
+import { Search, Filter, Eye, EyeOff, Edit, Trash2, RefreshCw, X, Upload, Image } from "lucide-react";
 import kynhanService from "@services/kynhan";
 import { IKyNhan } from "@models/ky-nhan/entity";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 import { IBackendResponse } from "@models/backend";
 import { ILandEntity } from "@models/land/entity";
+import { toast } from "react-toastify";
 
 const KyNhanListPage = ({
   kyNhanList,
@@ -54,7 +54,6 @@ const KyNhanListPage = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const { toast } = useToast();
 
   // Fetch ky-nhan data
   const fetchKyNhans = async () => {
@@ -72,11 +71,7 @@ const KyNhanListPage = ({
         );
       }
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: error.message || "Không thể tải danh sách kỳ nhân",
-      });
+      toast.error(error.message || "Không thể tải danh sách kỳ nhân");
     } finally {
       setIsLoading(false);
     }
@@ -182,20 +177,13 @@ const KyNhanListPage = ({
       )) as IBackendResponse<any>;
 
       if (response.statusCode === 200) {
-        toast({
-          title: "Thành công",
-          description: `Đã ${!kyNhan.active ? "hiện" : "ẩn"} kỳ nhân "${kyNhan.name}"`,
-        });
+        toast.success(`Đã ${!kyNhan.active ? "hiện" : "ẩn"} kỳ nhân "${kyNhan.name}"`);
         fetchKyNhans(); // Refresh data
       } else {
         throw new Error(response.message || "Cập nhật trạng thái thất bại");
       }
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: error.message || "Không thể cập nhật trạng thái",
-      });
+      toast.error(error.message || "Không thể cập nhật trạng thái");
     }
   };
 
@@ -220,21 +208,14 @@ const KyNhanListPage = ({
       )) as IBackendResponse<any>;
 
       if (response.statusCode === 200) {
-        toast({
-          title: "Thành công",
-          description: "Cập nhật thông tin kỳ nhân thành công",
-        });
+        toast.success("Cập nhật thông tin kỳ nhân thành công");
         closeEditModal();
         fetchKyNhans(); // Refresh data
       } else {
         throw new Error(response.message || "Cập nhật thất bại");
       }
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: error.message || "Không thể cập nhật thông tin kỳ nhân",
-      });
+      toast.error(error.message || "Không thể cập nhật thông tin kỳ nhân");
     } finally {
       setIsUpdating(false);
     }
@@ -437,7 +418,11 @@ const KyNhanListPage = ({
                           title={kyNhan.active ? "Ẩn" : "Hiện"}
                           onClick={() => handleToggleStatus(kyNhan)}
                         >
-                          <Eye className={`h-4 w-4 ${!kyNhan.active ? "opacity-50" : ""}`} />
+                          {kyNhan.active ? (
+                            <Eye className="h-4 w-4" />
+                          ) : (
+                            <EyeOff className="h-4 w-4" />
+                          )}
                         </Button>
                         <Button
                           variant="outline"
