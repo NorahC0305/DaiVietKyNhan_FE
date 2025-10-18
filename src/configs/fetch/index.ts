@@ -1,7 +1,9 @@
 import envConfig from "@configs/env";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import { authOptions } from "@lib/authOptions";
 import { getServerSession } from "next-auth";
+import { ROUTES } from "@routes";
+import { toast } from "react-toastify";
 type CustomOptions = RequestInit & {
   baseUrl?: string;
 };
@@ -14,13 +16,24 @@ const request = async <Response>(
   let accessToken: string | undefined;
 
   try {
+    let session: any;
     if (typeof window !== "undefined") {
-      const session = await getSession();
-      accessToken = (session as any)?.accessToken;
+      session = await getSession();
     } else {
-      const session = await getServerSession(authOptions);
-      accessToken = (session as any)?.accessToken;
+      session = await getServerSession(authOptions);
     }
+
+    // Kiểm tra nếu session không tồn tại (token đã bị xóa)
+    if (!session || !session.user || !session.accessToken) {
+      console.log("No session found, redirecting to login...");
+      if (typeof window !== "undefined") {
+        await signOut({ callbackUrl: ROUTES.AUTH.LOGIN });
+        toast.error("Phiên làm việc hết hạn, vui lòng đăng nhập lại");
+      }
+      return { error: "Session expired" } as Response;
+    }
+
+    accessToken = (session as any)?.accessToken;
   } catch (error) {
     console.error("Error getting session:", error);
   }

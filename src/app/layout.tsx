@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import QueryProviderWrapper from "@components/providers/QueryProviderWrapper";
 import AntdProvider from "@components/providers/AntdRegistry";
+import SessionProviderWrapper from "@components/providers/SessionProviderWrapper";
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
@@ -37,16 +38,18 @@ export default function RootLayout({
         className={`${StreetSignSans.variable} ${DFVNGraphit.variable} antialiased`}
       >
         <ToastContainer />
-        <AntdProvider>
-          <QueryProviderWrapper>
-            <Suspense fallback={<VietnameseHistoryLoading />}>
-              {children}
-            </Suspense>
-            <div className="hidden lg:block fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
-              <SocialMediaIcons />
-            </div>
-          </QueryProviderWrapper>
-        </AntdProvider>
+        <SessionProviderWrapper>
+          <AntdProvider>
+            <QueryProviderWrapper>
+              <Suspense fallback={<VietnameseHistoryLoading />}>
+                {children}
+              </Suspense>
+              <div className="hidden lg:block fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
+                <SocialMediaIcons />
+              </div>
+            </QueryProviderWrapper>
+          </AntdProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   );
