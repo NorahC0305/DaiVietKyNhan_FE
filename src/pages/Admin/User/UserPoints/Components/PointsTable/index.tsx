@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@atoms/ui/button";
+import { Button } from "@/components/Atoms/ui/button";
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@atoms/ui/table";
-import LucideIcon from "@atoms/LucideIcon";
+} from "@/components/Atoms/ui/table";
+import LucideIcon from "@/components/Atoms/LucideIcon";
 
 export type UserPoint = {
   id: string;

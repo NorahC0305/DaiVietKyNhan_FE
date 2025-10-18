@@ -7,16 +7,16 @@ import SessionProviderWrapper from "@components/providers/SessionProviderWrapper
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
-import localFont from 'next/font/local';
+import localFont from "next/font/local";
 
 const StreetSignSans = localFont({
-  src: './fonts/StreetSignSans.otf',
-  variable: '--font-bd-street-sign',
+  src: "./fonts/StreetSignSans.otf",
+  variable: "--font-bd-street-sign",
 });
 
 const DFVNGraphit = localFont({
-  src: './fonts/DFVNGraphitRegular.otf',
-  variable: '--font-dfvn-graphit',
+  src: "./fonts/DFVNGraphitRegular.otf",
+  variable: "--font-dfvn-graphit",
 });
 
 export const metadata: Metadata = {
