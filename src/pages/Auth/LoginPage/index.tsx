@@ -97,7 +97,8 @@ const LoginPageClient = () => {
                 // setCountdown(delay)
                 return;
             } else {
-                toast.error(res?.error || "Đăng nhập thất bại");
+                // Show error message from API response
+                setError(error || "Đăng nhập thất bại");
                 return;
             }
             //#endregion
@@ -141,13 +142,41 @@ const LoginPageClient = () => {
      */
     const handleGoogleLogin = async () => {
         try {
-            const res = await authService.googleLogin() as IBackendResponse<any>;
-            if (res.statusCode === 200) {
-                window.location.href = res.data.url;
+            setLoading(true);
+            setError(""); // Clear previous errors
+
+            // Call Google login API directly without using http service to avoid session check
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-link`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = "Không thể kết nối với Google";
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch {
+                    errorMessage = errorText || errorMessage;
+                }
+                setError(errorMessage);
+                return;
             }
-        } catch (error) {
-            toast.error("Đã xảy ra lỗi, vui lòng thử lại");
-            console.error(error);
+
+            const data = await response.json();
+            if (data.statusCode === 200) {
+                window.location.href = data.data.url;
+            } else {
+                setError(data.message || "Không thể kết nối với Google");
+            }
+        } catch (error: any) {
+            console.error("Google login error:", error);
+            setError(error.message || "Đã xảy ra lỗi, vui lòng thử lại");
+        } finally {
+            setLoading(false);
         }
     }
     //-----------------------------End-----------------------------//

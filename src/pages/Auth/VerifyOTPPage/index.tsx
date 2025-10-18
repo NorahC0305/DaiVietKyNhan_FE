@@ -41,21 +41,41 @@ const VerifyOtpPageClient = () => {
         try {
             setIsLoading(true)
 
-            const res = await authService.verifyOtp(data) as IBackendResponse<any>
+            // Call verify OTP API directly to avoid session check
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = "Mã OTP không đúng";
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch {
+                    errorMessage = errorText || errorMessage;
+                }
+                toast.error(errorMessage);
+                return;
+            }
+
+            const res = await response.json();
             if (res.statusCode === 200) {
                 localStorage.setItem('email', data.email)
                 localStorage.setItem('token', res.data.accessToken)
                 toast.success(res.message || 'Xác thực OTP thành công')
                 router.push(ROUTES.AUTH.RESET_PASSWORD)
             } else {
-                toast.error(res.message || 'Xác thực OTP thất bại')
-                setIsLoading(false)
-                return
+                toast.error(res.message || 'Mã OTP không đúng')
             }
-        } catch (error) {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.")
-            console.error(error)
+
+        } catch (error: any) {
+            console.error("Verify OTP error:", error);
+            toast.error(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại sau.')
         } finally {
             setIsLoading(false)
         }

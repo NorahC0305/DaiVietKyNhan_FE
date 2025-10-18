@@ -68,9 +68,9 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     return user;
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Authorization error:", error);
-                    throw error;
+                    throw new Error(error.message || "Đăng nhập thất bại");
                 }
             },
         }),

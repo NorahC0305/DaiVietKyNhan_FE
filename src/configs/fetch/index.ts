@@ -27,8 +27,14 @@ const request = async <Response>(
     if (!session || !session.user || !session.accessToken) {
       console.log("No session found, redirecting to login...");
       if (typeof window !== "undefined") {
-        await signOut({ callbackUrl: ROUTES.AUTH.LOGIN });
-        toast.error("Phiên làm việc hết hạn, vui lòng đăng nhập lại");
+        // Chỉ hiển thị toast nếu không phải đang ở trang login/register
+        const currentPath = window.location.pathname;
+        const isAuthPage = currentPath.includes('/auth/') || currentPath.includes('/login') || currentPath.includes('/register');
+
+        if (!isAuthPage) {
+          await signOut({ callbackUrl: ROUTES.AUTH.LOGIN });
+          toast.error("Phiên làm việc hết hạn, vui lòng đăng nhập lại");
+        }
       }
       return { error: "Session expired" } as Response;
     }
