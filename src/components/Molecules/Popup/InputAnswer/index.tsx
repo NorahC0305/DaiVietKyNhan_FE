@@ -9,6 +9,7 @@ type Props = {
   placeholder?: string;
   className?: string;
   inputClassName?: string;
+  disabled?: boolean;
 };
 
 export default function InputAnswer({
@@ -17,6 +18,7 @@ export default function InputAnswer({
   placeholder = "Nhập đáp án...",
   className = "",
   inputClassName = "",
+  disabled = false,
 }: Props) {
   const id = useId();
 
@@ -35,10 +37,11 @@ export default function InputAnswer({
         />
         <input
           id={id}
-          className={`absolute left-[18%] right-[18%] top-[42%] -translate-y-1/2 h-[38%] bg-transparent text-[#835D26] outline-none text-base sm:text-lg md:text-xl placeholder:text-[#835D26]/60 text-center ${inputClassName}`}
+          className={`absolute left-[18%] right-[18%] top-[42%] -translate-y-1/2 h-[38%] bg-transparent text-[#835D26] outline-none text-base sm:text-lg md:text-xl placeholder:text-[#835D26]/60 text-center ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${inputClassName}`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
         />
       </div>
     </div>

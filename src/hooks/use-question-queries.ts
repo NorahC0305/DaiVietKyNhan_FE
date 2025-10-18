@@ -86,7 +86,7 @@ export const useQuestions = (filters?: {
     queryKey: questionQueryKeys.list(filters),
     queryFn: async () => {
       try {
-        const response = await questionService.getAllQuestions();
+        const response = await questionService.getAllQuestionsAdmin();
 
         console.log("Question response:", response);
 

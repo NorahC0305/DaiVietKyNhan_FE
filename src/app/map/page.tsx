@@ -7,7 +7,7 @@ async function getUserLand() {
   return userLand;
 }
 
-export default async function MapPServer() {
+export default async function MapServer() {
   const userLand = (await getUserLand()) as IUserLandWithLandArrayResponseModel;
   return (
     <>
