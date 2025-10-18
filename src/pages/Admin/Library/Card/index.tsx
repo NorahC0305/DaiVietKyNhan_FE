@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useToast } from "@/components/Atoms/ui/use-toast";
 import { Button } from "@/components/Atoms/ui/button";
 import { Input } from "@/components/Atoms/ui/input";
 import { Textarea } from "@/components/Atoms/ui/textarea";
@@ -26,6 +25,8 @@ import kynhanService from "@services/kynhan";
 import landService from "@services/land";
 import { ILandEntity } from "@models/land/entity";
 import { IBackendResponse } from "@models/backend";
+import { IKyNhanResponseModel } from "@models/ky-nhan/response";
+import { toast } from "react-toastify";
 
 interface FormData {
   imgUrl: File | null;
@@ -59,8 +60,6 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
     landId: 0,
   });
 
-  const { toast } = useToast();
-
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
@@ -82,19 +81,15 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
             }));
           }
         }
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Lỗi",
-          description: "Không thể tải danh sách đất",
-        });
+      } catch (error: any) {
+        toast.error(error.message || "Không thể tải danh sách đất");
       } finally {
         setIsLoading(false);
-      }
-    };
+        }
+      };
 
-    fetchLands();
-  }, [toast]);
+      fetchLands();
+    }, []);
 
   // Handle image selection
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,11 +198,7 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast({
-        variant: "destructive",
-        title: "Lỗi xác thực",
-        description: "Vui lòng kiểm tra lại thông tin",
-      });
+      toast.error("Vui lòng kiểm tra lại thông tin");
       return;
     }
 
@@ -224,13 +215,9 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
       console.log(submitFormData);
       const response = (await kynhanService.createKyNhan(
         submitFormData
-      )) as IBackendResponse<any>;
-      console.log(response);
+      )) as IKyNhanResponseModel;
       if (response.statusCode === 200 || response.statusCode === 201) {
-        toast({
-          title: "Thành công",
-          description: "Tạo kỳ nhân thành công!",
-        });
+        toast.success(response.message || "Tạo kỳ nhân thành công!");
 
         // Reset form
         setFormData({
@@ -251,18 +238,10 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
           fileInput.value = "";
         }
       } else {
-        toast({
-          variant: "destructive",
-          title: "Lỗi",
-          description: response.message || "Có lỗi xảy ra khi tạo kỳ nhân",
-        });
+        toast.error(response.message || "Có lỗi xảy ra khi tạo kỳ nhân");
       }
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: "Không thể tạo kỳ nhân. Vui lòng thử lại.",
-      });
+      toast(error.message || "Không thể tạo kỳ nhân. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }
