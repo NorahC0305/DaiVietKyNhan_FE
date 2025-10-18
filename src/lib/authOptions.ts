@@ -1,9 +1,9 @@
 import { ROUTES } from "@/routes";
 import { AuthError } from "@constants/errors";
-import authService from "@services/auth";
 import NextAuth, { NextAuthOptions, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { jwtDecode } from "jwt-decode";
+import { loginWithCredentials } from "@services/auth/loginService";
 
 
 export const authOptions: NextAuthOptions = {
@@ -34,50 +34,76 @@ export const authOptions: NextAuthOptions = {
                     };
                 }
 
-                const res = await authService.login({
-                    email: credentials.email,
-                    password: credentials.password,
-                }) as { statusCode: number; data: any; message: string };
+                try {
+                    const res = await loginWithCredentials({
+                        email: credentials.email,
+                        password: credentials.password,
+                    }) as { statusCode: number; data: any; message: string };
 
-                switch (res.statusCode) {
-                    case 404:
-                        throw new Error(res.message || AuthError.USER_NOT_FOUND);
-                    case 422:
-                        throw new Error(res.message || AuthError.WRONG_CREDENTIALS);
-                    case 401:
-                        throw new Error(res.message || AuthError.INACTIVE);
-                    case 200:
-                    case 201:
-                        break;
+                    switch (res.statusCode) {
+                        case 404:
+                            throw new Error(res.message || AuthError.USER_NOT_FOUND);
+                        case 422:
+                            throw new Error(res.message || AuthError.WRONG_CREDENTIALS);
+                        case 401:
+                            throw new Error(res.message || AuthError.INACTIVE);
+                        case 200:
+                        case 201:
+                            break;
 
-                    default:
-                        throw new Error(res.message || "Đăng nhập thất bại");
+                        default:
+                            throw new Error(res.message || "Đăng nhập thất bại");
+                    }
+
+                    const decodedAccessToken: any = jwtDecode(res.data.accessToken);
+
+                    const user = {
+                        id: res.data.id,
+                        email: res.data.email,
+                        role: res.data.role.id,
+                        name: res.data.name,
+                        accessToken: res.data.accessToken,
+                        refreshToken: res.data.refreshToken,
+                        accessTokenExpires: decodedAccessToken.exp * 1000,
+                    }
+
+                    return user;
+                } catch (error: any) {
+                    console.error("Authorization error:", error);
+                    throw new Error(error.message || "Đăng nhập thất bại");
                 }
-                const user = {
-                    id: res.data.id,
-                    email: res.data.email,
-                    role: res.data.role.id,
-                    name: res.data.name,
-                    accessToken: res.data.accessToken,
-                    refreshToken: res.data.refreshToken,
-                }
-
-                return user;
             },
         }),
     ],
     callbacks: {
         async jwt({ token, user }: any) {
+            // Khi user đăng nhập lần đầu
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
                 token.name = user.name;
                 token.accessToken = user.accessToken;
                 token.refreshToken = user.refreshToken;
+                token.accessTokenExpires = user.accessTokenExpires;
+                return token;
             }
+
+            // Kiểm tra nếu token hết hạn
+            if (Date.now() >= token.accessTokenExpires) {
+                console.log("Access token expired, clearing token...");
+                // Trả về null để force NextAuth xóa session
+                return null;
+            }
+
             return token;
         },
         async session({ session, token }: any) {
+            // Kiểm tra nếu token là null (đã hết hạn)
+            if (!token) {
+                console.log("Session expired, returning null...");
+                return null;
+            }
+
             session.user.id = token.id;
             session.user.role = token.role;
             session.user.name = token.name;

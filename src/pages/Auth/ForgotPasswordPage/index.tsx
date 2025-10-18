@@ -34,19 +34,40 @@ const ForgotPasswordPageClient = () => {
         try {
             setIsLoading(true);
 
-            const res = await authService.forgotPassword(data.email) as IBackendResponse<any>;
-            if (!res.statusCode || ![200, 201].includes(res.statusCode)) {
-                toast.error(res.message || "Email không tồn tại trong hệ thống");
+            // Call forgot password API directly to avoid session check
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: data.email }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = "Email không tồn tại trong hệ thống";
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch {
+                    errorMessage = errorText || errorMessage;
+                }
+                toast.error(errorMessage);
                 return;
-            } else {
+            }
+
+            const res = await response.json();
+            if (res.statusCode === 200 || res.statusCode === 201) {
                 localStorage.setItem('email', data.email);
                 toast.success("Chúng tôi đã gửi mã OTP đến email của bạn. Vui lòng kiểm tra email để tiếp tục đặt lại mật khẩu.");
                 router.push(ROUTES.AUTH.VERIFY_OTP);
+            } else {
+                toast.error(res.message || "Email không tồn tại trong hệ thống");
             }
 
-        } catch (error) {
-            toast.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
-            console.error(error);
+        } catch (error: any) {
+            console.error("Forgot password error:", error);
+            toast.error(error.message || "Đã xảy ra lỗi. Vui lòng thử lại sau.");
         } finally {
             setIsLoading(false);
         }

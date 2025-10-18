@@ -1,5 +1,5 @@
 import { LAND } from "@constants/land";
-import { LandSchema } from "@models/land/entity";
+import { LandSchema } from "@models/Land/entity";
 import { z } from "zod";
 
 /**

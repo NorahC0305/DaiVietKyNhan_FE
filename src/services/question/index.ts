@@ -13,7 +13,7 @@ const questionService = {
   },
 
   // Get all questions
-  getAllQuestions: async () => {
+  getAllQuestionsAdmin: async () => {
     return await http.get<IQuestionResponse>(`/question`);
   },
   updateQuestion: async (id: number, data: ICreateQuestionRequest) => {

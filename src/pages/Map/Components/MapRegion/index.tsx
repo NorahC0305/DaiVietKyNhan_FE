@@ -131,21 +131,38 @@ export default function MapRegion({
 
       {/* Lock overlay khi region bị khóa */}
       {isLocked && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="bg-black bg-opacity-50 rounded-full p-3">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                clipRule="evenodd"
+        <div className="absolute inset-0 pointer-events-none">
+          {id === "ky-linh-viet-hoa" ? (
+            // Cloud overlay for Kỳ Linh Việt Hỏa - smaller size
+            <div className="absolute inset-16 flex items-center justify-center">
+              <Image
+                src="/cloud.svg"
+                alt="Cloud overlay"
+                width={610}
+                height={200}
+                className="object-cover"
+                style={{ zIndex: 1 }}
               />
-            </svg>
-          </div>
+            </div>
+          ) : (
+            // Default lock icon for other regions
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-black bg-opacity-50 rounded-full p-3">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

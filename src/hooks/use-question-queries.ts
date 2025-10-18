@@ -1,23 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@lib/QueryKey";
+import { useState, useEffect, useCallback } from "react";
 import questionService from "@services/question";
 import { IQuestionResponse } from "@models/question/response";
 import { ICreateQuestionRequest } from "@models/question/request";
 import { IQuestion } from "@models/question/entity";
 import { toast } from "react-toastify";
-
-// Query keys for questions
-export const questionQueryKeys = {
-  all: ["questions"] as const,
-  lists: () => [...questionQueryKeys.all, "list"] as const,
-  list: (filters?: { search?: string; category?: string; type?: string }) =>
-    [...questionQueryKeys.lists(), { filters }] as const,
-  details: () => [...questionQueryKeys.all, "detail"] as const,
-  detail: (id: string | number) =>
-    [...questionQueryKeys.details(), id] as const,
-};
 
 // UI Question interface
 export interface UIQuestion {
@@ -82,63 +70,106 @@ export const useQuestions = (filters?: {
   landId?: string;
   type?: string;
 }) => {
-  return useQuery({
-    queryKey: questionQueryKeys.list(filters),
-    queryFn: async () => {
-      try {
-        const response = await questionService.getAllQuestions();
+  const [data, setData] = useState<UIQuestion[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-        console.log("Question response:", response);
+  const fetchQuestions = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        // Handle different possible response structures
-        let questionsData = null;
+      const response = await questionService.getAllQuestionsAdmin();
 
-        // Case 1: response.data.results (pagination structure)
-        if (response.data?.results && Array.isArray(response.data.results)) {
-          questionsData = response.data.results;
-        }
-        // Case 2: response.data is array directly
-        else if (Array.isArray(response.data)) {
-          questionsData = response.data;
-        }
-        // Case 3: response is array directly (as shown in the image)
-        else if (Array.isArray(response)) {
-          questionsData = response;
-        }
+      console.log("Question response:", response);
 
-        if (questionsData && Array.isArray(questionsData)) {
-          console.log("Questions data found:", questionsData);
-          return questionsData.map(transformQuestionToUI);
-        }
+      // Handle different possible response structures
+      let questionsData = null;
 
+      // Case 1: response.data.results (pagination structure)
+      if (response.data?.results && Array.isArray(response.data.results)) {
+        questionsData = response.data.results;
+      }
+      // Case 2: response.data is array directly
+      else if (Array.isArray(response.data)) {
+        questionsData = response.data;
+      }
+      // Case 3: response is array directly (as shown in the image)
+      else if (Array.isArray(response)) {
+        questionsData = response;
+      }
+
+      if (questionsData && Array.isArray(questionsData)) {
+        console.log("Questions data found:", questionsData);
+        setData(questionsData.map(transformQuestionToUI));
+      } else {
         console.log(
           "No valid questions data found in response structure:",
           response
         );
-        return [];
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-        throw error;
+        setData([]);
       }
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 2,
-  });
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+      setError(error as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
+
+  const refetch = useCallback(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch,
+  };
 };
 
 // Hook to create a new question
 export const useCreateQuestion = () => {
-  const queryClient = useQueryClient();
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  return useMutation({
-    mutationFn: async (data: ICreateQuestionRequest) => {
-      const response = await questionService.createQuestion(data);
-      return response.data;
+  const mutate = useCallback(
+    async (
+      data: ICreateQuestionRequest,
+      options?: {
+        onSuccess?: () => void;
+        onError?: (error: Error) => void;
+      }
+    ) => {
+      setIsPending(true);
+      setError(null);
+
+      try {
+        const response = await questionService.createQuestion(data);
+        toast.success("Tạo câu hỏi thành công");
+        options?.onSuccess?.();
+        return response.data;
+      } catch (err) {
+        const error = err as Error;
+        setError(error);
+        toast.error("Không thể tạo câu hỏi");
+        options?.onError?.(error);
+        throw error;
+      } finally {
+        setIsPending(false);
+      }
     },
-    onSuccess: (data) => {
-      // Invalidate questions list to refresh data
-      queryClient.invalidateQueries({ queryKey: questionQueryKeys.lists() });
-      toast.success("Tạo câu hỏi thành công");
-    },
-  });
+    []
+  );
+
+  return {
+    mutate,
+    isPending,
+    error,
+  };
 };

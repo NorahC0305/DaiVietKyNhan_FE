@@ -1,28 +1,40 @@
 import { notFound } from "next/navigation";
 import MapRegionDetail from "@pages/Map/Components/MapRegionDetail";
-import { mockQuestions } from "@constants/mockdata/questions";
+import landService from "@services/land";
+import { ILandWithUserQuestionResponseModel } from "@models/Land/response";
+
+export const dynamic = 'force-dynamic';
 
 // Mapping từ slug đến region data
 const regionSlugs = {
-  "phu-tay-ho": {
-    id: "phu-tay-ho",
-    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722781/Map_Tha%CC%81nh_Gio%CC%81ng_1_x9yqi3.svg",
-  },
   "nui-tan-vien": {
-    id: "nui-tan-vien",
-    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722789/Map_So%CC%9Bn_Tinh_2_pq7v2w.svg",
+    slug: "nui-tan-vien",
+    id: 1,
+    backgroundImage:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722789/Map_So%CC%9Bn_Tinh_2_pq7v2w.svg",
   },
-  "ky-linh-viet-hoa": {
-    id: "ky-linh-viet-hoa",
-    backgroundImage: "/Chử Đồng Tử 1.png",
+  "phu-tay-ho": {
+    slug: "phu-tay-ho",
+    id: 2,
+    backgroundImage:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722781/Map_Tha%CC%81nh_Gio%CC%81ng_1_x9yqi3.svg",
   },
   "dam-da-trach": {
-    id: "dam-da-trach",
-    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722758/Map_Chu%CC%9B%CC%89_%C4%90o%CC%82%CC%80ng_Tu%CC%9B%CC%89_1_nypmqj.svg", // Sử dụng ảnh Thánh Gióng cho Đầm Dạ Trạch
+    slug: "dam-da-trach",
+    id: 3,
+    backgroundImage:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722758/Map_Chu%CC%9B%CC%89_%C4%90o%CC%82%CC%80ng_Tu%CC%9B%CC%89_1_nypmqj.svg", // Sử dụng ảnh Thánh Gióng cho Đầm Dạ Trạch
   },
   "lang-phu-dong": {
-    id: "lang-phu-dong",
+    slug: "lang-phu-dong",
+    id: 4,
     backgroundImage: "/Map Thánh Gióng 1.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
+  },
+
+  "ky-linh-viet-hoa": {
+    slug: "ky-linh-viet-hoa",
+    id: 5,
+    backgroundImage: "/Chử Đồng Tử 1.png",
   },
 };
 
@@ -31,10 +43,17 @@ interface PageProps {
     slug: string;
   }>;
 }
-
+async function getQuestionsWithUser(landId: number) {
+  const questions = (await landService.getQuestionsWithUser(
+    landId
+  )) as ILandWithUserQuestionResponseModel;
+  return questions;
+}
 export default async function MapRegionPage({ params }: PageProps) {
   const { slug } = await params;
   const region = regionSlugs[slug as keyof typeof regionSlugs];
+  const questionsWithUser = await getQuestionsWithUser(region.id);
+  console.log(questionsWithUser.data?.questions);
 
   if (!region) {
     notFound();
@@ -138,25 +157,22 @@ export default async function MapRegionPage({ params }: PageProps) {
   const scrollPositions =
     regionScrollPositions[region.id] ?? defaultScrollPositions;
 
-  // Mock data until BE is ready
-  const questions: ICOMPONENTS.Question[] = mockQuestions.map((question, idx) => {
-    const id = idx + 1;
-    return {
-      id,
-      title: question.title,
-      content: question.content,
-      category: question.category,
-    };
-  });
-
-  // Optionally mark some as already answered
-  const answeredQuestionIds: number[] = [];
+  // Xác định câu hỏi đã trả lời dựa trên userAnswerLogs với isCorrect: true
+  const answeredQuestionIds =
+    questionsWithUser.data?.questions
+      ?.filter(
+        (question: any) =>
+          question.userAnswerLogs &&
+          question.userAnswerLogs.length > 0 &&
+          question.userAnswerLogs.some((log: any) => log.isCorrect === true)
+      )
+      .map((question: any) => question.id) ?? [];
 
   return (
     <MapRegionDetail
       backgroundImage={region.backgroundImage}
       scrollPositions={scrollPositions}
-      questions={questions}
+      questions={questionsWithUser.data?.questions ?? []}
       answeredQuestionIds={answeredQuestionIds}
     />
   );

@@ -27,12 +27,12 @@ import {
   DialogTrigger,
 } from "@/components/Atoms/ui/dialog";
 import { Plus, Trash2, Users, Check, X } from "lucide-react";
-import { ILandEntity } from "@models/land/entity";
 import { IKyNhanSummary } from "@models/ky-nhan/entity";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import questionService from "@services/question";
 import { ICreateQuestionRequest } from "@models/question/request";
+import { ILandEntity } from "@models/Land/entity";
 
 interface AddQuestionFormProps {
   onSubmit: (questionData: ICreateQuestionRequest) => void;
@@ -346,11 +346,10 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
 
       return (
         <div
-          className={`relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md h-48 overflow-hidden ${
-            isSelected
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-200 hover:border-gray-300"
-          }`}
+          className={`relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md h-48 overflow-hidden ${isSelected
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-200 hover:border-gray-300"
+            }`}
           onClick={() => handleToggleKyNhanSummary(kyNhan.id)}
         >
           {isSelected && (

@@ -6,7 +6,13 @@ const authService = {
         return await http.post("/auth/login", data);
     },
     googleLogin: async () => {
-        return await http.get("/auth/google-link");
+        try {
+            const response = await http.get("/auth/google-link");
+            return response;
+        } catch (error: any) {
+            console.error("Google login service error:", error);
+            throw error;
+        }
     },
     register: async (data: IRegisterFormDataRequest) => {
         return await http.post("/auth/register", data);
