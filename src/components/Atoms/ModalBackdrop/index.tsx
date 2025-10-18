@@ -17,8 +17,8 @@ export default function ModalBackdrop({
   isOpen,
   onClose,
   children,
-  className = "relative mx-3 w-[700px]",
-  cardClassName = "relative bg-primary-light border-4 border-secondary rounded-2xl my-10 px-4 sm:px-6 md:px-8 py-0 lg:py-8",
+  className = "relative mx-3 w-full max-w-[700px] sm:w-[90vw] md:w-[700px]",
+  cardClassName = "relative bg-primary-light border-4 border-secondary rounded-2xl my-4 sm:my-6 md:my-10 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8",
   showCloseButton = true,
 }: ModalBackdropProps) {
   return (

@@ -1,9 +1,17 @@
-import MapPage from "@pages/Map";
+import { IUserLandWithLandArrayResponseModel } from "@models/user-land/response";
+import MapPageClient from "@pages/Map";
+import userLandService from "@services/user-land";
 
-export default function PersonalityResult() {
+async function getUserLand() {
+  const userLand = await userLandService.getUserLand();
+  return userLand;
+}
+
+export default async function MapPServer() {
+  const userLand = (await getUserLand()) as IUserLandWithLandArrayResponseModel;
   return (
     <>
-      <MapPage />
+      <MapPageClient userLand={userLand.data} />
     </>
   );
 }
