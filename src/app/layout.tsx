@@ -6,16 +6,16 @@ import AntdProvider from "@components/providers/AntdRegistry";
 import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
-import localFont from 'next/font/local';
+import localFont from "next/font/local";
 
 const StreetSignSans = localFont({
-  src: './fonts/StreetSignSans.otf',
-  variable: '--font-bd-street-sign',
+  src: "./fonts/StreetSignSans.otf",
+  variable: "--font-bd-street-sign",
 });
 
 const DFVNGraphit = localFont({
-  src: './fonts/DFVNGraphitRegular.otf',
-  variable: '--font-dfvn-graphit',
+  src: "./fonts/DFVNGraphitRegular.otf",
+  variable: "--font-dfvn-graphit",
 });
 
 export const metadata: Metadata = {
@@ -36,17 +36,17 @@ export default function RootLayout({
       <body
         className={`${StreetSignSans.variable} ${DFVNGraphit.variable} antialiased`}
       >
-        <ToastContainer />
-        <AntdProvider>
-          <QueryProviderWrapper>
+        <QueryProviderWrapper>
+          <ToastContainer />
+          <AntdProvider>
             <Suspense fallback={<VietnameseHistoryLoading />}>
               {children}
             </Suspense>
             <div className="hidden lg:block fixed right-0 top-1/2 transform -translate-y-1/2 z-50 pointer-events-auto">
               <SocialMediaIcons />
             </div>
-          </QueryProviderWrapper>
-        </AntdProvider>
+          </AntdProvider>
+        </QueryProviderWrapper>
       </body>
     </html>
   );

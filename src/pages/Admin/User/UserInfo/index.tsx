@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@atoms/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/Atoms/ui/card";
 import Toolbar from "./Components/Toolbar";
 import ToolbarSkeleton from "./Components/ToolbarSkeleton";
 import UsersTable from "./Components/UsersTable";
 import UsersTableSkeleton from "./Components/UsersTableSkeleton";
 import { IMePaginationResponse } from "@models/user/response";
-import { EnhancedPagination } from "@atoms/ui/pagination";
+import { EnhancedPagination } from "@/components/Atoms/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/Atoms/ui/select";
 import { Rows } from "lucide-react";
 import userService from "@services/user";

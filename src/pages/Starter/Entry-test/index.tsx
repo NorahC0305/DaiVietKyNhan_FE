@@ -244,7 +244,7 @@ export default function EntryTestPage({ testHome }: { testHome: ITestHome[] }) {
 
       // Save answer to backend (non-blocking)
       const currentQuestion = questions[currentStep - 1];
-      const selectedOption = ANSWER_OPTIONS.find((opt) => opt.id === answerId);
+      const selectedOption = ANSWER_OPTIONS?.find((opt) => opt.id === answerId);
       const apiAnswer = selectedOption?.apiValue;
 
       if (currentQuestion && apiAnswer) {

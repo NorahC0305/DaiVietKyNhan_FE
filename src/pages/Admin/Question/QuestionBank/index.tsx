@@ -1,89 +1,114 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/Atoms/ui/card";
+import { Skeleton } from "@/components/Atoms/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/Atoms/ui/alert-dialog";
 import SummaryCards from "./Components/SummaryCards";
 import SearchFilters from "./Components/Toolbar";
 import AddQuestionForm from "./Components/AddQuestionForm";
 import QuestionsTable from "./Components/QuestionsTable";
+import { IKyNhanSummary } from "@models/ky-nhan/entity";
+import { ILandEntity } from "@models/land/entity";
+import {
+  useCreateQuestion,
+  useQuestions,
+  UIQuestion,
+} from "@hooks/use-question-queries";
+import questionService from "@services/question";
+import { IDeleteQuestionResponse } from "@models/question/response";
 
 interface QuestionData {
-  category: string;
-  difficulty: string;
-  question: string;
-  options: {
-    A: string;
-    B: string;
-    C: string;
-    D: string;
-  };
-  correctAnswer: string;
+  text: string;
+  questionType: "TEXT_INPUT";
+  allowSimilarAnswers: boolean;
+  landId: number;
+  kynhanSummaries: number[];
+  answers: string[];
 }
 
-interface Question {
-  id: string;
-  question: string;
-  category: string;
-  difficulty: string;
-  createdAt: string;
-  status: "active" | "draft";
-  correctRate: number;
-}
-
-const QuestionBankPage = () => {
+const QuestionBankPage = ({
+  kyNhanSummary,
+  lands,
+}: {
+  kyNhanSummary: IKyNhanSummary[];
+  lands: ILandEntity[];
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Tất cả");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("Tất cả");
+  const [selectedLandId, setSelectedLandId] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [questionsList, setQuestionsList] = useState<UIQuestion[]>([]);
 
-  // Mock data - trong thực tế sẽ lấy từ API
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: "1",
-      question: "Thủ đô của Việt Nam là gì?",
-      category: "Địa lý",
-      difficulty: "Dễ",
-      createdAt: "2024-03-15",
-      status: "active",
-      correctRate: 88,
-    },
-    {
-      id: "2",
-      question: "Ai là tác giả của tác phẩm 'Truyện Kiều'?",
-      category: "Văn học",
-      difficulty: "Trung bình",
-      createdAt: "2024-03-14",
-      status: "active",
-      correctRate: 81,
-    },
-    {
-      id: "3",
-      question: "Năm nào Việt Nam gia nhập ASEAN?",
-      category: "Lịch sử",
-      difficulty: "Khó",
-      createdAt: "2024-03-13",
-      status: "draft",
-      correctRate: 0,
-    },
-  ]);
+  const createQuestionMutation = useCreateQuestion();
+
+  // Fetch questions data using the hook
+  const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
+
+  // Update local state when data changes
+  useEffect(() => {
+    if (allQuestions.length >= 0) {
+      setQuestionsList(allQuestions);
+    }
+  }, [allQuestions]);
+
+  // Filter questions based on search and category using local state
+  const filteredQuestions = questionsList.filter((question) => {
+    const matchesSearch =
+      !searchTerm ||
+      question.question.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedLandId === null || question.landId === selectedLandId.toString();
+    return matchesSearch && matchesCategory;
+  });
+
+  // Calculate summary statistics based on local questions list
+  const totalQuestions = questionsList.length;
+  const activeQuestions = questionsList.filter(
+    (q) => q.status === "active"
+  ).length;
+  const draftQuestions = questionsList.filter(
+    (q) => q.status === "draft"
+  ).length;
+  const averageCorrectRate =
+    totalQuestions > 0
+      ? questionsList.reduce((sum, q) => sum + q.correctRate, 0) /
+        totalQuestions
+      : 0;
+
+  // Handle mutation errors with toast notification
+  useEffect(() => {
+    if (createQuestionMutation.error) {
+      console.error("Failed to create question:", createQuestionMutation.error);
+      toast.error("Không thể tạo câu hỏi");
+    }
+  }, [createQuestionMutation.error]);
 
   const handleAddQuestion = (questionData: QuestionData) => {
-    const newQuestion: Question = {
-      id: Date.now().toString(),
-      question: questionData.question,
-      category: questionData.category,
-      difficulty: questionData.difficulty,
-      createdAt: new Date().toISOString().split("T")[0],
-      status: "active",
-      correctRate: 0,
-    };
-    setQuestions((prev) => [newQuestion, ...prev]);
-    setShowAddForm(false);
+    createQuestionMutation.mutate(questionData, {
+      onSuccess: () => {
+        setShowAddForm(false);
+        // Refetch data để cập nhật UI với câu hỏi mới
+        refetch();
+      },
+    });
   };
 
   const handleView = (id: string) => {
@@ -94,33 +119,44 @@ const QuestionBankPage = () => {
     console.log("Edit question:", id);
   };
 
-  const handleDelete = (id: string) => {
-    setQuestions((prev) => prev.filter((q) => q.id !== id));
+  const handleDeleteClick = (id: string) => {
+    setDeleteQuestionId(id);
+    setIsDeleteDialogOpen(true);
   };
 
-  const filteredQuestions = questions.filter((question) => {
-    const matchesSearch = question.question
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "Tất cả" || question.category === selectedCategory;
-    const matchesDifficulty =
-      selectedDifficulty === "Tất cả" ||
-      question.difficulty === selectedDifficulty;
+  const handleConfirmDelete = async () => {
+    if (!deleteQuestionId) return;
 
-    return matchesSearch && matchesCategory && matchesDifficulty;
-  });
+    try {
+      const response = (await questionService.deleteQuestion(
+        Number(deleteQuestionId)
+      )) as IDeleteQuestionResponse;
+      if (response.statusCode === 200) {
+        toast.success(response.message);
 
-  const totalQuestions = questions.length;
-  const activeQuestions = questions.filter((q) => q.status === "active").length;
-  const draftQuestions = questions.filter((q) => q.status === "draft").length;
-  const averageCorrectRate =
-    questions.length > 0
-      ? Math.round(
-          questions.reduce((sum, q) => sum + q.correctRate, 0) /
-            questions.length
-        )
-      : 0;
+        // Cách 1: Cập nhật local state để loại bỏ item đã xóa
+        setQuestionsList((prev) =>
+          prev.filter((question) => question.id !== deleteQuestionId)
+        );
+
+        // Cách 2: Refetch data từ server (backup option)
+        refetch();
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      toast.error("Không thể xóa câu hỏi");
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setDeleteQuestionId(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+    setDeleteQuestionId(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -137,12 +173,13 @@ const QuestionBankPage = () => {
           {/* Search and Filters */}
           <SearchFilters
             searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
-            selectedDifficulty={selectedDifficulty}
+            selectedLandId={selectedLandId || undefined}
             onSearchChange={setSearchTerm}
-            onCategoryChange={setSelectedCategory}
-            onDifficultyChange={setSelectedDifficulty}
+            onLandIdChange={(value: string) =>
+              setSelectedLandId(value === "all" ? null : Number(value))
+            }
             onAddQuestion={() => setShowAddForm(!showAddForm)}
+            lands={lands}
           />
 
           {/* Summary Cards */}
@@ -154,17 +191,56 @@ const QuestionBankPage = () => {
           />
 
           {/* Add Question Form */}
-          {showAddForm && <AddQuestionForm onSubmit={handleAddQuestion} />}
+          {showAddForm && (
+            <AddQuestionForm
+              onSubmit={handleAddQuestion}
+              lands={lands || []}
+              kyNhanSummary={kyNhanSummary || []}
+            />
+          )}
 
           {/* Questions Table */}
           <QuestionsTable
+            lands={lands}
             questions={filteredQuestions}
             onView={handleView}
             onEdit={handleEdit}
-            onDelete={handleDelete}
+            onDelete={handleDeleteClick}
+            isLoading={isLoading}
+            error={error}
           />
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa câu hỏi</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa câu hỏi này không? Hành động này không
+              thể hoàn tác.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className={"cursor-pointer"}
+              onClick={handleCancelDelete}
+            >
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+            >
+              Xóa
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

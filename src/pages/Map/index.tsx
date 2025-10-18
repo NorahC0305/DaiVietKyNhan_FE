@@ -129,7 +129,7 @@ export default function MapPageClient({
     const requiredLandIds = [1, 2, 3, 4];
     
     return requiredLandIds.every(landId => {
-      const userLandData = userLand.find((item) => item.landId === landId);
+      const userLandData = userLand?.find((item) => item.landId === landId);
       // Land is considered "completed" if it exists and is not LOCKED
       // This means PENDING or UNLOCKED status both allow progression
       return userLandData && userLandData.status !== LAND.LAND_STATUS.LOCKED;
@@ -148,7 +148,7 @@ export default function MapPageClient({
     // If region doesn't have a corresponding landId, it's locked
     if (landId === null || landId === undefined) return false;
 
-    const userLandData = userLand.find((item) => item.landId === landId);
+    const userLandData = userLand?.find((item) => item.landId === landId);
 
     // If no userLand data found, consider it locked
     if (!userLandData) return false;

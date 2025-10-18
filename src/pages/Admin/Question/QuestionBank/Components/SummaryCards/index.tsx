@@ -52,7 +52,9 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
             <CardTitle className="text-sm font-medium text-gray-600">
               {card.title}
             </CardTitle>
-            <span className="text-2xl">{card.icon}</span>
+            {card.icon && (
+              <span className="text-2xl">{card.icon}</span>
+            )}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-900">{card.value}</div>
