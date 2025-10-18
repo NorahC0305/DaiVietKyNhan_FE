@@ -1,3 +1,4 @@
+
 declare namespace ICOMPONENTS {
   type TransitionMode =
     | "wait"
@@ -149,9 +150,15 @@ declare namespace ICOMPONENTS {
 
   export interface Question {
     id: number;
-    title: string;
-    content: string;
-    category: string;
+    title?: string;
+    content?: string;
+    text?: string;
+    category?: string;
+    userAnswerLogs?: Array<{
+      id: number;
+      isCorrect: boolean;
+      text: string;
+    }>;
   }
 
   export interface QuestionModalProps {
@@ -159,6 +166,8 @@ declare namespace ICOMPONENTS {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (answerText: string) => void;
+    isSubmitting?: boolean;
+    isAnswered?: boolean;
   }
 
   interface ScrollPosition {
@@ -170,7 +179,7 @@ declare namespace ICOMPONENTS {
   interface MapRegionDetailProps {
     backgroundImage?: string;
     scrollPositions: ScrollPosition[];
-    questions: Question[];
+    questions: IQuestion[];
     answeredQuestionIds: number[];
   }
 

@@ -5,34 +5,28 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Check, Circle } from "lucide-react";
 import QuestionModal from "@components/Molecules/Popup/QuestionModal";
-import { toast } from "react-toastify";
-import RedeemModal from "@components/Molecules/Popup/RedeemModal";
-import AchievementsModal from "@components/Molecules/Popup/AchievementsModal";
 import WrongAnswer from "@components/Molecules/Popup/WrongAnswer";
-import RunOutOfLife from "@components/Molecules/Popup/RunOutOfLife";
-import BuyMoreLife from "@components/Molecules/Popup/BuyMoreLife";
-import WaitingOthers from "@components/Molecules/Popup/WaitingOthers";
-import IncompleteRegion from "@components/Molecules/Popup/IncompleteRegion";
-import FutureEvent from "@components/Molecules/Popup/FutureEvent";
-import InputGiftCode from "@components/Molecules/Popup/InputGiftCode";
-import AirEvent from "@components/Molecules/Popup/AirEvent";
-import CorrectGiftCode from "@components/Molecules/Popup/CorrectGiftCode";
-import IncorrectGiftCode from "@components/Molecules/Popup/IncorrectGiftCode";
-import LimitGiftCode from "@components/Molecules/Popup/LimitGiftCode";
+import { toast } from "react-toastify";
+import userAnswerLogService from "@services/user-answer-log";
+import { IUserAnswerLogRequest } from "@models/user-answer-log/request";
+import { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
   scrollPositions,
-  questions,
+  questions: questionsWithUser,
   answeredQuestionIds,
 }: ICOMPONENTS.MapRegionDetailProps) {
   // Đặt thành `false` để ẩn đường viền và nhãn gỡ lỗi
   const DEBUG_HOTSPOTS = false;
   const [open, setOpen] = useState(false);
   // State cho question modal
-  const [selectedQuestion, setSelectedQuestion] =
-    useState<ICOMPONENTS.Question | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+
+  // State cho wrong answer modal
+  const [isWrongAnswerModalOpen, setIsWrongAnswerModalOpen] = useState(false);
+  const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
 
   // State để track các câu hỏi đã được trả lời
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(
@@ -41,9 +35,29 @@ export default function FixedScrollsPageResponsive({
 
   // Không cần hàm kiểm tra unlock nữa - tất cả đều mở
 
+  // Hàm kiểm tra câu hỏi đã trả lời đúng chưa
+  const isQuestionAnswered = (question: any) => {
+    return (
+      question?.userAnswerLogs &&
+      question.userAnswerLogs.length > 0 &&
+      question.userAnswerLogs.some((log: any) => log.isCorrect === true)
+    );
+  };
+
+  // Hàm lấy câu trả lời cũ của người dùng
+  const getPreviousAnswer = (question: any) => {
+    if (question?.userAnswerLogs && question.userAnswerLogs.length > 0) {
+      const correctAnswer = question.userAnswerLogs.find(
+        (log: any) => log.isCorrect === true
+      );
+      return correctAnswer?.text || "";
+    }
+    return "";
+  };
+
   // Hàm xử lý khi click vào cuộn giấy - đơn giản hóa
   const handleScrollClick = (scrollIndex: number) => {
-    const question = questions[scrollIndex];
+    const question = questionsWithUser[scrollIndex];
 
     if (question) {
       setSelectedQuestion(question);
@@ -54,23 +68,104 @@ export default function FixedScrollsPageResponsive({
   };
 
   // Hàm xử lý khi submit câu trả lời
-  const handleQuestionSubmit = (answerText: string) => {
-    if (selectedQuestion) {
-      setAnsweredQuestions((prev) => {
-        const newSet = new Set([...prev, selectedQuestion.id]);
-        return newSet;
-      });
-      toast.success("Cập nhật câu trả lời thành công");
+  const handleQuestionSubmit = async (answerText: string) => {
+    if (!selectedQuestion || !answerText.trim()) {
+      return;
     }
 
-    // TODO: gửi API kiểm tra đáp án khi BE sẵn sàng
-    toast.success("Đã gửi câu trả lời để kiểm tra");
+    setIsSubmittingAnswer(true);
+
+    try {
+      const requestData: IUserAnswerLogRequest = {
+        questionId: selectedQuestion.id,
+        text: answerText.trim(),
+      };
+
+      const response = await userAnswerLogService.answerQuestion(requestData);
+
+      if (response && response.statusCode === 201 && response.data) {
+        if (response.data.isCorrect) {
+          // Trả lời đúng - hiện toast và cập nhật state
+          toast.success("Chính xác! Bạn đã trả lời đúng.");
+          setAnsweredQuestions((prev) => {
+            const newSet = new Set([...prev, selectedQuestion.id]);
+            return newSet;
+          });
+          // Đóng question modal
+          setIsQuestionModalOpen(false);
+          setSelectedQuestion(null);
+        } else {
+          // Trả lời sai - hiện wrong answer modal
+          setIsQuestionModalOpen(false);
+          setIsWrongAnswerModalOpen(true);
+        }
+      } else {
+        // Handle error response
+        toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
+      }
+    } catch (error) {
+      console.error("Error submitting answer:", error);
+      toast.error("Có lỗi xảy ra khi gửi câu trả lời. Vui lòng thử lại.");
+    } finally {
+      setIsSubmittingAnswer(false);
+    }
   };
 
   // Hàm đóng modal
   const handleCloseModal = () => {
     setIsQuestionModalOpen(false);
     setSelectedQuestion(null);
+  };
+
+  // Hàm xử lý wrong answer modal
+  const handleCloseWrongAnswerModal = () => {
+    setIsWrongAnswerModalOpen(false);
+  };
+
+  const handleRetryAnswer = () => {
+    setIsWrongAnswerModalOpen(false);
+    // Mở lại question modal với cùng câu hỏi
+    setIsQuestionModalOpen(true);
+  };
+
+  const handleUseCoins = async (questionId: number) => {
+    if (!questionId) {
+      toast.error("Không tìm thấy ID câu hỏi");
+      return;
+    }
+
+    // Optimistic update: Update UI immediately for better UX
+    const previousAnsweredQuestions = answeredQuestions;
+    setAnsweredQuestions((prev) => {
+      const newSet = new Set([...prev, questionId]);
+      return newSet;
+    });
+
+    try {
+      const requestData: IUserSkipQuestionByCoinsRequest = {
+        questionId: questionId,
+      };
+
+      const response = await userAnswerLogService.skipQuestionByCoins(requestData);
+
+      if (response && response.statusCode === 200) {
+        // Successfully skipped the question with coins
+        toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
+        
+        // Close the wrong answer modal
+        setIsWrongAnswerModalOpen(false);
+        setSelectedQuestion(null);
+      } else {
+        // Rollback optimistic update on error
+        setAnsweredQuestions(previousAnsweredQuestions);
+        toast.error(response?.message || "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi.");
+      }
+    } catch (error) {
+      // Rollback optimistic update on error
+      setAnsweredQuestions(previousAnsweredQuestions);
+      console.error("Error skipping question with coins:", error);
+      toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -103,9 +198,9 @@ export default function FixedScrollsPageResponsive({
         <div className="relative w-full h-full z-10">
           {scrollPositions?.map(
             (pos: ICOMPONENTS.ScrollPosition, idx: number) => {
-              const question = questions[idx];
+              const question = questionsWithUser[idx];
               const isAnswered = question
-                ? answeredQuestions.has(question.id)
+                ? isQuestionAnswered(question) || answeredQuestions.has(question.id)
                 : false;
 
               return (
@@ -187,155 +282,6 @@ export default function FixedScrollsPageResponsive({
           )}
         </div>
       </div>
-      <RedeemModal  isOpen={true}
-        onClose={() => setOpen(false)}
-        onRedeem={(tierId) => {
-          // call API here
-          console.log("redeem", tierId);
-          setOpen(false);
-        }}
-        tiers={[
-          {
-            id: "t1",
-            canRedeem: true,
-            cost: { unit: "POINT", amount: 300 },
-            reward: { unit: "COIN", amount: 150 },
-          },
-          {
-            id: "t2",
-            canRedeem: true,
-            cost: { unit: "POINT", amount: 500 },
-            reward: { unit: "COIN", amount: 250 },
-          },
-          {
-            id: "t3",
-            canRedeem: false,
-            cost: { unit: "COIN", amount: 6000 },
-            reward: { unit: "TEXT", label: "Combo quà tặng đặc biệt" },
-          },
-        ]} />
-
-      {/* <AchievementsModal
-          isOpen={true}
-          onClose={() => setOpen(false)}
-          onClaim={(achievementId) => {
-            // call API here
-            console.log("claim", achievementId);
-            setOpen(false);
-          }}
-        achievements={[
-          {
-            id: "a1",
-            title: "Đạt được 100 xu",
-            description: "Đạt được 100 xu",
-            canClaim: true,
-          },
-          {
-            id: "a2",
-            title: "Đạt được 100 xu",
-            description: "Đạt được 100 xu",
-            canClaim: true,
-          },
-          {
-            id: "a3",
-            title: "Đạt được 100 xu",
-            description: "Đạt được 100 xu",
-            canClaim: true,
-          },
-          {
-            id: "a4",
-            title: "Đạt được 100 xu",
-            description: "Đạt được 100 xu",
-            canClaim: false,
-          },
-        ]}
-        /> */}
-
-      {/* <WrongAnswer
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-        onRetry={() => {
-          console.log("retry");
-        }}
-        onUseCoins={() => {
-          console.log("use coins");
-        }}
-        coinCost={500}
-        penaltyPoints={20}
-      /> */}
-
-      {/* <BuyMoreLife
-        coinCost={500}
-        onBuy={() => {
-          console.log("buy");
-        }}
-        isBuying={false}
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <WaitingOthers
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <IncompleteRegion
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <FutureEvent
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <InputGiftCode
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <AirEvent
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-      /> */}
-
-      {/* <CorrectGiftCode
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-        coinsReward={500}
-      /> */}
-
-      {/* <IncorrectGiftCode
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-        coinsReward={500}
-      /> */}
-
-      {/* <LimitGiftCode
-        isOpen={true}
-        onClose={() => {
-          console.log("close");
-        }}
-        coinsReward={500}
-      /> */}
 
       {/* Question Modal */}
       <QuestionModal
@@ -343,6 +289,19 @@ export default function FixedScrollsPageResponsive({
         isOpen={isQuestionModalOpen}
         onClose={handleCloseModal}
         onSubmit={handleQuestionSubmit}
+        isSubmitting={isSubmittingAnswer}
+        isAnswered={selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false}
+      />
+
+      {/* Wrong Answer Modal */}
+      <WrongAnswer
+        isOpen={isWrongAnswerModalOpen}
+        onClose={handleCloseWrongAnswerModal}
+        onRetry={handleRetryAnswer}
+        onUseCoins={handleUseCoins}
+        questionId={selectedQuestion?.id}
+        coinCost={500}
+        penaltyPoints={20}
       />
     </main>
   );

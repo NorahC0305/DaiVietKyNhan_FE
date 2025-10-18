@@ -119,7 +119,8 @@ export default function MapPageClient({
   userLand: IUserLandWithLandResponseModel[];
 }) {
   const router = useRouter();
-  const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] = useState(false);
+  const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] =
+    useState(false);
   console.log(userLand);
 
   // Function to check if all previous 4 lands are completed
@@ -127,8 +128,8 @@ export default function MapPageClient({
     // Check if lands 1, 2, 3, 4 are all completed
     // For "Kỳ Linh Việt Hỏa" to unlock, all 4 previous lands should be unlocked (not locked)
     const requiredLandIds = [1, 2, 3, 4];
-    
-    return requiredLandIds.every(landId => {
+
+    return requiredLandIds.every((landId) => {
       const userLandData = userLand?.find((item) => item.landId === landId);
       // Land is considered "completed" if it exists and is not LOCKED
       // This means PENDING or UNLOCKED status both allow progression
@@ -153,11 +154,8 @@ export default function MapPageClient({
     // If no userLand data found, consider it locked
     if (!userLandData) return false;
 
-    // Region is unlocked if status is PENDING or UNLOCKED
-    return (
-      userLandData.status === LAND.LAND_STATUS.PENDING ||
-      userLandData.status === LAND.LAND_STATUS.UNLOCKED
-    );
+    // Region is unlocked if status is NOT LOCKED (allows PENDING, UNLOCKED, COMPLETED, etc.)
+    return userLandData.status !== LAND.LAND_STATUS.LOCKED;
   };
 
   const handleRegionClick = (regionId: string) => {
