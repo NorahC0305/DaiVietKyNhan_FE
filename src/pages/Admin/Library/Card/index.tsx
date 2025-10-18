@@ -45,7 +45,6 @@ interface ValidationErrors {
 }
 
 const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
-  console.log(initialLands);
   const [lands, setLands] = useState<ILandEntity[]>(initialLands);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -214,15 +213,19 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
 
     setIsSubmitting(true);
     try {
-      const response = (await kynhanService.createKyNhan({
-        imgUrl: formData.imgUrl!,
-        name: formData.name,
-        thoiky: formData.thoiky,
-        chienCong: formData.chienCong,
-        active: formData.active,
-        landId: formData.landId,
-      })) as IBackendResponse<any>;
-
+      // Create FormData here instead of in the service
+      const submitFormData = new FormData();
+      submitFormData.append("imgUrl", formData.imgUrl!);
+      submitFormData.append("name", formData.name);
+      submitFormData.append("thoiKy", formData.thoiky);
+      submitFormData.append("chienCong", formData.chienCong);
+      submitFormData.append("active", formData.active.toString());
+      submitFormData.append("landId", formData.landId.toString());
+      console.log(submitFormData);
+      const response = (await kynhanService.createKyNhan(
+        submitFormData
+      )) as IBackendResponse<any>;
+      console.log(response);
       if (response.statusCode === 200 || response.statusCode === 201) {
         toast({
           title: "Thành công",
@@ -443,8 +446,9 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
                     }`}
                   >
                     <SelectValue placeholder="Chọn đất">
-                      {lands?.find((land: ILandEntity) => land.id === formData.landId)
-                        ?.name || "Chọn đất"}
+                      {lands?.find(
+                        (land: ILandEntity) => land.id === formData.landId
+                      )?.name || "Chọn đất"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
