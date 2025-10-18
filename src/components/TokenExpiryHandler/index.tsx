@@ -6,28 +6,24 @@ import { ROUTES } from '@routes';
 import { toast } from 'react-toastify';
 
 export default function TokenExpiryHandler() {
-    const { data: session, status } = useSession();
+    const { data: session, status } = useSession() as { data: { accessToken: string } | null, status: 'loading' | 'authenticated' | 'unauthenticated' };
 
     useEffect(() => {
         if (status === 'loading' || !session?.accessToken) return;
 
         try {
-            // Decode JWT để lấy thời gian hết hạn
-            const token = session.accessToken;
+            const token = session.accessToken as string;
             const payload = JSON.parse(atob(token.split('.')[1]));
-            const expiryTime = payload.exp * 1000; // Convert to milliseconds
+            const expiryTime = payload.exp * 1000;
 
-            // Kiểm tra ngay lập tức
             if (Date.now() >= expiryTime) {
                 console.log("Token already expired, signing out immediately...");
                 handleSignOut();
                 return;
             }
 
-            // Tính thời gian còn lại
             const timeUntilExpiry = expiryTime - Date.now();
 
-            // Set timeout để signOut khi token hết hạn
             const timeout = setTimeout(() => {
                 console.log("Token expired, signing out...");
                 handleSignOut();
@@ -36,7 +32,6 @@ export default function TokenExpiryHandler() {
             return () => clearTimeout(timeout);
         } catch (error) {
             console.error("Error checking token expiry:", error);
-            // Nếu không decode được token, signOut ngay
             handleSignOut();
         }
     }, [session?.accessToken, status]);
