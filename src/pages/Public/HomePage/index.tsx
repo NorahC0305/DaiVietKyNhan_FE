@@ -1,23 +1,75 @@
 "use client";
 
-import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ROUTES } from '@routes'
-import { IUser } from '@models/user/entity'
-import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ROUTES } from '@routes';
+import { IUser } from '@models/user/entity';
+import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response';
 
 interface HomePageClientProps {
-  user: IUser
-  activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
-  accessToken: string
+  user: IUser;
+  activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
+  accessToken: string;
 }
 
+// Dữ liệu mock cho phần nhận xét
+const testimonialsData = [
+  {
+    id: 1,
+    name: "TS. Phạm Thanh Hải",
+    title: "",
+    quote: "Đây là cuốn sách rất xứng đáng để có một trên gia sách của các gia đình Việt Nam?",
+    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811389/PhanThanhHai_dtbb2b.svg",
+    isMain: false,
+  },
+  {
+    id: 2,
+    name: "NSƯT Thành Lộc",
+    title: "",
+    quote: "Tôi tin đây là một cuốn sách ai cũng nên có cho chính mình, người thân và gia đình!",
+    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811335/NSUTThanhLoc_o9xoa6.svg",
+    isMain: true,
+  },
+  {
+    id: 3,
+    name: "Charlie Nguyễn",
+    title: "Đạo diễn",
+    quote: "Đây là 1 dự án hiếm hoi xứng đáng được lan truyền rộng rãi trong cộng đồng.",
+    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811440/CharlieNguyen_oxuqka.svg",
+    isMain: false,
+  },
+];
+
+
 const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
+  const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonialsData.length);
+    }, 5000); // Tự động lướt sau mỗi 5 giây
+
+    return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+  }, []);
+
+  const getTestimonialDisplay = (indexOffset: number) => {
+    const total = testimonialsData.length;
+    let actualIndex = (currentIndex + indexOffset + total) % total;
+    return testimonialsData[actualIndex];
+  };
+
+  const getDotClass = (index: number) => {
+    if (index === currentIndex) {
+      return "w-3.5 h-3.5 bg-red-600 rounded-full cursor-pointer";
+    }
+    return "w-2.5 h-2.5 bg-gray-500 rounded-full cursor-pointer hover:bg-gray-400";
+  };
+
   return (
     <div className='min-h-screen bg-black'>
       {/* Banner 1 - Main Hero Section */}
-      <section className="relative  w-full sm:h-[600px] lg:h-[1000px] flex items-center justify-center overflow-hidden">
+      <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803766/HomePageBanner_iyp4lc.svg"
@@ -31,13 +83,13 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
       </section>
 
       {/* Banner 2 - Khí Chất Section */}
-      <section className="relative w-full h-[1100px] flex items-center justify-center overflow-hidden">
+      <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803844/KhiChatCuaBanLa_wmxfip.svg"
             alt="Khí Chất Của Bạn Là"
             width={1730}
-            height={3000}
+            height={1000}
             priority
           />
         </div>
@@ -64,7 +116,7 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
                 text-center text-4xl
                 mb-0 lg:mb-4 drop-shadow-sm
                 text-primary bg-clip-text
-              ">
+                ">
                 BXH Kỳ Chủ
               </h3>
               <div className="w-full flex justify-center items-center gap-3 md:gap-4">
@@ -159,55 +211,124 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
                   </div>
                 </div>
               </div>
-              <div className="w-full flex items-center justify-center mt-0 lg:mt-4">
+              {/* <div className="w-full flex items-center justify-center mt-0 lg:mt-4">
                 <button className="text-primary cursor-pointer font-bold text-sm lg:text-lg hover:underline">
                   Xem thêm
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="relative w-full min-h-screen bg-gradient-to-b from-gray-900 to-black py-16">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-bold text-white mb-8 font-dfvn-graphit">
-              NHỮNG NHẬN XÉT VỀ ĐẠI VIỆT KỸ NHÂN
+      <section className="relative w-full bg-gradient-to-b from-gray-900 to-black py-16 pb-24 overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto px-4">
+          {/* Headline */}
+          <div className="w-full mb-10 lg:mb-16 flex items-center justify-center gap-4">
+            <div className='line' />
+            <h3 className="text-3xl lg:text-4xl text-white font-bd-street-sign text-center">
+              NHỮNG NHẬN XÉT VỀ ĐẠI VIỆT KỲ NHÂN
             </h3>
+            <div className='line' />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto flex items-center justify-center">
-                <span className="text-white font-bold text-xl">PH</span>
+          {/* Testimonials Carousel Container */}
+          <div className="flex justify-center items-start gap-8 lg:gap-12 relative h-[350px]">
+            {/* Để lướt, chúng ta sẽ render 3 phần tử: trước, hiện tại, sau */}
+
+            {/* === Left Testimonial (Faded) === */}
+            <div className={`
+              absolute transition-all duration-1000 ease-in-out
+              flex flex-col items-center space-y-5 pt-12 opacity-60
+              w-full max-w-xs
+              left-1/3 lg:left-1/4 transform -translate-x-full -ml-40 md:-ml-0
+              md:flex
+              `}>
+              <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
+                {getTestimonialDisplay(-1).quote}
+              </p>
+              <div className="relative w-20 h-20 flex-shrink-0">
+                <Image
+                  src={getTestimonialDisplay(-1).avatar}
+                  alt={getTestimonialDisplay(-1).name}
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover w-full h-full"
+                />
               </div>
-              <p className="text-white font-semibold">TS. Phan Thanh Hải</p>
+              <div className='text-center'>
+                <p className="text-white font-semibold">{getTestimonialDisplay(-1).name}</p>
+                {getTestimonialDisplay(-1).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(-1).title}</p>}
+              </div>
             </div>
 
-            {/* Testimonial 2 */}
-            <div className="text-center space-y-4">
-              <div className="bg-yellow-400 p-6 rounded-lg shadow-lg relative">
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-yellow-400 rotate-45"></div>
-                <p className="text-gray-800 font-medium text-center">
-                  "Tôi tin đây là một cuốn sách vô cùng nên có cho chính mình, người thân và gia đình!"
+            {/* === Center Testimonial (Prominent) === */}
+            <div className={`
+              absolute transition-all duration-1000 ease-in-out
+              flex flex-col items-center space-y-6
+              w-full md:w-1/2 max-w-md
+              left-1/2 transform -translate-x-1/2
+              `}>
+              {/* Speech Bubble */}
+              <div className="bg-secondary p-6 rounded-lg shadow-lg relative z-10">
+                <p className="text-white font-medium text-center text-lg lg:text-xl italic">
+                  {getTestimonialDisplay(0).quote}
                 </p>
+                {/* Bubble Pointer */}
+                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-6 h-10 bg-secondary rotate-45"></div>
               </div>
-              <div className="w-16 h-16 bg-gray-600 rounded-full mx-auto flex items-center justify-center">
-                <span className="text-white font-bold text-xl">TL</span>
+              {/* Avatar */}
+              <div className="relative w-24 h-24 flex-shrink-0">
+                <Image
+                  src={getTestimonialDisplay(0).avatar}
+                  alt={getTestimonialDisplay(0).name}
+                  width={96}
+                  height={96}
+                  className="rounded-full object-cover w-full h-full border-2 border-secondary"
+                />
               </div>
-              <p className="text-white font-semibold">KHMT Thanh Lâm</p>
+              {/* Name */}
+              <div className='text-center'>
+                <p className="text-white font-semibold text-lg">{getTestimonialDisplay(0).name}</p>
+                {getTestimonialDisplay(0).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(0).title}</p>}
+              </div>
             </div>
 
-            {/* Testimonial 3 */}
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-pink-500 rounded-full mx-auto flex items-center justify-center">
-                <span className="text-white font-bold text-xl">TN</span>
+            <div className={`
+              absolute transition-all duration-1000 ease-in-out
+              flex flex-col items-center space-y-5 pt-12 opacity-60
+              w-full max-w-xs
+              right-0 transform translate-x-0 ml-40 md:ml-0
+              md:flex
+              `}>
+              <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
+                {getTestimonialDisplay(1).quote}
+              </p>
+              <div className="relative w-20 h-20 flex-shrink-0">
+                <Image
+                  src={getTestimonialDisplay(1).avatar}
+                  alt={getTestimonialDisplay(1).name}
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover w-full h-full"
+                />
               </div>
-              <p className="text-white font-semibold">ThS. Nguyễn Thị Nga</p>
+              <div className='text-center'>
+                <p className="text-white font-semibold">{getTestimonialDisplay(1).name}</p>
+                {getTestimonialDisplay(1).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(1).title}</p>}
+              </div>
             </div>
+          </div>
+
+          {/* Slider Dots */}
+          <div className="flex justify-center items-center gap-3 pt-12">
+            {testimonialsData.map((_, index) => (
+              <div
+                key={index}
+                className={getDotClass(index)}
+                onClick={() => setCurrentIndex(index)}
+              ></div>
+            ))}
           </div>
         </div>
       </section>
@@ -215,4 +336,4 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
   )
 }
 
-export default HomePageClient
+export default HomePageClient;
