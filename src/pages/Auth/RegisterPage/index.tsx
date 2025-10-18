@@ -45,27 +45,54 @@ const RegisterPageClient = () => {
     } = useForm<IRegisterFormDataRequest>({
         resolver: zodResolver(registerFormDataRequest),
         defaultValues: {
+            name: "",
             email: "",
+            phoneNumber: "",
             password: "",
         }
     });
 
     const [loading, setLoading] = useState<boolean>(false);
     const onSubmit = async (data: IRegisterFormDataRequest) => {
+        if (loading) return;
+
         try {
             setLoading(true);
 
-            const res = await authService.register(data) as IBackendResponse<any>;
+            // Call register API directly to avoid session check
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = "Đăng ký thất bại";
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch {
+                    errorMessage = errorText || errorMessage;
+                }
+                toast.error(errorMessage);
+                return;
+            }
+
+            const res = await response.json();
             if (res.statusCode === 201) {
                 toast.success(res.message || "Đăng ký thành công");
-                router.push(ROUTES.AUTH.LOGIN);
                 setEmail(data.email);
+                router.push(ROUTES.AUTH.LOGIN);
             } else {
                 toast.error(res.message || "Đăng ký thất bại");
             }
+
         } catch (error: any) {
-            toast.error(error.message || "Đăng ký thất bại");
-            console.error("Login error:", error);
+            console.error("Register error:", error);
+            toast.error(error.message || "Đã xảy ra lỗi. Vui lòng thử lại sau.");
         } finally {
             setLoading(false);
         }
@@ -77,6 +104,8 @@ const RegisterPageClient = () => {
      * Handle google login
      */
     const handleGoogleLogin = async () => {
+        if (loading) return;
+
         try {
             setLoading(true);
 
@@ -187,7 +216,8 @@ const RegisterPageClient = () => {
                     disabled={isSubmitting || loading}
                     isLoading={isSubmitting || loading}
                 >
-                    {isSubmitting || loading ? "Đang đăng ký..." : "Đăng ký"} <MoveRight />
+                    {isSubmitting || loading ? "Đang đăng ký..." : "Đăng ký"}
+                    {!(isSubmitting || loading) && <MoveRight />}
                 </Button>
             </section>
 
@@ -205,11 +235,12 @@ const RegisterPageClient = () => {
                 <div className="flex justify-center items-center gap-3 w-full">
                     <button
                         type="button"
-                        className="cursor-pointer w-full h-12 flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        className="cursor-pointer w-full h-12 flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={handleGoogleLogin}
+                        disabled={loading}
                     >
                         <GoogleIcon size="default" />
-                        Google
+                        {loading ? "Đang xử lý..." : "Google"}
                     </button>
                 </div>
             </div>

@@ -14,78 +14,96 @@ import { useGetLocalStorage } from "@hooks/useLocalStorage"
 import { toast } from "react-toastify"
 import { IBackendResponse } from "@models/backend"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { IResetPasswordFormDataRequest, resetPasswordFormDataRequest } from "@models/user/request"
 
 const ResetPassswordPage = () => {
     const router = useRouter()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     /**
-     * Get email and otp from local storage
+     * Get email from local storage
      */
-    const { value, isReady } = useGetLocalStorage('email')
-    // const { value: otp } = useGetLocalStorage('otp')
+    const { value: emailValue, isReady } = useGetLocalStorage('email')
+    const { value: tokenValue } = useGetLocalStorage('token')
     //-----------------------------End-----------------------------//
-
 
     //#region Handle form submit
     const {
         register,
         handleSubmit,
         setValue,
-        watch,
         formState: { errors },
     } = useForm<IResetPasswordFormDataRequest>({
         resolver: zodResolver(resetPasswordFormDataRequest),
         defaultValues: {
-            email: value || '',
+            email: emailValue || '',
             newPassword: '',
             confirmNewPassword: '',
         },
     })
 
     const onSubmit = async (data: IResetPasswordFormDataRequest) => {
-        //#region api reset password
-        const res = await authService.resetPassword(data) as IBackendResponse<any>
+        if (isLoading) return;
 
-        if (res.statusCode === 201) {
-            localStorage.removeItem('email');
-            localStorage.removeItem('token');
-            toast.success('Đặt lại mật khẩu thành công')
-            router.push(ROUTES.AUTH.LOGIN)
+        try {
+            setIsLoading(true);
 
-        } else {
-            toast.error(res.message || 'Đặt lại mật khẩu thất bại')
-            return
+            // Call reset password API directly to avoid session check
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${tokenValue}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = "Đặt lại mật khẩu thất bại";
+                try {
+                    const errorData = JSON.parse(errorText);
+                    errorMessage = errorData.message || errorData.error || errorMessage;
+                } catch {
+                    errorMessage = errorText || errorMessage;
+                }
+                toast.error(errorMessage);
+                return;
+            }
+
+            const res = await response.json();
+            if (res.statusCode === 200 || res.statusCode === 201) {
+                // Clean up localStorage
+                localStorage.removeItem('email');
+                localStorage.removeItem('token');
+
+                toast.success('Đặt lại mật khẩu thành công');
+                router.push(ROUTES.AUTH.LOGIN);
+            } else {
+                toast.error(res.message || 'Đặt lại mật khẩu thất bại');
+            }
+
+        } catch (error: any) {
+            console.error("Reset password error:", error);
+            toast.error(error.message || "Đã xảy ra lỗi. Vui lòng thử lại sau.");
+        } finally {
+            setIsLoading(false);
         }
-        //#endregion
     }
     //#endregion
 
-    /**
-       * Handle confirm password
-       * @param value 
-       * @returns 
-       */
-    const handleConfirmPassword = useCallback((value: string) => {
-        if (value !== watch('newPassword')) {
-            return 'Password does not match';
-        }
-        return true;
-    }, [watch]);
-    //---------------------------Handle confirm password---------------------------//
-
-
-    //#region check if email is exist in local storage
+    //#region check if email and token exist in local storage
     useEffect(() => {
         if (!isReady) return;
-        if (!value) {
-            router.push(ROUTES.AUTH.FORGOT_PASSWORD)
+
+        if (!emailValue || !tokenValue) {
+            toast.error("Phiên đặt lại mật khẩu đã hết hạn. Vui lòng thử lại.");
+            router.push(ROUTES.AUTH.FORGOT_PASSWORD);
         } else {
-            setValue('email', value)
-            // setValue('otp', otp || '')
+            setValue('email', emailValue);
         }
-    }, [isReady, value, router, setValue])
+    }, [isReady, emailValue, tokenValue, router, setValue])
     //#endregion
 
     return (
@@ -139,23 +157,27 @@ const ResetPassswordPage = () => {
                                 type="password"
                                 togglePassword={true}
                                 placeholder="Xác nhận mật khẩu mới"
-                                {...register("confirmNewPassword", {
-                                    required: true,
-                                    validate: handleConfirmPassword,
-                                })}
+                                {...register("confirmNewPassword")}
                                 className={errors.confirmNewPassword ? 'input-error' : ''}
                             />
                             {errors.confirmNewPassword && <span className="text-red-500 text-sm">{errors.confirmNewPassword.message}</span>}
                         </div>
                     </div>
 
-                    <Button type="submit" size="full">
-                        Xác nhận
+                    <Button type="submit" size="full" isLoading={isLoading} disabled={isLoading}>
+                        {isLoading ? 'Đang xử lý...' : 'Xác nhận'}
                     </Button>
                 </form>
 
                 <p className="flex mt-5 justify-center items-center text-holder">
-                    <Link href={ROUTES.AUTH.FORGOT_PASSWORD} className="flex flex-row items-center hover:underline" onClick={() => localStorage.removeItem('email')}>
+                    <Link
+                        href={ROUTES.AUTH.FORGOT_PASSWORD}
+                        className="flex flex-row items-center hover:underline"
+                        onClick={() => {
+                            localStorage.removeItem('email');
+                            localStorage.removeItem('token');
+                        }}
+                    >
                         <ArrowLeft size={20} className="text-dark mr-2" />
                         <p className="font-sm text-dark">
                             Quay lại

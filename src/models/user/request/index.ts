@@ -62,6 +62,9 @@ export const resetPasswordFormDataRequest = z.object({
     email: z.string().email('Email không hợp lệ'),
     newPassword: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
     confirmNewPassword: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Mật khẩu xác nhận không khớp",
+    path: ["confirmNewPassword"],
 });
 export type IResetPasswordFormDataRequest = z.infer<typeof resetPasswordFormDataRequest>;
 //-----------------End-Reset-Password-Request-----------------//
