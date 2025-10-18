@@ -1,4 +1,4 @@
-import AdminSideBar from "@pages/Admin/Components/AdminSideBar";
+import AdminSideBar from "@components/Admin/Components/AdminSideBar";
 import HeaderAdminSSR from "@components/Organisms/HeaderAdminSSR";
 import { Toaster } from "@components/Atoms/ui/toaster";
 

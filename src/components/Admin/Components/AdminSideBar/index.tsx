@@ -72,6 +72,11 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     ],
   },
   {
+    id: "manage-library",
+    label: "Quản lý thư viện",
+    icon: "BookOpen",
+  },
+  {
     id: "statistics-reports",
     label: "Thống kê & Báo cáo",
     icon: "BarChart3",
@@ -147,6 +152,7 @@ const AdminSideBar = () => {
       "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
+      "manage-library": ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO,
     }),
     []
   );
@@ -193,6 +199,9 @@ const AdminSideBar = () => {
       [ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE]: {
         parentId: "system-config",
         subId: "release-date",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO]: {
+        parentId: "manage-library",
       },
     }),
     []
