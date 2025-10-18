@@ -52,7 +52,7 @@ const PersonalityResultPage = React.memo(() => {
       MELANCHOLIC: "vui-tuoi",
       PHLEGMATIC: "uu-tu",
     };
-    const firstAchieved = profiles.find((p) => p.isAchieved);
+    const firstAchieved = profiles?.find((p) => p.isAchieved);
     if (firstAchieved) {
       setSelectedPersonality(map[firstAchieved.traitType] || null);
     }
@@ -74,7 +74,7 @@ const PersonalityResultPage = React.memo(() => {
         "uu-tu": "PHLEGMATIC",
       };
       const trait = mapIdToTrait[id];
-      return profiles.find((p) => p.traitType === trait) || null;
+      return profiles?.find((p) => p.traitType === trait) || null;
     },
     [profiles]
   );
@@ -161,14 +161,14 @@ const PersonalityResultPage = React.memo(() => {
     }));
   }, [profiles]);
 
-  const selectedOption = personalityOptions.find(
+  const selectedOption = personalityOptions?.find(
     (option) => option.id === selectedPersonality
   );
 
   // Auto-select guardian when personality is selected
   useEffect(() => {
     if (selectedPersonality && !selectedGuardian) {
-      const guardian = guardianDeities.find(
+      const guardian = guardianDeities?.find(
         (g) => g.personalityId === selectedPersonality
       );
       const profile = getProfileById(selectedPersonality);
