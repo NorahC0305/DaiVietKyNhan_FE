@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 import {
   Card,
@@ -55,43 +55,39 @@ const QuestionBankPage = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [questionsList, setQuestionsList] = useState<UIQuestion[]>([]);
-
   const createQuestionMutation = useCreateQuestion();
 
   // Fetch questions data using the hook
   const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
 
-  // Update local state when data changes
-  useEffect(() => {
-    if (allQuestions.length >= 0) {
-      setQuestionsList(allQuestions);
-    }
-  }, [allQuestions]);
+  // Filter questions based on search and category using query data directly
+  const filteredQuestions = useMemo(() => {
+    return allQuestions.filter((question) => {
+      const matchesSearch =
+        !searchTerm ||
+        question.question.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedLandId === null || question.landId === selectedLandId.toString();
+      return matchesSearch && matchesCategory;
+    });
+  }, [allQuestions, searchTerm, selectedLandId]);
 
-  // Filter questions based on search and category using local state
-  const filteredQuestions = questionsList.filter((question) => {
-    const matchesSearch =
-      !searchTerm ||
-      question.question.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedLandId === null || question.landId === selectedLandId.toString();
-    return matchesSearch && matchesCategory;
-  });
-
-  // Calculate summary statistics based on local questions list
-  const totalQuestions = questionsList.length;
-  const activeQuestions = questionsList.filter(
-    (q) => q.status === "active"
-  ).length;
-  const draftQuestions = questionsList.filter(
-    (q) => q.status === "draft"
-  ).length;
-  const averageCorrectRate =
+  // Calculate summary statistics based on query data directly
+  const totalQuestions = allQuestions.length;
+  const activeQuestions = useMemo(() => 
+    allQuestions.filter((q) => q.status === "active").length,
+    [allQuestions]
+  );
+  const draftQuestions = useMemo(() => 
+    allQuestions.filter((q) => q.status === "draft").length,
+    [allQuestions]
+  );
+  const averageCorrectRate = useMemo(() => 
     totalQuestions > 0
-      ? questionsList.reduce((sum, q) => sum + q.correctRate, 0) /
-        totalQuestions
-      : 0;
+      ? allQuestions.reduce((sum, q) => sum + q.correctRate, 0) / totalQuestions
+      : 0,
+    [allQuestions, totalQuestions]
+  );
 
   // Handle mutation errors with toast notification
   useEffect(() => {
@@ -134,12 +130,7 @@ const QuestionBankPage = ({
       if (response.statusCode === 200) {
         toast.success(response.message);
 
-        // Cách 1: Cập nhật local state để loại bỏ item đã xóa
-        setQuestionsList((prev) =>
-          prev.filter((question) => question.id !== deleteQuestionId)
-        );
-
-        // Cách 2: Refetch data từ server (backup option)
+        // Refetch data từ server để cập nhật UI
         refetch();
       } else {
         toast.error(response.message);

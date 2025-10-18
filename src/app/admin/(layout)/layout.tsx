@@ -1,5 +1,5 @@
 import AdminLayoutClient from "@components/Templates/AdminLayout";
-import AdminSideBar from "@pages/Admin/Components/AdminSideBar";
+import AdminSideBar from "@components/Admin/Components/AdminSideBar";
 import HeaderAdminSSR from "@components/Organisms/HeaderAdminSSR";
 
 export default async function AdminLayout({
