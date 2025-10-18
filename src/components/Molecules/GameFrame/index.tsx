@@ -13,6 +13,9 @@ import AchievementsModal from '../Popup/AchievementsModal';
 import AirEvent from '../Popup/AirEvent';
 import RedeemModal from '../Popup/RedeemModal';
 import BuyMoreLife from '../Popup/BuyMoreLife';
+import CorrectGiftCode from '../Popup/CorrectGiftCode';
+import InputGiftCode from '../Popup/InputGiftCode';
+import IncorrectGiftCode from '../Popup/IncorrectGiftCode';
 interface GameFrameProps {
     children: React.ReactNode;
     className?: string;
@@ -64,6 +67,30 @@ export const GameFrame: React.FC<GameFrameProps> = ({
         setIsBuyMoreLifeModalOpen(!isBuyMoreLifeModalOpen);
     }, [isBuyMoreLifeModalOpen]);
     //--------------------------End--------------------------//
+
+
+    /**
+     * Input Gift Code Modal
+     * TODO: Logic input gift code
+     */
+    const [isInputGiftCodeModalOpen, setIsInputGiftCodeModalOpen] = useState<boolean>(false);
+    const onInputGiftCodeClick = useCallback(() => {
+        setIsInputGiftCodeModalOpen(!isInputGiftCodeModalOpen);
+    }, [isInputGiftCodeModalOpen]);
+
+
+    const [isIncorrectGiftCodeModalOpen, setIsIncorrectGiftCodeModalOpen] = useState<boolean>(false);
+    const onIncorrectGiftCodeClick = useCallback(() => {
+        setIsIncorrectGiftCodeModalOpen(!isIncorrectGiftCodeModalOpen);
+    }, [isIncorrectGiftCodeModalOpen]);
+    //--------------------------End--------------------------//
+
+
+    const [isCorrectGiftCodeModalOpen, setIsCorrectGiftCodeModalOpen] = useState<boolean>(false);
+    const onCorrectGiftCodeClick = useCallback(() => {
+        setIsCorrectGiftCodeModalOpen(!isCorrectGiftCodeModalOpen);
+    }, [isCorrectGiftCodeModalOpen]);
+    //--------------------------End--------------------------//
     return (
         <div className={cn('relative w-full h-full z-50', className)}>
             {/* Avatar */}
@@ -99,11 +126,12 @@ export const GameFrame: React.FC<GameFrameProps> = ({
                 <div className='relative top-1 lg:top-2 left-0 flex items-center justify-center'>
                     <div className='relative w-[100px] h-[45px] lg:w-[180px] lg:h-[85px]'>
                         <Image src={frameCoin} alt='coin' className='mt-3' fill />
+                        <div className='absolute top-2 lg:top-1.5 -left-1 lg:left-0 flex justify-center items-center h-full w-full gap-2'>
+                            <span className='text-xs lg:text-xl font-bold ml-8 text-amber-500'>10000</span>
+                        </div>
                     </div>
 
-                    <div className='absolute top-2 lg:top-1.5 -left-1 lg:left-0 flex justify-center items-center h-full w-full gap-2'>
-                        <span className='text-xs lg:text-xl font-bold ml-8 text-amber-500'>10000</span>
-                    </div>
+                    <Plus color='#FFDD3D' className='mt-3 -ml-1 cursor-pointer drop-shadow-2xl hover:opacity-60 transition-all duration-300' strokeWidth={3} size={25} onClick={onInputGiftCodeClick} />
                 </div>
 
                 <div className='relative top-0 left-0 flex items-center justify-center ml-2'>
@@ -114,7 +142,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
                         </div>
                     </div>
 
-                    <button className='relative w-[35px] h-[35px] lg:w-[65px] lg:h-[65px] top-0 left-0 flex items-center justify-center ml-2 cursor-pointer hover:opacity-80 transition-all duration-300' onClick={onBuyMoreLifeClick}>
+                    <button className='relative w-[35px] h-[35px] lg:w-[65px] lg:h-[65px] top-0 left-0 flex items-center justify-center ml-2 cursor-pointer hover:opacity-80 transition-all duration-300'>
                         <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg' alt='buy more life' className='mt-3' fill />
                     </button>
                 </div>
@@ -150,6 +178,9 @@ export const GameFrame: React.FC<GameFrameProps> = ({
             <AirEvent isOpen={isAirEventModalOpen} onClose={() => setIsAirEventModalOpen(false)} />
             <RedeemModal isOpen={isRedeemModalOpen} onClose={() => setIsRedeemModalOpen(false)} onRedeem={() => { }} />
             <BuyMoreLife isOpen={isBuyMoreLifeModalOpen} onClose={() => setIsBuyMoreLifeModalOpen(false)} onBuy={onBuyMoreLifeClick} coinCost={200} />
+            <InputGiftCode isOpen={isInputGiftCodeModalOpen} onClose={() => setIsInputGiftCodeModalOpen(false)} />
+            <CorrectGiftCode isOpen={isCorrectGiftCodeModalOpen} onClose={() => setIsCorrectGiftCodeModalOpen(false)} coinsReward={500} />
+            <IncorrectGiftCode isOpen={isIncorrectGiftCodeModalOpen} onClose={() => setIsIncorrectGiftCodeModalOpen(false)} coinsReward={500} />
         </div >
-        );
-    };
+    );
+};
