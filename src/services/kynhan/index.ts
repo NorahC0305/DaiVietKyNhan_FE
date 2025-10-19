@@ -1,12 +1,23 @@
 import http from "@configs/fetch";
-import { IKyNhanSummaryResponseModel, IKyNhanResponseModel, IKyNhanUserListResponseModel } from "@models/ky-nhan/response";
+import {
+  IKyNhanSummaryResponseModel,
+  IKyNhanResponseModel,
+  IKyNhanUserListResponseModel,
+} from "@models/ky-nhan/response";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
-
 const kynhanService = {
-
   getKyNhan: async (qs?: string, currentPage?: number, pageSize?: number) => {
-    return await http.get<IKyNhanResponseModel>(`/kynhan?qs=${qs}&currentPage=${currentPage}&pageSize=${pageSize}`, {
+    const params = new URLSearchParams();
+    if (qs) params.append("qs", qs);
+    if (currentPage !== undefined)
+      params.append("currentPage", currentPage.toString());
+    if (pageSize !== undefined) params.append("pageSize", pageSize.toString());
+
+    const queryString = params.toString();
+    const url = queryString ? `/kynhan?${queryString}` : "/kynhan";
+
+    return await http.get<IKyNhanResponseModel>(url, {
       cache: "no-store",
     });
   },
