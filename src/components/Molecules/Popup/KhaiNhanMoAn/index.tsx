@@ -69,8 +69,7 @@ export default function KhaiNhanMoAn({
                             onClick={() => handleSetAn('Sơn Tinh')}
                         >
                             {an === 'Sơn Tinh' && (
-                                <div className="absolute inset-0  rounded-xl border-2 border-transparent bg-gradient-to-r from-green-400 via-lime-500 to-green-400 animate-led-border -z-10">
-                                </div>
+                                <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-green-400 via-lime-500 to-green-400 animate-led-border -z-10" />
                             )}
                             <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760861674/Sơn_Tinh_-_Chương_1_tmi2kx.png' alt="Sơn Tinh - Chương 1" fill className="relative z-10" />
                         </div>
@@ -81,8 +80,7 @@ export default function KhaiNhanMoAn({
                             onClick={() => handleSetAn('Chử Đồng Tử')}
                         >
                             {an === 'Chử Đồng Tử' && (
-                                <div className="absolute inset-0 rounded-xl border-2 border-transparent bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-400 animate-led-border -z-10">
-                                </div>
+                                <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-400 animate-led-border -z-10" />
                             )}
                             <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10"></div>
                         </div>
@@ -92,10 +90,9 @@ export default function KhaiNhanMoAn({
                             onClick={() => handleSetAn('Thánh Gióng')}
                         >
                             {an === 'Thánh Gióng' && (
-                                <div className="absolute inset-0 rounded-xl border-2 border-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-400 animate-led-border -z-10">
-                                </div>
+                                <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-400 animate-led-border -z-10" />
                             )}
-                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10"></div>
+                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
                         </div>
                         <div
                             className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#8D3BBB] cursor-pointer transition-all duration-300 ${an === 'Liễu Hạnh' ? 'scale-105' : ''
@@ -103,10 +100,9 @@ export default function KhaiNhanMoAn({
                             onClick={() => handleSetAn('Liễu Hạnh')}
                         >
                             {an === 'Liễu Hạnh' && (
-                                <div className="absolute inset-0 rounded-xl border-2 border-transparent bg-gradient-to-r from-purple-400 via-violet-500 to-purple-400 animate-led-border -z-10">
-                                </div>
+                                <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-purple-400 via-violet-500 to-purple-400 animate-led-border -z-10" />
                             )}
-                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10"></div>
+                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
                         </div>
                     </div>
 
