@@ -1,11 +1,11 @@
 import z from "zod";
 
 /**
- * Login form data request
+ * User answer log request - text can be string or array
  */
 export const userAnswerLogRequest = z.object({
   questionId: z.number().optional(),
-  text: z.string().optional(),
+  text: z.union([z.string(), z.array(z.string())]).optional(),
 });
 export type IUserAnswerLogRequest = z.infer<typeof userAnswerLogRequest>;
 //-----------------End-UserAnswerLogRequest-----------------//

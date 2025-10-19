@@ -17,10 +17,10 @@ const TRANSITION_DURATION = 300;
 // CSS Classes
 const SIDEBAR_CLASSES = {
   container:
-    "h-full bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col transition-all duration-300",
+    "h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col transition-all duration-300",
   collapsed: "w-16 p-2",
   expanded: "w-80 p-6",
-  mobile: "fixed inset-y-0 left-0 z-50 w-80 p-6",
+  mobile: "fixed top-0 left-0 z-50 h-screen w-80 p-6",
   desktop: "lg:relative lg:z-auto",
 } as const;
 
@@ -75,6 +75,13 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     id: "manage-library",
     label: "Quản lý thư viện",
     icon: "BookOpen",
+    subItems: [
+      { id: "card", label: "Thư viện card", icon: "CreditCard" },
+      { id: "card-story", label: "Thư viện card story", icon: "ScrollText" },
+      { id: "lib-card", label: "Thư viện lib card", icon: "Library" },
+      { id: "ky-nhan-list", label: "Danh sách kỳ nhân", icon: "Users" },
+      { id: "ky-nhan-summary", label: "Tóm tắt kỳ nhân", icon: "FileText" },
+    ],
   },
   {
     id: "statistics-reports",
@@ -139,6 +146,11 @@ const AdminSideBar = () => {
       "content-edit": ROUTES.ADMIN_DASHBOARD.CONTENT.INFO,
       "question-bank": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "question-statistics": ROUTES.ADMIN_DASHBOARD.QUESTION.STATISTICS,
+      card: ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD,
+      "card-story": ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD_STORY,
+      "lib-card": ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD,
+      "ky-nhan-list": ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_LIST,
+      "ky-nhan-summary": ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_SUMMARY,
       "statistics-overview": ROUTES.ADMIN_DASHBOARD.STATISTICS.OVERVIEW,
       "statistics-user": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
@@ -152,7 +164,7 @@ const AdminSideBar = () => {
       "question-game-management": ROUTES.ADMIN_DASHBOARD.QUESTION.BANK,
       "statistics-reports": ROUTES.ADMIN_DASHBOARD.STATISTICS.USER,
       "release-date": ROUTES.ADMIN_DASHBOARD.SYSTEM.RELEASE_DATE,
-      "manage-library": ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO,
+      "manage-library": ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD,
     }),
     []
   );
@@ -200,8 +212,25 @@ const AdminSideBar = () => {
         parentId: "system-config",
         subId: "release-date",
       },
-      [ROUTES.ADMIN_DASHBOARD.LIBRARY.INFO]: {
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD]: {
         parentId: "manage-library",
+        subId: "card",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.CARD_STORY]: {
+        parentId: "manage-library",
+        subId: "card-story",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.LIB_CARD]: {
+        parentId: "manage-library",
+        subId: "lib-card",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_LIST]: {
+        parentId: "manage-library",
+        subId: "ky-nhan-list",
+      },
+      [ROUTES.ADMIN_DASHBOARD.LIBRARY.KY_NHAN_SUMMARY]: {
+        parentId: "manage-library",
+        subId: "ky-nhan-summary",
       },
     }),
     []
@@ -460,7 +489,7 @@ const AdminSideBar = () => {
         </header>
 
         {/* Menu Items */}
-        <nav className="flex flex-col space-y-3 flex-1 pt-2">
+        <nav className="flex flex-col space-y-3 flex-1 pt-2 overflow-y-auto hide-scrollbar">
           {MENU_ITEMS.map((item) => (
             <div key={item.id} className="flex flex-col">
               <MainMenuItem item={item} />

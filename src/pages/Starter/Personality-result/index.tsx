@@ -6,7 +6,7 @@ import Image from "next/image";
 import FrameText from "../Components/FrameText";
 import FrameNumber from "../Components/FrameNumber";
 import { ROUTES } from "@routes";
-import { useGodProfilePointHome } from "@/hooks/useGodProfilePointHome";
+import { useGodProfilePointHome } from "@hooks/useGodProfilePointHome";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import godProfileService from "@services/god-profile";
 import { IGodProfileResponseModel } from "@models/god-profile/response";

@@ -13,6 +13,7 @@ export interface UIQuestion {
   question: string;
   landId: string;
   type: string;
+  answerOptionType?: string;
   createdAt: string;
   status: "active" | "draft";
   correctRate: number;
@@ -45,6 +46,7 @@ const transformQuestionToUI = (question: any): UIQuestion => {
         question.questionType === "TEXT_INPUT"
           ? "Tự Luận"
           : question.questionType || "",
+      answerOptionType: question.answerOptionType || "ONE",
       createdAt,
       status: question.deletedAt ? "draft" : "active",
       correctRate: 0, // Default correct rate, you might need to calculate this from answers
@@ -57,6 +59,7 @@ const transformQuestionToUI = (question: any): UIQuestion => {
       question: question.text || "Unknown question",
       landId: question.landId?.toString() || "",
       type: "Tự Luận",
+      answerOptionType: question.answerOptionType || "ONE",
       createdAt: new Date().toLocaleDateString("vi-VN"),
       status: "active",
       correctRate: 0,
@@ -171,5 +174,86 @@ export const useCreateQuestion = () => {
     mutate,
     isPending,
     error,
+  };
+};
+
+// Hook to update a question
+export const useUpdateQuestion = () => {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const mutate = useCallback(
+    async (
+      id: number,
+      data: ICreateQuestionRequest,
+      options?: {
+        onSuccess?: () => void;
+        onError?: (error: Error) => void;
+      }
+    ) => {
+      setIsPending(true);
+      setError(null);
+
+      try {
+        const response = await questionService.updateQuestion(id, data);
+        toast.success("Cập nhật câu hỏi thành công");
+        options?.onSuccess?.();
+        return response.data;
+      } catch (err) {
+        const error = err as Error;
+        setError(error);
+        toast.error("Không thể cập nhật câu hỏi");
+        options?.onError?.(error);
+        throw error;
+      } finally {
+        setIsPending(false);
+      }
+    },
+    []
+  );
+
+  return {
+    mutate,
+    isPending,
+    error,
+  };
+};
+
+// Hook to get a ONE question by ID
+export const useGetQuestionById = (id: number | null) => {
+  const [data, setData] = useState<IQuestion | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchQuestion = useCallback(async () => {
+    if (!id) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await questionService.getQuestionById(id);
+      if (response.statusCode === 200 && response.data) {
+        setData(response.data);
+      } else {
+        setError(new Error("Failed to fetch question"));
+      }
+    } catch (err) {
+      const error = err as Error;
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchQuestion();
+  }, [fetchQuestion]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch: fetchQuestion,
   };
 };

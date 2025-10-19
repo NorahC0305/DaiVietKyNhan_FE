@@ -7,6 +7,7 @@ import MapRegion from "./Components/MapRegion";
 import MobileRegion from "./Components/MobileRegion";
 import ForceLandscape from "@/components/Atoms/ForceLandscape";
 import IncompleteRegion from "@/components/Molecules/Popup/IncompleteRegion";
+import WaitingOthers from "@/components/Molecules/Popup/WaitingOthers";
 import { IUserLandWithLandEntity } from "@models/user-land/entity";
 import { IUserLandWithLandResponseModel } from "@models/user-land/response";
 import { LAND } from "@constants/land";
@@ -121,6 +122,8 @@ export default function MapPageClient({
   const router = useRouter();
   const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] =
     useState(false);
+  const [isWaitingOthersModalOpen, setIsWaitingOthersModalOpen] =
+    useState(false);
   console.log(userLand);
 
   // Function to check if all previous 4 lands are completed
@@ -163,8 +166,13 @@ export default function MapPageClient({
     if (isRegionUnlocked(regionId)) {
       router.push(`/map/${regionId}`);
     } else {
-      // If locked, show the incomplete region popup
-      setIsIncompleteRegionModalOpen(true);
+      // Special case for "ky-linh-viet-hoa" - show WaitingOthers popup
+      if (regionId === "ky-linh-viet-hoa") {
+        setIsWaitingOthersModalOpen(true);
+      } else {
+        // For other locked regions, show the incomplete region popup
+        setIsIncompleteRegionModalOpen(true);
+      }
     }
   };
 
@@ -240,6 +248,12 @@ export default function MapPageClient({
       <IncompleteRegion
         isOpen={isIncompleteRegionModalOpen}
         onClose={() => setIsIncompleteRegionModalOpen(false)}
+      />
+
+      {/* Popup for ky-linh-viet-hoa region */}
+      <WaitingOthers
+        isOpen={isWaitingOthersModalOpen}
+        onClose={() => setIsWaitingOthersModalOpen(false)}
       />
     </ForceLandscape>
   );

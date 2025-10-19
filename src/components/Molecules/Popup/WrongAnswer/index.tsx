@@ -2,7 +2,6 @@
 
 import ButtonImage from "../../../Atoms/ButtonImage";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
-import userAnswerLogService from "@services/user-answer-log";
 import { toast } from "react-toastify";
 import { useState } from "react";
 
@@ -10,7 +9,7 @@ type WrongAnswerProps = {
   isOpen: boolean;
   onClose: () => void;
   onRetry?: () => void;
-  onUseCoins?: (questionId: number) => Promise<void>;
+  onUseCoins: (questionId: number) => Promise<void>;
   questionId?: number;
   coinCost?: number; // default 500
   penaltyPoints?: number; // default 20
@@ -40,15 +39,7 @@ export default function WrongAnswer({
 
     setIsSubmitting(true);
     try {
-      // Call the skip service directly here if no custom handler provided
-      if (!onUseCoins) {
-        await userAnswerLogService.skipQuestionByCoins({ questionId });
-        toast.success(`Đã sử dụng ${coinCost} xu để vượt qua câu hỏi`);
-        onClose();
-      } else {
-        // Use custom handler if provided
-        await onUseCoins(questionId);
-      }
+      await onUseCoins(questionId);
     } catch (error) {
       console.error("Error skipping question with coins:", error);
       toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
@@ -71,32 +62,35 @@ export default function WrongAnswer({
       {/* Actions */}
       <div className="mt-6 flex items-center justify-center gap-4 sm:gap-6">
         {/* Use coins */}
-        <button
+
+        <ButtonImage
+          width={180}
+          height={48}
           onClick={handleUseCoins}
           disabled={isSubmitting}
-          className={`relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center ${
-            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          isLoading={isSubmitting}
+          className="hover:scale-105 transition-all duration-300"
         >
-          <ButtonImage width={180} height={48}>
-            <span className="relative z-10 flex items-center gap-2">
-              <span className="text-secondary text-xl sm:text-x2l font-semibold">
-                -{coinCost}
-              </span>
-              <img src="/DVKN%20coin.svg" alt="coin" width={48} height={48} />
+          <span className="relative z-10 flex items-center gap-2">
+            <span className="text-secondary text-xl sm:text-x2l font-semibold">
+              -{coinCost}
             </span>
-          </ButtonImage>
-        </button>
+            <img src="/DVKN%20coin.svg" alt="coin" width={48} height={48} />
+          </span>
+        </ButtonImage>
 
         {/* Retry */}
-        <button
+
+        <ButtonImage
+          width={180}
+          height={48}
           onClick={handleRetry}
-          className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center"
+          disabled={isSubmitting}
+          isLoading={isSubmitting}
+          className="hover:scale-105 transition-all duration-300"
         >
-          <ButtonImage width={180} height={48}>
-            Trả lời lại
-          </ButtonImage>
-        </button>
+          Trả lời lại
+        </ButtonImage>
       </div>
     </ModalBackdrop>
   );

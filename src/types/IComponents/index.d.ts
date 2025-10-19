@@ -101,6 +101,7 @@ declare namespace ICOMPONENTS {
     date: Date | undefined;
     description: string;
     isActive: boolean;
+    createdAt?: Date;
   }
 
   export interface ReleaseDateMessage {
@@ -154,6 +155,7 @@ declare namespace ICOMPONENTS {
     content?: string;
     text?: string;
     category?: string;
+    answerOptionType?: "ONE" | "TWO";
     userAnswerLogs?: Array<{
       id: number;
       isCorrect: boolean;
@@ -165,7 +167,7 @@ declare namespace ICOMPONENTS {
     question: Question | null;
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (answerText: string) => void;
+    onSubmit: (text: string[], questionId: number) => void;
     isSubmitting?: boolean;
     isAnswered?: boolean;
   }

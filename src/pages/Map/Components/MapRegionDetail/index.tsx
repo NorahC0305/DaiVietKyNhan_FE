@@ -68,17 +68,18 @@ export default function FixedScrollsPageResponsive({
   };
 
   // Hàm xử lý khi submit câu trả lời
-  const handleQuestionSubmit = async (answerText: string) => {
-    if (!selectedQuestion || !answerText.trim()) {
+  const handleQuestionSubmit = async (text: string[], questionId: number) => {
+    if (!selectedQuestion || text.length === 0) {
       return;
     }
 
     setIsSubmittingAnswer(true);
 
     try {
+      // Gửi một request duy nhất với text là mảng
       const requestData: IUserAnswerLogRequest = {
-        questionId: selectedQuestion.id,
-        text: answerText.trim(),
+        questionId: questionId,
+        text: text,
       };
 
       const response = await userAnswerLogService.answerQuestion(requestData);
@@ -146,19 +147,24 @@ export default function FixedScrollsPageResponsive({
         questionId: questionId,
       };
 
-      const response = await userAnswerLogService.skipQuestionByCoins(requestData);
+      const response = await userAnswerLogService.skipQuestionByCoins(
+        requestData
+      );
 
-      if (response && response.statusCode === 200) {
+      if (response && (response.statusCode === 200 || response.statusCode === 201)) {
         // Successfully skipped the question with coins
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
-        
-        // Close the wrong answer modal
+
+        // Close the wrong answer modal and reset state
         setIsWrongAnswerModalOpen(false);
         setSelectedQuestion(null);
       } else {
         // Rollback optimistic update on error
         setAnsweredQuestions(previousAnsweredQuestions);
-        toast.error(response?.message || "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi.");
+        toast.error(
+          response?.message ||
+            "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi."
+        );
       }
     } catch (error) {
       // Rollback optimistic update on error
@@ -200,7 +206,8 @@ export default function FixedScrollsPageResponsive({
             (pos: ICOMPONENTS.ScrollPosition, idx: number) => {
               const question = questionsWithUser[idx];
               const isAnswered = question
-                ? isQuestionAnswered(question) || answeredQuestions.has(question.id)
+                ? isQuestionAnswered(question) ||
+                  answeredQuestions.has(question.id)
                 : false;
 
               return (
@@ -290,7 +297,9 @@ export default function FixedScrollsPageResponsive({
         onClose={handleCloseModal}
         onSubmit={handleQuestionSubmit}
         isSubmitting={isSubmittingAnswer}
-        isAnswered={selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false}
+        isAnswered={
+          selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false
+        }
       />
 
       {/* Wrong Answer Modal */}

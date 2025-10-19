@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { isValid } from "date-fns";
+import { isValid, addHours } from "date-fns";
 import systemService from "@services/system";
 import {
   IGetReleaseDateResponse,
@@ -20,6 +20,7 @@ export const useReleaseDateManager = () => {
     date: undefined,
     description: "",
     isActive: false,
+    createdAt: undefined,
   });
   const [currentReleaseSetting, setCurrentReleaseSetting] =
     useState<ICOMPONENTS.ReleaseDateData>({
@@ -27,6 +28,7 @@ export const useReleaseDateManager = () => {
       date: undefined,
       description: "",
       isActive: false,
+      createdAt: undefined,
     });
   const [allReleaseDates, setAllReleaseDates] = useState<
     ICOMPONENTS.ReleaseDateData[]
@@ -36,6 +38,7 @@ export const useReleaseDateManager = () => {
   const [activeReleaseDate, setActiveReleaseDate] = useState<Date | undefined>(
     undefined
   );
+  const [activeReleaseEventData, setActiveReleaseEventData] = useState<ICOMPONENTS.ReleaseDateData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<ICOMPONENTS.ReleaseDateMessage | null>(
     null
@@ -65,18 +68,25 @@ export const useReleaseDateManager = () => {
       const response = (await systemService.getReleaseDate(
         "sort:-launchDate,sort:-isActive"
       )) as IGetReleaseDateResponse;
-
       if (response.data && response.data.results.length > 0) {
         // Chuyển đổi tất cả release dates từ UTC sang múi giờ Việt Nam
         const allDates = response.data.results.map((releaseDateData) => {
           const utcDate = new Date(releaseDateData.launchDate);
           const vietnamDate = convertUtcToVietnamTime(utcDate);
+          // Trừ đi 14 tiếng để hiển thị đúng thời gian người dùng đã chọn ban đầu
+          const adjustedDate = addHours(vietnamDate, -14);
+          
+          // Xử lý createdAt nếu có
+          const createdAt = releaseDateData.createdAt 
+            ? new Date(releaseDateData.createdAt)
+            : undefined;
 
           return {
             id: releaseDateData.id,
-            date: vietnamDate,
+            date: adjustedDate,
             description: releaseDateData.description || "",
             isActive: releaseDateData.isActive || false,
+            createdAt,
           };
         });
 
@@ -86,8 +96,11 @@ export const useReleaseDateManager = () => {
         const activeEvent = allDates.find((event) => event.isActive);
         if (activeEvent && activeEvent.date) {
           setActiveReleaseDate(activeEvent.date);
+          setActiveReleaseEventData(activeEvent);
         } else {
           setActiveReleaseDate(undefined);
+        setActiveReleaseEventData(null);
+          setActiveReleaseEventData(null);
         }
 
         // Chọn sự kiện gần nhất làm mặc định
@@ -118,12 +131,14 @@ export const useReleaseDateManager = () => {
           date: undefined,
           description: "",
           isActive: false,
+          createdAt: undefined,
         };
         setAllReleaseDates([]);
         setReleaseDate(emptyState);
         setCurrentReleaseSetting(emptyState);
         setSelectedEventId(null);
         setActiveReleaseDate(undefined);
+        setActiveReleaseEventData(null);
       }
     } catch (error) {
       console.error("Error loading release dates:", error);
@@ -160,12 +175,15 @@ export const useReleaseDateManager = () => {
 
       // Chuyển đổi từ múi giờ Việt Nam về UTC trước khi gửi lên server
       const utcDate = convertVietnamTimeToUtc(releaseDate.date);
+      
+      // Thêm 14 tiếng vào launchDate trước khi gửi lên hệ thống
+      const launchDateWithExtraHours = addHours(utcDate, 14);
 
       let response;
       if (releaseDate.id) {
         // Cập nhật release date hiện có
         const payload = {
-          launchDate: utcDate.toISOString(),
+          launchDate: launchDateWithExtraHours.toISOString(),
         };
         response = (await systemService.updateReleaseDate(
           releaseDate.id,
@@ -174,7 +192,7 @@ export const useReleaseDateManager = () => {
       } else {
         // Tạo release date mới
         const payload = {
-          launchDate: utcDate.toISOString(),
+          launchDate: launchDateWithExtraHours.toISOString(),
         };
         response = (await systemService.setReleaseDate(
           payload
@@ -213,6 +231,7 @@ export const useReleaseDateManager = () => {
         date: undefined,
         description: "",
         isActive: false,
+        createdAt: undefined,
       });
     } else {
       // Reset về sự kiện hiện tại
@@ -275,6 +294,7 @@ export const useReleaseDateManager = () => {
           date: undefined,
           description: "",
           isActive: false,
+          createdAt: undefined,
         };
         setReleaseDate(emptyState);
         setCurrentReleaseSetting(emptyState);
@@ -325,6 +345,7 @@ export const useReleaseDateManager = () => {
     selectedEventId,
     isCreatingNew,
     activeReleaseDate,
+    activeReleaseEventData,
     isLoading,
     message,
     currentDateTime,

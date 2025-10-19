@@ -15,7 +15,7 @@ import { Button } from "@/components/Atoms/ui/button";
 import { Skeleton } from "@/components/Atoms/ui/skeleton";
 import { Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { UIQuestion } from "@hooks/use-question-queries";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 
 interface QuestionsTableProps {
   lands: ILandEntity[];
@@ -36,16 +36,25 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
   isLoading = false,
   error,
 }) => {
-  const getTypeBadgeStyle = (type: string) => {
-    switch (type) {
-      case "Tự Luận":
+  const getAnswerOptionTypeBadgeStyle = (answerOptionType: string) => {
+    switch (answerOptionType) {
+      case "ONE":
         return { backgroundColor: "#d86d37", color: "white" };
-      case "Trắc nghiệm":
+      case "TWO":
         return { backgroundColor: "#f26644", color: "white" };
-      case "Kết hợp":
-        return { backgroundColor: "#dd003f", color: "white" };
       default:
         return { backgroundColor: "#d86d37", color: "white" };
+    }
+  };
+
+  const getAnswerOptionTypeText = (answerOptionType: string) => {
+    switch (answerOptionType) {
+      case "ONE":
+        return "Đơn lẻ";
+      case "TWO":
+        return "Cặp đôi";
+      default:
+        return "Đơn lẻ";
     }
   };
 
@@ -87,7 +96,7 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
               <TableRow>
                 <TableHead className="font-semibold">Câu hỏi</TableHead>
                 <TableHead className="font-semibold">Danh mục</TableHead>
-                <TableHead className="font-semibold">Loại</TableHead>
+                <TableHead className="font-semibold">Loại đáp án</TableHead>
                 <TableHead className="font-semibold">Ngày tạo</TableHead>
                 <TableHead className="font-semibold">Trạng thái</TableHead>
                 <TableHead className="font-semibold">Tỷ lệ đúng</TableHead>
@@ -146,10 +155,10 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
                     </TableCell>
                     <TableCell>
                       <Badge
-                        style={getTypeBadgeStyle(question.type)}
+                        style={getAnswerOptionTypeBadgeStyle(question.answerOptionType || "ONE")}
                         className="border-0"
                       >
-                        {question.type}
+                        {getAnswerOptionTypeText(question.answerOptionType || "ONE")}
                       </Badge>
                     </TableCell>
                     <TableCell>{question.createdAt}</TableCell>
