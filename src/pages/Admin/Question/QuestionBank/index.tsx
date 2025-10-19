@@ -35,7 +35,7 @@ import questionService from "@services/question";
 import { IDeleteQuestionResponse } from "@models/question/response";
 import { ICreateQuestionRequest } from "@models/question/request";
 import { IQuestion } from "@models/question/entity";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 
 
 const QuestionBankPage = ({

@@ -32,7 +32,7 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import kyNhanSummaryService from "@services/ky-nhan-summary";
 import { ICreateQuestionRequest } from "@models/question/request";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 import { IQuestion } from "@models/question/entity";
 
 interface AddQuestionFormProps {
