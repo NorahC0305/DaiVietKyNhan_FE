@@ -19,13 +19,14 @@ import {
 } from "@/components/Atoms/ui/dialog";
 import { Label } from "@/components/Atoms/ui/label";
 import { Textarea } from "@/components/Atoms/ui/textarea";
-import { Search, Filter, Eye, EyeOff, Edit, Trash2, RefreshCw, X, Upload, Image } from "lucide-react";
+import { Search, Filter, Eye, EyeOff, Edit, Trash2, RefreshCw, X, Upload, Image, BookUser } from "lucide-react";
 import kynhanService from "@services/kynhan";
 import { IKyNhan } from "@models/ky-nhan/entity";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 import { IBackendResponse } from "@models/backend";
 import { ILandEntity } from "@models/Land/entity";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const KyNhanListPage = ({
   kyNhanList,
@@ -53,6 +54,7 @@ const KyNhanListPage = ({
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const router = useRouter();
 
 
   // Fetch ky-nhan data
@@ -132,6 +134,11 @@ const KyNhanListPage = ({
     setSelectedImage(null);
     setEditModalOpen(true);
   };
+
+  const openViewDetailModal = (kyNhan: IKyNhan) => {
+    router.push(`/admin/manage-library/card-story/${kyNhan.id}`);
+  };
+
 
   const closeEditModal = () => {
     setEditModalOpen(false);
@@ -431,6 +438,15 @@ const KyNhanListPage = ({
                           onClick={() => openEditModal(kyNhan)}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
+                          title="Xem Chi Tiết"
+                          onClick={() => openViewDetailModal(kyNhan)}
+                        >
+                          <BookUser className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"
