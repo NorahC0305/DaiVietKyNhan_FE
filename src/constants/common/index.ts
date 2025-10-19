@@ -24,4 +24,17 @@ const LAND_CONFIG = {
         color: '#8D3BBB'
     }
 }
-export { COOKIES, LAND_CONFIG };
+
+const ROLE = {
+    ADMIN: {
+        ID: 1,
+        NAME: 'admin',
+    },
+    CUSTOMER: {
+        ID: 2,
+        NAME: 'customer',
+    },
+};
+
+
+export { COOKIES, LAND_CONFIG, ROLE };

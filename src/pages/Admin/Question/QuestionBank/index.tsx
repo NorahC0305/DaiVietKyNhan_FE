@@ -35,7 +35,7 @@ import questionService from "@services/question";
 import { IDeleteQuestionResponse } from "@models/question/response";
 import { ICreateQuestionRequest } from "@models/question/request";
 import { IQuestion } from "@models/question/entity";
-import { ILandEntity } from "@models/land/entity";
+import { ILandEntity } from "@models/Land/entity";
 
 
 const QuestionBankPage = ({
@@ -54,7 +54,7 @@ const QuestionBankPage = ({
 
   // Fetch questions data using the hook
   const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
-  
+
   // Fetch editing question data
   const { data: editingQuestion, isLoading: isLoadingEditQuestion } = useGetQuestionById(editingQuestionId);
 
