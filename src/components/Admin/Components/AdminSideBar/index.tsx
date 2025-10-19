@@ -17,10 +17,10 @@ const TRANSITION_DURATION = 300;
 // CSS Classes
 const SIDEBAR_CLASSES = {
   container:
-    "h-full bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col transition-all duration-300",
+    "h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col transition-all duration-300",
   collapsed: "w-16 p-2",
   expanded: "w-80 p-6",
-  mobile: "fixed inset-y-0 left-0 z-50 w-80 p-6",
+  mobile: "fixed top-0 left-0 z-50 h-screen w-80 p-6",
   desktop: "lg:relative lg:z-auto",
 } as const;
 
@@ -489,7 +489,7 @@ const AdminSideBar = () => {
         </header>
 
         {/* Menu Items */}
-        <nav className="flex flex-col space-y-3 flex-1 pt-2">
+        <nav className="flex flex-col space-y-3 flex-1 pt-2 overflow-y-auto hide-scrollbar">
           {MENU_ITEMS.map((item) => (
             <div key={item.id} className="flex flex-col">
               <MainMenuItem item={item} />

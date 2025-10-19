@@ -283,7 +283,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                           const selectedKyNhan = kyNhanList?.find(
                             (k) => k.id.toString() === formData.kyNhanId
                           );
-                          return selectedKyNhan?.imgUrl ? (
+                          return selectedKyNhan?.imgUrl && selectedKyNhan.imgUrl.trim() ? (
                             <img
                               src={selectedKyNhan.imgUrl}
                               alt={selectedKyNhan.name}
@@ -357,7 +357,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                             className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-colors"
                           >
                             <div className="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0">
-                              {kyNhan.imgUrl ? (
+                              {kyNhan.imgUrl && kyNhan.imgUrl.trim() ? (
                                 <img
                                   src={kyNhan.imgUrl}
                                   alt={kyNhan.name}

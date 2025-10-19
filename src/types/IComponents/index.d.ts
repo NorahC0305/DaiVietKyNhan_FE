@@ -101,6 +101,7 @@ declare namespace ICOMPONENTS {
     date: Date | undefined;
     description: string;
     isActive: boolean;
+    createdAt?: Date;
   }
 
   export interface ReleaseDateMessage {

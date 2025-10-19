@@ -15,6 +15,7 @@ const ReleaseDateManager: React.FC = () => {
     selectedEventId,
     isCreatingNew,
     activeReleaseDate,
+    activeReleaseEventData,
     isLoading,
     message,
     currentDateTime,
@@ -66,6 +67,7 @@ const ReleaseDateManager: React.FC = () => {
         <SystemStatusDashboard
           currentTime={currentDateTime}
           activeReleaseDate={activeReleaseDate}
+          activeReleaseEventData={activeReleaseEventData}
         />
       )}
 

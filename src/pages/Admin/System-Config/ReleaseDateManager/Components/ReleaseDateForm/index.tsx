@@ -64,7 +64,7 @@ const ReleaseDateForm: React.FC<ReleaseDateFormProps> = React.memo(
         <CardContent className="space-y-6">
           <AntdDateTimePicker
             date={releaseDate?.date}
-            onDateChange={onDateChange}
+            onDateChange={(date)=>{onDateChange(date); console.log("date", date)}}
             placeholder="Chọn ngày và giờ ra mắt (GMT+7)"
             minDate={getCurrentVietnamTime()}
           />

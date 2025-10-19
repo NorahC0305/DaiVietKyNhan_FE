@@ -331,7 +331,7 @@ const KyNhanListPage = ({
                     {/* Image - Now larger and moved to top */}
                     <div className="relative">
                       <div className="w-full h-48 rounded-t-lg overflow-hidden border-b border-gray-200 bg-gray-50 flex items-center justify-center">
-                        {kyNhan.imgUrl ? (
+                        {kyNhan.imgUrl && kyNhan.imgUrl.trim() ? (
                           <img
                             src={kyNhan.imgUrl}
                             alt={kyNhan.name}
@@ -473,7 +473,7 @@ const KyNhanListPage = ({
                       alt="Preview"
                       className="w-full h-full object-contain"
                     />
-                  ) : editingKyNhan?.imgUrl ? (
+                  ) : editingKyNhan?.imgUrl && editingKyNhan.imgUrl.trim() ? (
                     <img
                       src={editingKyNhan.imgUrl}
                       alt={editingKyNhan.name}

@@ -2,29 +2,37 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { getCurrentVietnamTime } from "@utils/ReleaseDateUtils";
 
 interface LaunchProgressBarProps {
   releaseDate: Date;
   startDate: Date;
+  createdAt?: Date;
 }
 
 const LaunchProgressBar: React.FC<LaunchProgressBarProps> = ({
   releaseDate,
   startDate,
+  createdAt,
 }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const totalDuration = releaseDate.getTime() - startDate.getTime();
-    if (totalDuration <= 0) {
-      setProgress(100);
-      return;
-    }
-
     const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const elapsed = now - startDate.getTime();
-      const currentProgress = Math.min((elapsed / totalDuration) * 100, 100);
+      const now = getCurrentVietnamTime();
+      
+      // Sử dụng createdAt nếu có, nếu không thì dùng mốc thời gian 30 ngày trước
+      const actualStartTime = createdAt || new Date(releaseDate.getTime() - (30 * 24 * 60 * 60 * 1000));
+      
+      const totalDuration = releaseDate.getTime() - actualStartTime.getTime();
+      const elapsed = now.getTime() - actualStartTime.getTime();
+      
+      if (totalDuration <= 0) {
+        setProgress(100);
+        return;
+      }
+
+      const currentProgress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
       setProgress(currentProgress);
 
       if (currentProgress >= 100) {
@@ -33,7 +41,7 @@ const LaunchProgressBar: React.FC<LaunchProgressBarProps> = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [releaseDate, startDate]);
+  }, [releaseDate, createdAt]);
 
   return (
     <div className="w-full bg-gray-200/50 rounded-full h-2.5 overflow-hidden">

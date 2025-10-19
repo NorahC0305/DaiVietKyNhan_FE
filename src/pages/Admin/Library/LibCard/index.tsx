@@ -350,11 +350,17 @@ const LibCardPage = () => {
                           className="w-full p-0"
                         >
                           <div className="flex items-center gap-3 py-2 px-2 w-full">
-                            <img
-                              src={kynhan.imgUrl}
-                              alt={kynhan.name}
-                              className="w-8 h-8 rounded-full object-cover border border-gray-200 flex-shrink-0"
-                            />
+                            {kynhan.imgUrl && kynhan.imgUrl.trim() ? (
+                              <img
+                                src={kynhan.imgUrl}
+                                alt={kynhan.name}
+                                className="w-8 h-8 rounded-full object-cover border border-gray-200 flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full border border-gray-200 flex-shrink-0 bg-gray-100 flex items-center justify-center">
+                                <span className="text-xs text-gray-400">?</span>
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm whitespace-normal">
                                 {kynhan.name}
@@ -380,11 +386,17 @@ const LibCardPage = () => {
                           );
                           return selectedKynhan ? (
                             <div className="flex items-center gap-3">
-                              <img
-                                src={selectedKynhan.imgUrl}
-                                alt={selectedKynhan.name}
-                                className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                              />
+                              {selectedKynhan.imgUrl && selectedKynhan.imgUrl.trim() ? (
+                                <img
+                                  src={selectedKynhan.imgUrl}
+                                  alt={selectedKynhan.name}
+                                  className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full border border-gray-300 bg-gray-100 flex items-center justify-center">
+                                  <span className="text-xs text-gray-400">?</span>
+                                </div>
+                              )}
                               <div>
                                 <div className="font-medium text-gray-800">
                                   {selectedKynhan.name}

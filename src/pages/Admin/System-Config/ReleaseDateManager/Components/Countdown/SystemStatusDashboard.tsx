@@ -17,11 +17,13 @@ import {
 interface SystemStatusDashboardProps {
   currentTime: Date;
   activeReleaseDate: Date | undefined;
+  activeReleaseEventData: ICOMPONENTS.ReleaseDateData | null;
 }
 
 const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
   currentTime,
   activeReleaseDate,
+  activeReleaseEventData,
 }) => {
   const [countdown, setCountdown] = useState<ICOMPONENTS.CountdownState>({
     days: 0,
@@ -40,13 +42,15 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
 
     const interval = setInterval(() => {
       try {
-        // Lấy thời gian hiện tại (đã là múi giờ Việt Nam)
-        const nowVietnam = getCurrentVietnamTime();
+        // Lấy thời gian hiện tại và +7 tiếng để điều chỉnh múi giờ
+        const nowVietnam = new Date(
+          getCurrentVietnamTime().getTime() + 7 * 60 * 60 * 1000
+        );
         const releaseDateVietnam = convertUtcToVietnamTime(activeReleaseDate);
 
         // Validate dates before calculation
         if (!isValid(nowVietnam) || !isValid(releaseDateVietnam)) {
-          console.warn('Invalid date detected in countdown calculation');
+          console.warn("Invalid date detected in countdown calculation");
           return;
         }
 
@@ -69,7 +73,7 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
           seconds: Math.floor((distance % (1000 * 60)) / 1000),
         });
       } catch (error) {
-        console.error('Error in countdown calculation:', error);
+        console.error("Error in countdown calculation:", error);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -89,12 +93,18 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xl font-bold text-gray-800">
-                {isValid(currentTime) ? formatVietnamTime(currentTime, "HH:mm:ss") : "Invalid Time"}
+                {isValid(currentTime)
+                  ? formatVietnamTime(currentTime, "HH:mm:ss")
+                  : "Invalid Time"}
               </span>
             </div>
           </div>
           <div className="flex justify-end text-sm text-gray-600 mt-1">
-            <span>{isValid(currentTime) ? formatVietnamTime(currentTime, "EEEE, dd/MM/yyyy") : "Invalid Date"}</span>
+            <span>
+              {isValid(currentTime)
+                ? formatVietnamTime(currentTime, "EEEE, dd/MM/yyyy")
+                : "Invalid Date"}
+            </span>
           </div>
         </div>
 
@@ -145,6 +155,7 @@ const SystemStatusDashboard: React.FC<SystemStatusDashboardProps> = ({
               <LaunchProgressBar
                 releaseDate={activeReleaseDate}
                 startDate={startDate}
+                createdAt={activeReleaseEventData?.createdAt}
               />
             </motion.div>
           ) : (
