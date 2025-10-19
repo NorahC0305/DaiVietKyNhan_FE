@@ -31,7 +31,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
     /**
      * Achievement Modal
      */
-    const [isAchievementModalOpen, setIsAchievementModalOpen] = useState<boolean>(true);
+    const [isAchievementModalOpen, setIsAchievementModalOpen] = useState<boolean>(false);
     const onAchievementClick = useCallback(() => {
         setIsAchievementModalOpen(!isAchievementModalOpen);
     }, [isAchievementModalOpen]);
