@@ -4,40 +4,17 @@ import React from 'react'
 import Image from 'next/image'
 import ButtonImage from '@components/Atoms/ButtonImage'
 import ModalBackdrop from '@components/Atoms/ModalBackdrop'
+import { LAND_CONFIG } from '@constants/common'
 
-type LandType = 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
-
-const LAND_CONFIG: Record<LandType, { img: string; tenNui: string; color: string }> = {
-    'Sơn Tinh': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714093/Logo_ST_w5vzqy.svg',
-        tenNui: 'Núi Tản Viên',
-        color: '#41821E'
-    },
-    'Thánh Gióng': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714074/Logo_TG_ybvbuo.svg',
-        tenNui: 'Đền Phù Đổng',
-        color: '#EF493D'
-    },
-    'Chử Đồng Tử': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg',
-        tenNui: 'Đầm Dạ Trạch',
-        color: '#2B638F'
-    },
-    'Liễu Hạnh': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg',
-        tenNui: 'Phủ Tây Hồ',
-        color: '#8D3BBB'
-    }
-}
-
+type LandKey = 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
 interface CompleteLandProps {
     isOpen: boolean
     onClose: () => void
-    land: LandType
+    land: LandKey
 }
 
 const CompleteLand = ({ isOpen, onClose, land }: CompleteLandProps) => {
-    const kyChu = LAND_CONFIG[land]
+    const kyChu = LAND_CONFIG[land as LandKey]
     return (
         <ModalBackdrop isOpen={isOpen} onClose={onClose}>
             <div className='flex items-center justify-center'>
