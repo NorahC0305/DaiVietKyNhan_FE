@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import MapRegionDetail from "@pages/Map/Components/MapRegionDetail";
 import landService from "@services/land";
-import { ILandWithUserQuestionResponseModel } from "@models/Land/response";
+import { ILandWithUserQuestionResponseModel } from "@models/land/response";
 
 export const dynamic = "force-dynamic";
 

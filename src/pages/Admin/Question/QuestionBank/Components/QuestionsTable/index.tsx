@@ -15,7 +15,7 @@ import { Button } from "@/components/Atoms/ui/button";
 import { Skeleton } from "@/components/Atoms/ui/skeleton";
 import { Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { UIQuestion } from "@hooks/use-question-queries";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 
 interface QuestionsTableProps {
   lands: ILandEntity[];

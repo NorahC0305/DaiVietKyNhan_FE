@@ -23,7 +23,7 @@ import {
 import { Upload, Save, X, Plus } from "lucide-react";
 import kynhanService from "@services/kynhan";
 import landService from "@services/land";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 import { IBackendResponse } from "@models/backend";
 import { IKyNhanResponseModel } from "@models/ky-nhan/response";
 import { toast } from "react-toastify";

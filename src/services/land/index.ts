@@ -1,5 +1,5 @@
 import http from "@configs/fetch";
-import { ILandResponseModel, ILandWithUserQuestionResponseModel } from "@models/Land/response";
+import { ILandResponseModel, ILandWithUserQuestionResponseModel } from "@models/land/response";
 
 
 const landService = {
