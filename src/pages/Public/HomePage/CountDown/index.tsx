@@ -73,7 +73,9 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         if (!launchDate) return;
 
         const calculateTimeLeft = () => {
-            const difference = +new Date(launchDate) - +new Date();
+            const vnLaunchDate = new Date(launchDate);
+            vnLaunchDate.setHours(vnLaunchDate.getHours() - 7);
+            const difference = +vnLaunchDate - +new Date();
             let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
             if (difference > 0) {
@@ -89,11 +91,7 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
         };
 
         setTimeLeft(calculateTimeLeft());
-
-        const timer = setInterval(() => {
-            setTimeLeft(calculateTimeLeft());
-        }, 1000);
-
+        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
         return () => clearInterval(timer);
     }, [launchDate]);
     //--------------------------------End--------------------------------//
