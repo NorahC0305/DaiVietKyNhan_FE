@@ -16,6 +16,7 @@ export default function QuestionModal({
 }: ICOMPONENTS.QuestionModalProps) {
   const [answerText, setAnswerText] = useState("");
   const [secondAnswerText, setSecondAnswerText] = useState("");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Kiểm tra câu hỏi đã trả lời đúng chưa
   const isQuestionAnswered = (question: any) => {
@@ -32,7 +33,12 @@ export default function QuestionModal({
       const correctAnswer = question.userAnswerLogs.find(
         (log: any) => log.isCorrect === true
       );
-      return correctAnswer?.text || "";
+      const text = correctAnswer?.text;
+      // Handle both string and array cases
+      if (Array.isArray(text)) {
+        return text[0] || "";
+      }
+      return text || "";
     }
     return "";
   };
@@ -43,45 +49,126 @@ export default function QuestionModal({
       const correctAnswers = question.userAnswerLogs.filter(
         (log: any) => log.isCorrect === true
       );
-      // Giả sử câu trả lời đầu tiên là answer đầu, câu trả lời thứ 2 là answer thứ 2
+      
+      // Tìm log có text là array với nhiều phần tử (mới)
+      const answerWithArray = correctAnswers.find((log: any) => 
+        Array.isArray(log.text) && log.text.length > 1
+      );
+      
+      if (answerWithArray && Array.isArray(answerWithArray.text)) {
+        // Nếu có log với array, lấy 2 phần tử đầu
+        return {
+          firstAnswer: answerWithArray.text[0] || "",
+          secondAnswer: answerWithArray.text[1] || "",
+        };
+      }
+      
+      // Fallback: giả sử câu trả lời đầu tiên là answer đầu, câu trả lời thứ 2 là answer thứ 2
+      const extractText = (text: any) => {
+        if (Array.isArray(text)) {
+          return text[0] || "";
+        }
+        return text || "";
+      };
+      
       return {
-        firstAnswer: correctAnswers[0]?.text || "",
-        secondAnswer: correctAnswers[1]?.text || "",
+        firstAnswer: extractText(correctAnswers[0]?.text),
+        secondAnswer: extractText(correctAnswers[1]?.text),
       };
     }
     return { firstAnswer: "", secondAnswer: "" };
   };
 
   // Sử dụng prop isAnswered từ parent thay vì chỉ dựa vào server data
-  const isQuestionAnsweredFromServer = question ? isQuestionAnswered(question) : false;
+  const isQuestionAnsweredFromServer = question
+    ? isQuestionAnswered(question)
+    : false;
   const finalIsAnswered = isAnswered || isQuestionAnsweredFromServer;
   const previousAnswer = question ? getPreviousAnswer(question) : "";
-  const previousAnswers = question ? getPreviousAnswers(question) : { firstAnswer: "", secondAnswer: "" };
+  const previousAnswers = question
+    ? getPreviousAnswers(question)
+    : { firstAnswer: "", secondAnswer: "" };
 
   // Xác định xem có phải loại TWO không
   const isTwoAnswerType = question?.answerOptionType === "TWO";
 
-  // Set câu trả lời cũ khi modal mở và câu hỏi đã được trả lời
+  // Helper function to ensure string value
+  const ensureString = (value: any): string => {
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) return value[0] || "";
+    return String(value || "");
+  };
+
+  // Set câu trả lời khi modal mở
   useEffect(() => {
-    if (isOpen && question && finalIsAnswered) {
-      if (isTwoAnswerType) {
-        setAnswerText(previousAnswers.firstAnswer);
-        setSecondAnswerText(previousAnswers.secondAnswer);
+    if (isOpen && question && !hasInitialized) {
+      if (finalIsAnswered) {
+        // Set câu trả lời cũ nếu đã trả lời đúng
+        if (isTwoAnswerType) {
+          setAnswerText(ensureString(previousAnswers.firstAnswer));
+          setSecondAnswerText(ensureString(previousAnswers.secondAnswer));
+        } else {
+          setAnswerText(ensureString(previousAnswer));
+        }
       } else {
-        setAnswerText(previousAnswer);
+        // Reset về rỗng nếu chưa trả lời
+        setAnswerText("");
+        setSecondAnswerText("");
       }
-    } else if (isOpen && question && !finalIsAnswered) {
-      setAnswerText("");
-      setSecondAnswerText("");
+      setHasInitialized(true);
+    } else if (!isOpen) {
+      // Reset khi modal đóng
+      setHasInitialized(false);
     }
-  }, [isOpen, question, finalIsAnswered, previousAnswer, previousAnswers, isTwoAnswerType]);
+  }, [isOpen, question, hasInitialized]);
+
+  // Cập nhật câu trả lời khi previous answers thay đổi (chỉ khi modal đã mở)
+  useEffect(() => {
+    if (isOpen && question && hasInitialized && finalIsAnswered) {
+      if (isTwoAnswerType) {
+        setAnswerText(ensureString(previousAnswers.firstAnswer));
+        setSecondAnswerText(ensureString(previousAnswers.secondAnswer));
+      } else {
+        setAnswerText(ensureString(previousAnswer));
+      }
+    }
+  }, [
+    previousAnswer,
+    previousAnswers,
+    isTwoAnswerType,
+    finalIsAnswered,
+    isOpen,
+    question,
+    hasInitialized,
+  ]);
 
   const handleSubmit = () => {
     if (question) {
-      if (isTwoAnswerType) {
-        onSubmit(answerText.trim(), secondAnswerText.trim());
-      } else {
-        onSubmit(answerText.trim());
+      // Ensure we have string values before trimming
+      const answerTextStr = ensureString(answerText);
+      const secondAnswerTextStr = ensureString(secondAnswerText);
+      
+      // Kiểm tra validation giống như button disabled logic
+      if (
+        !answerTextStr.trim() ||
+        isSubmitting ||
+        (isTwoAnswerType && !secondAnswerTextStr.trim())
+      ) {
+        return;
+      }
+
+      const textArray: string[] = [];
+
+      if (answerTextStr.trim()) {
+        textArray.push(answerTextStr.trim());
+      }
+
+      if (isTwoAnswerType && secondAnswerTextStr.trim()) {
+        textArray.push(secondAnswerTextStr.trim());
+      }
+
+      if (textArray.length > 0) {
+        onSubmit(textArray, question.id);
       }
     }
   };
@@ -89,6 +176,7 @@ export default function QuestionModal({
   const handleClose = () => {
     setAnswerText("");
     setSecondAnswerText("");
+    setHasInitialized(false);
     onClose();
   };
 
@@ -186,12 +274,15 @@ export default function QuestionModal({
                         onChange={setAnswerText}
                         disabled={finalIsAnswered}
                         placeholder="Đáp án 1..."
+                        autoFocus={!finalIsAnswered}
+                        onEnter={handleSubmit}
                       />
                       <InputAnswer
                         value={secondAnswerText}
                         onChange={setSecondAnswerText}
                         disabled={finalIsAnswered}
                         placeholder="Đáp án 2..."
+                        onEnter={handleSubmit}
                       />
                     </div>
                   ) : (
@@ -199,6 +290,8 @@ export default function QuestionModal({
                       value={answerText}
                       onChange={setAnswerText}
                       disabled={finalIsAnswered}
+                      autoFocus={!finalIsAnswered}
+                      onEnter={handleSubmit}
                     />
                   )}
 
@@ -214,9 +307,9 @@ export default function QuestionModal({
                       <button
                         onClick={handleSubmit}
                         disabled={
-                          !answerText.trim() || 
+                          !ensureString(answerText).trim() ||
                           isSubmitting ||
-                          (isTwoAnswerType && !secondAnswerText.trim())
+                          (isTwoAnswerType && !ensureString(secondAnswerText).trim())
                         }
                         className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
                       >

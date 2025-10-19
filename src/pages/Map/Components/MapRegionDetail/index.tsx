@@ -68,88 +68,41 @@ export default function FixedScrollsPageResponsive({
   };
 
   // Hàm xử lý khi submit câu trả lời
-  const handleQuestionSubmit = async (answerText: string, secondAnswerText?: string) => {
-    if (!selectedQuestion || !answerText.trim()) {
-      return;
-    }
-
-    // Kiểm tra nếu có answerOptionType là TWO thì cần cả 2 answers
-    if (selectedQuestion.answerOptionType === "TWO" && (!secondAnswerText || !secondAnswerText.trim())) {
+  const handleQuestionSubmit = async (text: string[], questionId: number) => {
+    if (!selectedQuestion || text.length === 0) {
       return;
     }
 
     setIsSubmittingAnswer(true);
 
     try {
-      let response;
-      
-      if (selectedQuestion.answerOptionType === "TWO" && secondAnswerText) {
-        // Gửi 2 request riêng biệt cho loại TWO
-        const firstRequestData: IUserAnswerLogRequest = {
-          questionId: selectedQuestion.id,
-          text: answerText.trim(),
-        };
+      // Gửi một request duy nhất với text là mảng
+      const requestData: IUserAnswerLogRequest = {
+        questionId: questionId,
+        text: text,
+      };
 
-        const secondRequestData: IUserAnswerLogRequest = {
-          questionId: selectedQuestion.id,
-          text: secondAnswerText.trim(),
-        };
+      const response = await userAnswerLogService.answerQuestion(requestData);
 
-        // Gửi cả 2 requests song song
-        const [firstResponse, secondResponse] = await Promise.all([
-          userAnswerLogService.answerQuestion(firstRequestData),
-          userAnswerLogService.answerQuestion(secondRequestData)
-        ]);
-
-        // Kiểm tra cả 2 responses
-        if (firstResponse && firstResponse.statusCode === 201 && firstResponse.data &&
-            secondResponse && secondResponse.statusCode === 201 && secondResponse.data) {
-          // Cả 2 câu trả lời đều đúng
-          if (firstResponse.data.isCorrect && secondResponse.data.isCorrect) {
-            toast.success("Chính xác! Bạn đã trả lời đúng cả hai câu.");
-            setAnsweredQuestions((prev) => {
-              const newSet = new Set([...prev, selectedQuestion.id]);
-              return newSet;
-            });
-            setIsQuestionModalOpen(false);
-            setSelectedQuestion(null);
-          } else {
-            // Ít nhất 1 câu trả lời sai
-            setIsQuestionModalOpen(false);
-            setIsWrongAnswerModalOpen(true);
-          }
+      if (response && response.statusCode === 201 && response.data) {
+        if (response.data.isCorrect) {
+          // Trả lời đúng - hiện toast và cập nhật state
+          toast.success("Chính xác! Bạn đã trả lời đúng.");
+          setAnsweredQuestions((prev) => {
+            const newSet = new Set([...prev, selectedQuestion.id]);
+            return newSet;
+          });
+          // Đóng question modal
+          setIsQuestionModalOpen(false);
+          setSelectedQuestion(null);
         } else {
-          toast.error("Có lỗi xảy ra khi gửi câu trả lời.");
+          // Trả lời sai - hiện wrong answer modal
+          setIsQuestionModalOpen(false);
+          setIsWrongAnswerModalOpen(true);
         }
       } else {
-        // Xử lý như cũ cho loại ONE
-        const requestData: IUserAnswerLogRequest = {
-          questionId: selectedQuestion.id,
-          text: answerText.trim(),
-        };
-
-        response = await userAnswerLogService.answerQuestion(requestData);
-
-        if (response && response.statusCode === 201 && response.data) {
-          if (response.data.isCorrect) {
-            // Trả lời đúng - hiện toast và cập nhật state
-            toast.success("Chính xác! Bạn đã trả lời đúng.");
-            setAnsweredQuestions((prev) => {
-              const newSet = new Set([...prev, selectedQuestion.id]);
-              return newSet;
-            });
-            // Đóng question modal
-            setIsQuestionModalOpen(false);
-            setSelectedQuestion(null);
-          } else {
-            // Trả lời sai - hiện wrong answer modal
-            setIsQuestionModalOpen(false);
-            setIsWrongAnswerModalOpen(true);
-          }
-        } else {
-          // Handle error response
-          toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
-        }
+        // Handle error response
+        toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -194,19 +147,24 @@ export default function FixedScrollsPageResponsive({
         questionId: questionId,
       };
 
-      const response = await userAnswerLogService.skipQuestionByCoins(requestData);
+      const response = await userAnswerLogService.skipQuestionByCoins(
+        requestData
+      );
 
-      if (response && response.statusCode === 200) {
+      if (response && (response.statusCode === 200 || response.statusCode === 201)) {
         // Successfully skipped the question with coins
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
-        
-        // Close the wrong answer modal
+
+        // Close the wrong answer modal and reset state
         setIsWrongAnswerModalOpen(false);
         setSelectedQuestion(null);
       } else {
         // Rollback optimistic update on error
         setAnsweredQuestions(previousAnsweredQuestions);
-        toast.error(response?.message || "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi.");
+        toast.error(
+          response?.message ||
+            "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi."
+        );
       }
     } catch (error) {
       // Rollback optimistic update on error
@@ -248,7 +206,8 @@ export default function FixedScrollsPageResponsive({
             (pos: ICOMPONENTS.ScrollPosition, idx: number) => {
               const question = questionsWithUser[idx];
               const isAnswered = question
-                ? isQuestionAnswered(question) || answeredQuestions.has(question.id)
+                ? isQuestionAnswered(question) ||
+                  answeredQuestions.has(question.id)
                 : false;
 
               return (
@@ -338,7 +297,9 @@ export default function FixedScrollsPageResponsive({
         onClose={handleCloseModal}
         onSubmit={handleQuestionSubmit}
         isSubmitting={isSubmittingAnswer}
-        isAnswered={selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false}
+        isAnswered={
+          selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false
+        }
       />
 
       {/* Wrong Answer Modal */}

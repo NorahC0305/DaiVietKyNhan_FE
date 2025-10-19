@@ -166,7 +166,7 @@ declare namespace ICOMPONENTS {
     question: Question | null;
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (answerText: string, secondAnswerText?: string) => void;
+    onSubmit: (text: string[], questionId: number) => void;
     isSubmitting?: boolean;
     isAnswered?: boolean;
   }
