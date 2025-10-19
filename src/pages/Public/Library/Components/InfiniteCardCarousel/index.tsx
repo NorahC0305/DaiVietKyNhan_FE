@@ -16,7 +16,7 @@ const numberWithinRange = (number: number, min: number, max: number): number =>
 
 interface CardData {
   id: number;
-  isLocked: boolean;
+  unlocked: boolean;
   imageSrc?: string;
   backContent?: {
     backgroundSrc?: string;
@@ -260,7 +260,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
               onClick={() => {
                 if (!emblaApi) return;
                 const isCenter = index === selectedIndex;
-                if (isCenter && !card.isLocked) {
+                if (isCenter && card.unlocked) {
                   setFlippedIndex((prev) => (prev === index ? null : index));
                 } else {
                   emblaApi.scrollTo(index);

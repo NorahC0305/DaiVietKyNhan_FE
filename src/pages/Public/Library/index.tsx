@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
+  import { useState, useEffect } from "react";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
 import DailyCheckin from "@/components/Molecules/DailyCheckin";
 import { useLandscapeMobile } from "@/hooks/useLandscapeMobile";
+import kynhanService from "@services/kynhan";
+import { IKyNhanUserListResponseModel } from "@models/ky-nhan/response";
+import { IKyNhanUser } from "@models/ky-nhan/entity";
 
 interface CardData {
   id: number;
-  isLocked: boolean;
+  unlocked: boolean;
   imageSrc?: string;
   backContent?: {
     backgroundSrc?: string;
@@ -16,57 +19,6 @@ interface CardData {
     ctaHref?: string;
   };
 }
-const MOCK_CARDS: CardData[] = [
-  { id: 1, isLocked: true },
-  {
-    id: 2,
-    isLocked: false,
-    imageSrc: "/Thiết kế chưa có tên (6) 1 (1).png",
-    backContent: {
-      backgroundSrc: "/revealedBG.svg",
-      description:
-        "Mẫu Thượng Thiên – vị thần cai quản bầu trời, mưa nắng sấm chớp.\nLà một trong bốn vị Mẫu tối cao của Tứ Phủ.",
-      ctaText: "Xem Thêm",
-      ctaHref: "#",
-    },
-  },
-  { id: 3, isLocked: true },
-  {
-    id: 4,
-    isLocked: false,
-    imageSrc: "/Thiết kế chưa có tên (7) 1.png",
-    backContent: {
-      description:
-        "Tản Viên Sơn Thánh – biểu tượng của núi rừng đất Việt, che chở bản làng.",
-      ctaText: "Khám phá",
-    },
-  },
-  {
-    id: 5,
-    isLocked: false,
-    imageSrc: "/Thiết kế chưa có tên (7) 2.png",
-    backContent: {
-      description:
-        "Anh hùng truyền thuyết với sức mạnh chế ngự thú dữ và sơn lâm.",
-      ctaText: "Chi tiết",
-    },
-  },
-  { id: 6, isLocked: true },
-  { id: 7, isLocked: true },
-  {
-    id: 8,
-    isLocked: false,
-    imageSrc: "/Thiết kế chưa có tên (8) 1.png",
-    backContent: {
-      description:
-        "Vị tướng cưỡi Hắc Mã, băng qua lửa đỏ – khí phách và chiến công lẫy lừng.",
-    },
-  },
-  { id: 9, isLocked: true },
-  { id: 10, isLocked: true },
-  { id: 11, isLocked: true },
-  { id: 12, isLocked: true },
-];
 const LibraryPage = () => {
   const [isDailyCheckinOpen, setIsDailyCheckinOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,7 +26,42 @@ const LibraryPage = () => {
     undefined
   );
   const [highlightQuery, setHighlightQuery] = useState<string>("");
+  const [cards, setCards] = useState<CardData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const isLandscapeMobile = useLandscapeMobile();
+
+  // Convert API data to CardData format
+  const convertToCardData = (kynhanData: IKyNhanUser): CardData => ({
+    id: kynhanData.id,
+    unlocked: kynhanData.unlocked,
+    imageSrc: kynhanData.imgUrl || undefined,
+    backContent: {
+      backgroundSrc: "/revealedBG.svg",
+      description: `${kynhanData.name}\n${kynhanData.thoiKy}\n${kynhanData.chienCong}`,
+      ctaText: "Chi tiết",
+      ctaHref: "#",
+    },
+  });
+
+  // Fetch kynhan data from API
+  useEffect(() => {
+    const fetchKynhanList = async () => {
+      try {
+        setIsLoading(true);
+        const response = await kynhanService.getUserKyNhanList() as IKyNhanUserListResponseModel;
+        if (response.data) {
+          const cardData = response.data.map(convertToCardData);
+          setCards(cardData);
+        }
+      } catch (error) {
+        console.error("Error fetching kynhan list:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchKynhanList();
+  }, []);
 
   const normalizeText = (text?: string) =>
     (text || "")
@@ -92,11 +79,11 @@ const LibraryPage = () => {
     const asNumber = Number(q);
     let index = -1;
     if (!Number.isNaN(asNumber)) {
-      index = MOCK_CARDS.findIndex((c) => c.id === asNumber);
+      index = cards.findIndex((c) => c.id === asNumber);
     }
 
     if (index === -1) {
-      index = MOCK_CARDS.findIndex((c) => {
+      index = cards.findIndex((c) => {
         const haystack = [
           normalizeText(c.backContent?.description),
           normalizeText(c.backContent?.ctaText),
@@ -174,12 +161,18 @@ const LibraryPage = () => {
 
       {/* Main Content */}
       <div className="min-h-screen w-full flex items-center justify-center py-6 sm:py-10 md:py-12 mt-16 sm:mt-0">
-        <EmblaCarouselWithCards
-          cards={MOCK_CARDS}
-          options={{ loop: true, align: "center" }}
-          scrollToIndex={scrollToIndex}
-          highlightQuery={highlightQuery}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <div className="text-white text-lg">Đang tải...</div>
+          </div>
+        ) : (
+          <EmblaCarouselWithCards
+            cards={cards}
+            options={{ loop: true, align: "center" }}
+            scrollToIndex={scrollToIndex}
+            highlightQuery={highlightQuery}
+          />
+        )}
       </div>
 
       {/* Daily Checkin Modal */}

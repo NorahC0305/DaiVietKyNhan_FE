@@ -32,4 +32,22 @@ export const KyNhanSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const KyNhanUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  thoiKy: z.string(),
+  chienCong: z.string(),
+  imgUrl: z.string(),
+  active: z.boolean(),
+  landId: z.number(),
+  createdById: z.number(),
+  updatedById: z.number().nullable(),
+  deletedById: z.number().nullable(),
+  deletedAt: z.date().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  unlocked: z.boolean(),
+});
+
 export type IKyNhan = z.infer<typeof KyNhanSchema>;
+export type IKyNhanUser = z.infer<typeof KyNhanUserSchema>;

@@ -1,8 +1,9 @@
 import { cn } from "@utils/CN";
 import Image from "next/image";
+import FramedImage from "../ImageInFrame";
 
 export default function Card({
-  isLocked,
+  unlocked,
   isCenter,
   cardNumber,
   imageSrc,
@@ -10,7 +11,7 @@ export default function Card({
   isFlipped,
   highlightQuery,
 }: {
-  isLocked: boolean;
+  unlocked: boolean;
   isCenter: boolean;
   cardNumber: number;
   imageSrc?: string;
@@ -61,11 +62,12 @@ export default function Card({
     const normToOrig: number[] = [];
     let iOrig = 0;
     let iNorm = 0;
-    while (iOrig < originalCodePoints.length && iNorm < normalizedCodePoints.length) {
+    while (
+      iOrig < originalCodePoints.length &&
+      iNorm < normalizedCodePoints.length
+    ) {
       const origChar = originalCodePoints[iOrig];
-      const folded = origChar
-        .normalize("NFD")
-        .replace(/\p{Diacritic}+/gu, "");
+      const folded = origChar.normalize("NFD").replace(/\p{Diacritic}+/gu, "");
       // folded may have length 0 (for pure combining), 1 or more; advance norm by its length
       const len = Array.from(folded).length || 0;
       for (let k = 0; k < len; k += 1) {
@@ -76,13 +78,12 @@ export default function Card({
     }
 
     const startOrig = normToOrig[start] ?? 0;
-    const endOrig = normToOrig[start + normalizedQuery.length - 1] ??
+    const endOrig =
+      normToOrig[start + normalizedQuery.length - 1] ??
       originalCodePoints.length - 1;
 
     const before = originalCodePoints.slice(0, startOrig).join("");
-    const match = originalCodePoints
-      .slice(startOrig, endOrig + 1)
-      .join("");
+    const match = originalCodePoints.slice(startOrig, endOrig + 1).join("");
     const after = originalCodePoints.slice(endOrig + 1).join("");
 
     return (
@@ -98,20 +99,20 @@ export default function Card({
       <div
         className={cn(
           "relative p-1 shadow-2xl",
-          isCenter && !isLocked && "group"
+          isCenter && unlocked && "group"
         )}
       >
         <div className="relative aspect-[3/5] w-52 sm:w-64 md:w-80 lg:w-96 [perspective:1200px]">
           <div
             className={cn(
               "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-              isCenter && !isLocked && "group-hover:[transform:rotateY(180deg)]",
-              isFlipped && !isLocked && "[transform:rotateY(180deg)]"
+              isCenter && unlocked && "group-hover:[transform:rotateY(180deg)]",
+              isFlipped && unlocked && "[transform:rotateY(180deg)]"
             )}
           >
             {/* Front side */}
             <div className="absolute inset-0 [backface-visibility:hidden]">
-              {isLocked ? (
+              {!unlocked ? (
                 <>
                   <Image
                     src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
@@ -121,36 +122,28 @@ export default function Card({
                     className="object-contain"
                     priority={isCenter}
                   />
-                  {/* <div className="absolute inset-0">
-                    <Image
-                      src="/Group 104.svg"
-                      alt="Locked"
-                      fill
-                      sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                      className={cn(
-                        "object-contain w-full h-full transition-all duration-300",
-                        isCenter ? "scale-90" : "scale-85"
-                      )}
-                    />
-                  </div> */}
                 </>
               ) : (
-                <Image
-                  src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
-                  alt="Hidden framed card"
-                  fill
-                  sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                  className="object-contain"
-                  priority={isCenter}
-                />
+                <>
+                  <FramedImage
+                    src={
+                      imageSrc ||
+                      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
+                    }
+                    alt="Kỳ nhân card"
+                  />
+                </>
               )}
             </div>
 
             {/* Back side (shown on flip for unlocked center card) */}
-            {!isLocked && (
+            {unlocked && (
               <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
                 <Image
-                  src={backContent?.backgroundSrc || "/revealedBG.svg"}
+                  src={
+                    backContent?.backgroundSrc ||
+                    "https://res.cloudinary.com/dznt9yias/image/upload/v1760726112/revealedBG_gzuiid.svg"
+                  }
                   alt="Revealed background"
                   fill
                   sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
