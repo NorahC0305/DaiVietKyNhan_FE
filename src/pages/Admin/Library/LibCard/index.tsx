@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -13,10 +13,36 @@ import { Textarea } from "@/components/Atoms/ui/textarea";
 import { Button } from "@/components/Atoms/ui/button";
 import { Label } from "@/components/Atoms/ui/label";
 import { Upload, Plus, Save, X } from "lucide-react";
-import libcardService, { CreateLibCardRequest } from "@services/libcard";
+import { toast } from "react-toastify";
+import libcardService from "@services/mo-ta-ky-nhan";
+import kynhanService from "@services/kynhan";
+import { IKyNhan } from "@models/ky-nhan/entity";
+import { IKyNhanResponseModel } from "@models/ky-nhan/response";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/Atoms/ui/select";
+
+interface FormData {
+  ten?: string;
+  danhHieu?: string;
+  namSinhNamMat?: string;
+  queQuan?: string;
+  xuatThan?: string;
+  khoiNghia?: string;
+  nguoiDongHanh?: string;
+  phuQuan?: string;
+  chienCong?: string;
+  dinhCao?: string;
+  ketCuc?: string;
+  kyNhanId?: number;
+}
 
 const LibCardPage = () => {
-  const [formData, setFormData] = useState<Partial<CreateLibCardRequest>>({
+  const [formData, setFormData] = useState<FormData>({
     ten: "",
     danhHieu: "",
     namSinhNamMat: "",
@@ -28,15 +54,40 @@ const LibCardPage = () => {
     chienCong: "",
     dinhCao: "",
     ketCuc: "",
-    kyNhanId: 0,
+    kyNhanId: undefined,
   });
-  
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [kynhans, setKynhans] = useState<IKyNhan[]>([]);
+  const [isLoadingKynhans, setIsLoadingKynhans] = useState(false);
 
-  const handleInputChange = (field: keyof CreateLibCardRequest, value: string | number) => {
-    setFormData(prev => ({
+  // Fetch Ky Nhans on component mount
+  useEffect(() => {
+    const fetchKynhans = async () => {
+      setIsLoadingKynhans(true);
+      try {
+        const response =
+          (await kynhanService.getKyNhan()) as IKyNhanResponseModel;
+        if (response.data?.results) {
+          setKynhans(response.data.results);
+        }
+      } catch (error) {
+        console.error("Error fetching kynhans:", error);
+      } finally {
+        setIsLoadingKynhans(false);
+      }
+    };
+
+    fetchKynhans();
+  }, []);
+
+  const handleInputChange = (
+    field: keyof FormData,
+    value: string | number
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -46,7 +97,7 @@ const LibCardPage = () => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      
+
       // Create preview URL
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
@@ -80,8 +131,8 @@ const LibCardPage = () => {
     e.currentTarget.classList.remove("bg-blue-50", "border-blue-400");
 
     const files = Array.from(e.dataTransfer.files);
-    const imageFile = files.find(file => file.type.startsWith("image/"));
-    
+    const imageFile = files.find((file) => file.type.startsWith("image/"));
+
     if (imageFile) {
       setSelectedFile(imageFile);
       const url = URL.createObjectURL(imageFile);
@@ -101,38 +152,49 @@ const LibCardPage = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     if (!selectedFile) {
-      alert("Vui lòng chọn hình ảnh");
+      toast.error("Vui lòng chọn hình ảnh");
       return;
     }
 
-    if (!formData.ten || !formData.danhHieu || !formData.kyNhanId) {
-      alert("Vui lòng điền đầy đủ các trường bắt buộc");
+    if (
+      !formData.ten ||
+      !formData.danhHieu ||
+      !formData.kyNhanId ||
+      formData.kyNhanId === 0
+    ) {
+      toast.error("Vui lòng điền đầy đủ các trường bắt buộc");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const submitData: CreateLibCardRequest = {
-        imgUrl: selectedFile,
-        ten: formData.ten,
-        danhHieu: formData.danhHieu,
-        namSinhNamMat: formData.namSinhNamMat || "",
-        queQuan: formData.queQuan || "",
-        xuatThan: formData.xuatThan || "",
-        khoiNghia: formData.khoiNghia || "",
-        nguoiDongHanh: formData.nguoiDongHanh || "",
-        phuQuan: formData.phuQuan || "",
-        chienCong: formData.chienCong || "",
-        dinhCao: formData.dinhCao || "",
-        ketCuc: formData.ketCuc || "",
-        kyNhanId: formData.kyNhanId || 0,
-      };
-
-      await libcardService.createLibCard(submitData);
-      alert("Tạo libcard thành công!");
+      // Tạo FormData để gửi đến service
+      const submitFormData = new FormData();
       
+      // Append file
+      submitFormData.append('imgUrl', selectedFile);
+      
+      // Append required fields
+      submitFormData.append('ten', formData.ten || '');
+      submitFormData.append('danhHieu', formData.danhHieu || '');
+      
+      // Append optional fields
+      submitFormData.append('namSinhNamMat', formData.namSinhNamMat || '');
+      submitFormData.append('queQuan', formData.queQuan || '');
+      submitFormData.append('xuatThan', formData.xuatThan || '');
+      submitFormData.append('khoiNghia', formData.khoiNghia || '');
+      submitFormData.append('nguoiDongHanh', formData.nguoiDongHanh || '');
+      submitFormData.append('phuQuan', formData.phuQuan || '');
+      submitFormData.append('chienCong', formData.chienCong || '');
+      submitFormData.append('dinhCao', formData.dinhCao || '');
+      submitFormData.append('ketCuc', formData.ketCuc || '');
+      submitFormData.append('kyNhanId', (formData.kyNhanId || 0).toString());
+
+      await libcardService.createLibCard(submitFormData);
+      toast.success("Tạo libcard thành công!");
+
       // Reset form
       setFormData({
         ten: "",
@@ -146,12 +208,12 @@ const LibCardPage = () => {
         chienCong: "",
         dinhCao: "",
         ketCuc: "",
-        kyNhanId: 0,
+        kyNhanId: undefined,
       });
       clearImage();
     } catch (error) {
       console.error("Error creating libcard:", error);
-      alert("Có lỗi xảy ra khi tạo libcard");
+      toast.error("Có lỗi xảy ra khi tạo libcard");
     } finally {
       setIsSubmitting(false);
     }
@@ -162,9 +224,7 @@ const LibCardPage = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Tạo LibCard Mới
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Tạo LibCard Mới</h1>
           <p className="text-gray-600">
             Điền thông tin để tạo mới libcard cho kỳ nhân
           </p>
@@ -240,7 +300,6 @@ const LibCardPage = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-
               {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -260,18 +319,86 @@ const LibCardPage = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
-                    Ky Nhan ID (bắt buộc)
+                    Chọn Kỳ Nhân (bắt buộc)
                   </label>
-                  <Input
-                    id="kyNhanId"
-                    type="number"
-                    value={formData.kyNhanId || ""}
-                    onChange={(e) => handleInputChange("kyNhanId", parseInt(e.target.value) || 0)}
-                    placeholder="Nhập Ky Nhan ID"
-                    color="black"
-                    className="rounded-4xl border-gray-300"
-                    required
-                  />
+                  <Select
+                    value={
+                      formData.kyNhanId && formData.kyNhanId > 0
+                        ? formData.kyNhanId.toString()
+                        : ""
+                    }
+                    onValueChange={(value) =>
+                      handleInputChange("kyNhanId", parseInt(value))
+                    }
+                    disabled={isLoadingKynhans}
+                  >
+                    <SelectTrigger
+                      className="border-gray-300 h-13 w-full [&>span]:text-gray-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      style={{ borderRadius: "2rem" }}
+                    >
+                      <SelectValue
+                        placeholder={
+                          isLoadingKynhans ? "Đang tải..." : "Chọn kỳ nhân"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-80 w-[var(--radix-select-trigger-width)] min-w-full">
+                      {kynhans.map((kynhan) => (
+                        <SelectItem
+                          key={kynhan.id}
+                          value={kynhan.id.toString()}
+                          className="w-full p-0"
+                        >
+                          <div className="flex items-center gap-3 py-2 px-2 w-full">
+                            <img
+                              src={kynhan.imgUrl}
+                              alt={kynhan.name}
+                              className="w-8 h-8 rounded-full object-cover border border-gray-200 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm whitespace-normal">
+                                {kynhan.name}
+                              </div>
+                              <div className="text-xs text-gray-500 whitespace-normal break-words">
+                                {kynhan.thoiKy}
+                              </div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formData.kyNhanId && formData.kyNhanId > 0 && (
+                    <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-gray-700">
+                          Đã chọn:
+                        </span>
+                        {(() => {
+                          const selectedKynhan = kynhans.find(
+                            (k) => k.id === formData.kyNhanId
+                          );
+                          return selectedKynhan ? (
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={selectedKynhan.imgUrl}
+                                alt={selectedKynhan.name}
+                                className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                              />
+                              <div>
+                                <div className="font-medium text-gray-800">
+                                  {selectedKynhan.name}
+                                </div>
+                                <div className="text-xs text-gray-600">
+                                  {selectedKynhan.thoiKy}
+                                </div>
+                              </div>
+                            </div>
+                          ) : null;
+                        })()}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -283,7 +410,9 @@ const LibCardPage = () => {
                 <Input
                   id="danhHieu"
                   value={formData.danhHieu || ""}
-                  onChange={(e) => handleInputChange("danhHieu", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("danhHieu", e.target.value)
+                  }
                   placeholder="Nhập danh hiệu"
                   color="black"
                   className="rounded-4xl border-gray-300"
@@ -298,7 +427,9 @@ const LibCardPage = () => {
                 <Input
                   id="namSinhNamMat"
                   value={formData.namSinhNamMat || ""}
-                  onChange={(e) => handleInputChange("namSinhNamMat", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("namSinhNamMat", e.target.value)
+                  }
                   placeholder="Nhập thông tin năm sinh và năm mất"
                   color="black"
                   className="rounded-4xl border-gray-300"
@@ -327,7 +458,9 @@ const LibCardPage = () => {
                 <Textarea
                   id="xuatThan"
                   value={formData.xuatThan || ""}
-                  onChange={(e) => handleInputChange("xuatThan", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("xuatThan", e.target.value)
+                  }
                   placeholder="Nhập thông tin xuất thân"
                   rows={3}
                   className="rounded-4xl border-gray-300"
@@ -341,7 +474,9 @@ const LibCardPage = () => {
                 <Textarea
                   id="khoiNghia"
                   value={formData.khoiNghia || ""}
-                  onChange={(e) => handleInputChange("khoiNghia", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("khoiNghia", e.target.value)
+                  }
                   placeholder="Nhập thông tin về cuộc khởi nghĩa"
                   rows={3}
                   className="rounded-4xl border-gray-300"
@@ -357,7 +492,9 @@ const LibCardPage = () => {
                   <Input
                     id="nguoiDongHanh"
                     value={formData.nguoiDongHanh || ""}
-                    onChange={(e) => handleInputChange("nguoiDongHanh", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("nguoiDongHanh", e.target.value)
+                    }
                     placeholder="Nhập thông tin người đồng hành"
                     color="black"
                     className="rounded-4xl border-gray-300"
@@ -371,7 +508,9 @@ const LibCardPage = () => {
                   <Input
                     id="phuQuan"
                     value={formData.phuQuan || ""}
-                    onChange={(e) => handleInputChange("phuQuan", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("phuQuan", e.target.value)
+                    }
                     placeholder="Nhập thông tin phu quân"
                     color="black"
                     className="rounded-4xl border-gray-300"
@@ -387,7 +526,9 @@ const LibCardPage = () => {
                 <Textarea
                   id="chienCong"
                   value={formData.chienCong || ""}
-                  onChange={(e) => handleInputChange("chienCong", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("chienCong", e.target.value)
+                  }
                   placeholder="Nhập thông tin về các chiến công"
                   rows={3}
                   className="rounded-4xl border-gray-300"
@@ -427,8 +568,8 @@ const LibCardPage = () => {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-4 pb-6">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="bg-stone-50 border-stone-300"
             onClick={() => {
               setFormData({
@@ -443,19 +584,19 @@ const LibCardPage = () => {
                 chienCong: "",
                 dinhCao: "",
                 ketCuc: "",
-                kyNhanId: 0,
+                kyNhanId: undefined,
               });
               clearImage();
             }}
           >
             Hủy
           </Button>
-          <Button 
-            type="button" 
-            disabled={isSubmitting} 
+          <Button
+            type="button"
+            disabled={isSubmitting}
             className="bg-stone-600 hover:bg-stone-700"
             onClick={() => {
-              const form = document.querySelector('form');
+              const form = document.querySelector("form");
               if (form) {
                 form.requestSubmit();
               }

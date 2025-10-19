@@ -12,6 +12,7 @@ export const QuestionSchema = z.object({
   allowSimilarAnswers: z.boolean(),
   point: z.number(),
   landId: z.number(),
+  answerOptionType: z.enum(["ONE", "TWO"]).optional(),
   createdById: z.number(),
   updatedById: z.number().nullable(),
   deletedById: z.number().nullable(),

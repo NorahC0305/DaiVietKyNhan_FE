@@ -31,13 +31,15 @@ import { ILandEntity } from "@models/land/entity";
 import { IKyNhanSummary } from "@models/ky-nhan/entity";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import questionService from "@services/question";
+import kyNhanSummaryService from "@services/ky-nhan-summary";
 import { ICreateQuestionRequest } from "@models/question/request";
+import { IQuestion } from "@models/question/entity";
 
 interface AddQuestionFormProps {
   onSubmit: (questionData: ICreateQuestionRequest) => void;
   lands: ILandEntity[];
-  kyNhanSummary: IKyNhanSummary[];
+  editQuestion?: IQuestion | null;
+  onCancel?: () => void;
 }
 
 interface FormData {
@@ -46,6 +48,7 @@ interface FormData {
   allowSimilarAnswers: boolean;
   landId: number;
   kynhanSummaries: number[];
+  answerOptionType: "ONE" | "TWO";
   answers: string[];
 }
 
@@ -54,6 +57,7 @@ interface ValidationErrors {
   questionType?: string;
   landId?: string;
   kynhanSummaries?: string;
+  answerOptionType?: string;
   answers?: string;
 }
 
@@ -72,17 +76,22 @@ const OPTION_LABEL_START = 65; // ASCII code for 'A'
 const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   onSubmit,
   lands,
-  kyNhanSummary,
+  editQuestion,
+  onCancel,
 }) => {
   // Memoized computed values
-  const defaultLandId = useMemo(() => lands && lands.length > 0 ? lands[0]?.id : 0, [lands]);
+  const defaultLandId = useMemo(
+    () => (lands && lands.length > 0 ? lands[0]?.id : 0),
+    [lands]
+  );
 
   const [formData, setFormData] = useState<FormData>({
     text: "",
     questionType: "TEXT_INPUT",
     allowSimilarAnswers: true,
-    landId: defaultLandId,
+    landId: 0,
     kynhanSummaries: [],
+    answerOptionType: "ONE",
     answers: [],
   });
 
@@ -94,17 +103,92 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {}
   );
+  const [kyNhanSummary, setKyNhanSummary] = useState<IKyNhanSummary[]>([]);
+  const [isLoadingKyNhan, setIsLoadingKyNhan] = useState(false);
 
-  // Update default land ID when lands change
+  // Initialize form with editQuestion data
   useEffect(() => {
-    if (lands && lands?.length > 0 && defaultLandId !== formData?.landId) {
-      setFormData((prev) => ({
-        ...prev,
-        landId: defaultLandId,
-      }));
-    }
-  }, [lands, defaultLandId, formData?.landId]);
+    if (editQuestion) {
+      const kynhanIds =
+        editQuestion.kynhanSummaries?.map((kyNhan) => kyNhan.id) || [];
+      const answers = editQuestion.answers?.map((answer) => answer.text) || [];
 
+      // Initialize form data
+      setFormData({
+        text: editQuestion.text || "",
+        questionType: editQuestion.questionType || "TEXT_INPUT",
+        allowSimilarAnswers: editQuestion.allowSimilarAnswers || false,
+        landId: editQuestion.landId || 0,
+        kynhanSummaries: kynhanIds,
+        answerOptionType: editQuestion.answerOptionType || "ONE",
+        answers: answers,
+      });
+
+      // Initialize options based on answerOptionType
+      if (editQuestion.answerOptionType === "TWO") {
+        setOptions({
+          answer1: answers[0] || "",
+          answer2: answers[1] || "",
+        });
+      } else if (editQuestion.allowSimilarAnswers && answers.length > 0) {
+        // Initialize multiple options
+        const newOptions: Record<string, string> = {};
+        answers.forEach((answer, index) => {
+          const label = String.fromCharCode(65 + index); // A, B, C, D...
+          newOptions[label] = answer;
+        });
+        setOptions(newOptions);
+        setOptionCount(answers.length);
+      } else {
+        // ONE answer
+        setOptions({
+          answer: answers[0] || "",
+        });
+        setOptionCount(1);
+      }
+    }
+  }, [editQuestion]);
+
+  // Fetch kỳ nhân khi landId thay đổi
+  useEffect(() => {
+    const fetchKyNhanByLand = async () => {
+      if (formData.landId && formData.landId > 0) {
+        try {
+          setIsLoadingKyNhan(true);
+          const response = await kyNhanSummaryService.getKyNhanWwithLand(
+            formData.landId
+          );
+
+          if (response.statusCode === 200 && response.data) {
+            // Handle both cases: response.data.results (pagination) or response.data (direct array)
+            const kyNhanData = Array.isArray(response.data)
+              ? response.data
+              : response.data.results || [];
+
+            setKyNhanSummary(kyNhanData);
+            // Reset kỳ nhân đã chọn khi chuyển land (only if not editing)
+            if (!editQuestion) {
+              setFormData((prev) => ({
+                ...prev,
+                kynhanSummaries: [],
+              }));
+            }
+          } else {
+            setKyNhanSummary([]);
+          }
+        } catch (error) {
+          console.error("Error fetching kỳ nhân:", error);
+          setKyNhanSummary([]);
+        } finally {
+          setIsLoadingKyNhan(false);
+        }
+      } else {
+        setKyNhanSummary([]);
+      }
+    };
+
+    fetchKyNhanByLand();
+  }, [formData.landId, editQuestion]);
   // Memoized values
   const selectedKyNhanSummaries = useMemo(
     () =>
@@ -156,6 +240,39 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
       }
     },
     [handleInputChange]
+  );
+
+  const handleAnswerOptionTypeChange = useCallback(
+    (value: "ONE" | "TWO") => {
+      handleInputChange("answerOptionType", value);
+
+      // When switching to ONE, reset kỳ nhân selection if more than 1 are selected
+      if (value === "ONE" && formData.kynhanSummaries.length > 1) {
+        setFormData((prev) => ({
+          ...prev,
+          answerOptionType: value,
+          kynhanSummaries: prev.kynhanSummaries.slice(0, 1),
+        }));
+      }
+
+      // When switching to TWO, reset kỳ nhân selection if more than 2 are selected
+      if (value === "TWO" && formData.kynhanSummaries.length > 2) {
+        setFormData((prev) => ({
+          ...prev,
+          answerOptionType: value,
+          kynhanSummaries: prev.kynhanSummaries.slice(0, 2),
+        }));
+      }
+
+      // When switching to TWO, initialize the two answer fields
+      if (value === "TWO") {
+        setOptions((prev) => ({
+          answer1: prev.answer || prev.A || "",
+          answer2: prev.B || "",
+        }));
+      }
+    },
+    [handleInputChange, formData.kynhanSummaries.length]
   );
 
   const handleOptionChange = useCallback((option: string, value: string) => {
@@ -215,12 +332,30 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   );
 
   const handleToggleKyNhanSummary = useCallback((kyNhanId: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      kynhanSummaries: prev.kynhanSummaries.includes(kyNhanId)
+    setFormData((prev) => {
+      const newKynhanSummaries = prev.kynhanSummaries.includes(kyNhanId)
         ? prev.kynhanSummaries.filter((id) => id !== kyNhanId)
-        : [...prev.kynhanSummaries, kyNhanId],
-    }));
+        : [...prev.kynhanSummaries, kyNhanId];
+
+      // If answerOptionType is ONE, enforce exactly 1 selection
+      if (prev.answerOptionType === "ONE") {
+        if (newKynhanSummaries.length > 1) {
+          return prev; // Don't allow more than 1 selection
+        }
+      }
+
+      // If answerOptionType is TWO, enforce exactly 2 selections
+      if (prev.answerOptionType === "TWO") {
+        if (newKynhanSummaries.length > 2) {
+          return prev; // Don't allow more than 2 selections
+        }
+      }
+
+      return {
+        ...prev,
+        kynhanSummaries: newKynhanSummaries,
+      };
+    });
   }, []);
 
   const resetForm = useCallback(() => {
@@ -230,11 +365,13 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
       allowSimilarAnswers: true,
       landId: defaultLandId,
       kynhanSummaries: [],
+      answerOptionType: "ONE",
       answers: [],
     });
     setOptions(INITIAL_OPTIONS);
     setOptionCount(INITIAL_OPTION_COUNT);
     setValidationErrors({});
+    setKyNhanSummary([]);
   }, [defaultLandId]);
 
   // Validation function
@@ -256,6 +393,18 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
 
       if (!formData.kynhanSummaries || formData.kynhanSummaries.length === 0) {
         errors.kynhanSummaries = "Vui lòng chọn ít nhất một kỳ nhân";
+      } else if (
+        formData.answerOptionType === "ONE" &&
+        formData.kynhanSummaries.length !== 1
+      ) {
+        errors.kynhanSummaries =
+          "Vui lòng chọn chính xác 1 kỳ nhân khi chọn loại đáp án đơn lẻ";
+      } else if (
+        formData.answerOptionType === "TWO" &&
+        formData.kynhanSummaries.length !== 2
+      ) {
+        errors.kynhanSummaries =
+          "Vui lòng chọn chính xác 2 kỳ nhân khi chọn loại đáp án cặp đôi";
       }
 
       if (!answers || answers.length === 0) {
@@ -264,6 +413,11 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
         const emptyAnswers = answers.filter((answer) => !answer.trim());
         if (emptyAnswers.length > 0) {
           errors.answers = "Đáp án không được để trống";
+        }
+
+        // For TWO option type, require exactly 2 answers
+        if (formData.answerOptionType === "TWO" && answers.length !== 2) {
+          errors.answers = "Loại đáp án cặp đôi yêu cầu chính xác 2 đáp án";
         }
       }
 
@@ -281,9 +435,18 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
 
       try {
         // Convert options to answers array
-        const answers = Object.values(options).filter(
-          (answer) => answer.trim() !== ""
-        );
+        let answers: string[];
+        if (formData.answerOptionType === "TWO") {
+          // For TWO type, get the two specific answers
+          answers = [options.answer1 || "", options.answer2 || ""].filter(
+            (answer) => answer.trim() !== ""
+          );
+        } else {
+          // For other types, use the existing logic
+          answers = Object.values(options).filter(
+            (answer) => answer.trim() !== ""
+          );
+        }
 
         // Validate form
         const errors = validateForm(answers);
@@ -306,28 +469,33 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
           allowSimilarAnswers: formData.allowSimilarAnswers,
           landId: formData.landId,
           kynhanSummaries: formData.kynhanSummaries,
+          answerOptionType: formData.answerOptionType,
           answers: answers.map((answer) => answer.trim()),
         };
 
-        const response = await questionService.createQuestion(finalData);
+        // Let parent component handle create/update logic
+        await onSubmit(finalData);
 
-        if (response.statusCode === 201) {
-          toast.success(response.message || "Tạo câu hỏi thành công!");
-          onSubmit(finalData);
+        // Reset form only if not in edit mode
+        if (!editQuestion) {
           resetForm();
-        } else {
-          toast.error(response.message || "Có lỗi xảy ra khi tạo câu hỏi");
         }
       } catch (error: any) {
-        console.error("Error creating question:", error);
-        const errorMessage =
-          error?.response?.data?.message || "Có lỗi xảy ra khi tạo câu hỏi";
-        toast.error(errorMessage);
+        console.error("Error submitting question:", error);
+        // Error handling and toast notifications are now handled in parent component
       } finally {
         setIsSubmitting(false);
       }
     },
-    [formData, options, isSubmitting, validateForm, onSubmit, resetForm]
+    [
+      formData,
+      options,
+      isSubmitting,
+      validateForm,
+      onSubmit,
+      resetForm,
+      editQuestion,
+    ]
   );
 
   // Memoized callback for image error handling
@@ -343,15 +511,24 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   const KyNhanItem = useCallback(
     ({ kyNhan }: { kyNhan: IKyNhanSummary }) => {
       const isSelected = formData.kynhanSummaries.includes(kyNhan.id);
+      const isDisabled =
+        (formData.answerOptionType === "ONE" &&
+          !isSelected &&
+          formData.kynhanSummaries.length >= 1) ||
+        (formData.answerOptionType === "TWO" &&
+          !isSelected &&
+          formData.kynhanSummaries.length >= 2);
 
       return (
         <div
           className={`relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md h-48 overflow-hidden ${
             isSelected
               ? "border-blue-500 bg-blue-50"
+              : isDisabled
+              ? "border-gray-100 bg-gray-50 cursor-not-allowed opacity-50"
               : "border-gray-200 hover:border-gray-300"
           }`}
-          onClick={() => handleToggleKyNhanSummary(kyNhan.id)}
+          onClick={() => !isDisabled && handleToggleKyNhanSummary(kyNhan.id)}
         >
           {isSelected && (
             <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1 z-10">
@@ -371,7 +548,12 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
         </div>
       );
     },
-    [formData.kynhanSummaries, handleToggleKyNhanSummary, handleImageError]
+    [
+      formData.kynhanSummaries,
+      formData.answerOptionType,
+      handleToggleKyNhanSummary,
+      handleImageError,
+    ]
   );
 
   const SelectedKyNhanItem = useCallback(
@@ -401,23 +583,39 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   return (
     <Card className="border-gray-300  ">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl md:text-2xl font-bold text-gray-900">
-          Thêm câu hỏi mới
-        </CardTitle>
-        <CardDescription className="text-sm text-gray-600">
-          Tạo câu hỏi mới cho ngân hàng câu hỏi
-        </CardDescription>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle className="text-xl md:text-2xl font-bold text-gray-900">
+              {editQuestion ? "Chỉnh sửa câu hỏi" : "Thêm câu hỏi mới"}
+            </CardTitle>
+            <CardDescription className="text-sm text-gray-600">
+              {editQuestion
+                ? "Chỉnh sửa thông tin câu hỏi"
+                : "Tạo câu hỏi mới cho ngân hàng câu hỏi"}
+            </CardDescription>
+          </div>
+          {editQuestion && onCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="text-gray-600 hover:text-gray-800"
+            >
+              Hủy
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Category and Type Selection - Side by Side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Category, Type and Answer Option Type Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Danh mục
               </label>
               <Select
-                value={formData.landId.toString()}
+                value={formData.landId > 0 ? formData.landId.toString() : ""}
                 onValueChange={handleLandChange}
               >
                 <SelectTrigger className="w-full border-gray-300 rounded-md">
@@ -457,12 +655,48 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Loại đáp án
+              </label>
+              <Select
+                value={formData.answerOptionType}
+                onValueChange={handleAnswerOptionTypeChange}
+              >
+                <SelectTrigger className="w-full border-gray-300 rounded-md">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem key="ONE" value="ONE">
+                    Đơn lẻ
+                  </SelectItem>
+                  <SelectItem key="TWO" value="TWO">
+                    Cặp đôi
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {validationErrors.answerOptionType && (
+                <p className="text-sm text-red-600 mt-1">
+                  {validationErrors.answerOptionType}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* KyNhan Summary Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Chọn Kỳ Nhân
+              {formData.answerOptionType === "ONE" && (
+                <span className="text-sm text-blue-600 font-normal ml-2">
+                  (Chọn chính xác 1 kỳ nhân cho câu hỏi đơn lẻ)
+                </span>
+              )}
+              {formData.answerOptionType === "TWO" && (
+                <span className="text-sm text-blue-600 font-normal ml-2">
+                  (Chọn chính xác 2 kỳ nhân cho câu hỏi cặp đôi)
+                </span>
+              )}
             </label>
             <div className="flex flex-col space-y-2">
               {/* Nút để mở modal */}
@@ -489,9 +723,21 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
                     <DialogTitle>Chọn Kỳ Nhân</DialogTitle>
                   </DialogHeader>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {kyNhanSummary?.map((kyNhan) => (
-                      <KyNhanItem key={kyNhan.id} kyNhan={kyNhan} />
-                    )) || []}
+                    {isLoadingKyNhan ? (
+                      <div className="col-span-full flex items-center justify-center py-8">
+                        <div className="text-gray-500">Đang tải kỳ nhân...</div>
+                      </div>
+                    ) : kyNhanSummary?.length > 0 ? (
+                      kyNhanSummary.map((kyNhan) => (
+                        <KyNhanItem key={kyNhan.id} kyNhan={kyNhan} />
+                      ))
+                    ) : (
+                      <div className="col-span-full flex items-center justify-center py-8">
+                        <div className="text-gray-500">
+                          Không có kỳ nhân nào trong land này
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
                     <Button
@@ -542,41 +788,86 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
           </div>
 
           {/* Allow Similar Answers Switch */}
-          <div className="flex items-center justify-between p-4 border-gray-300 border-1 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Cho phép nhiều lựa chọn
-              </label>
-              <p className="text-xs text-gray-500 mt-1">
-                Bật để thêm nhiều lựa chọn, tắt để chỉ có 1 ô nhập đáp án
-              </p>
+          {formData.answerOptionType !== "TWO" && (
+            <div className="flex items-center justify-between p-4 border-gray-300 border-1 rounded-lg">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Cho phép nhiều lựa chọn
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  Bật để thêm nhiều lựa chọn, tắt để chỉ có 1 ô nhập đáp án
+                </p>
+              </div>
+              <Switch
+                checked={formData.allowSimilarAnswers}
+                onCheckedChange={handleAllowSimilarAnswersChange}
+              />
             </div>
-            <Switch
-              checked={formData.allowSimilarAnswers}
-              onCheckedChange={handleAllowSimilarAnswersChange}
-            />
-          </div>
+          )}
 
           {/* Options Section */}
           <div>
-            {formData.allowSimilarAnswers && (
-              <div className="flex items-center justify-between mb-4">
+            {formData.allowSimilarAnswers &&
+              formData.answerOptionType !== "TWO" && (
+                <div className="flex items-center justify-between mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Các lựa chọn
+                  </label>
+                  <Button
+                    type="button"
+                    onClick={addOption}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center gap-2"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Thêm lựa chọn
+                  </Button>
+                </div>
+              )}
+            {formData.answerOptionType === "TWO" && (
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Các lựa chọn
+                  Đáp án cho cặp đôi
+                  <span className="text-sm text-blue-600 font-normal ml-2">
+                    (Nhập đáp án tương ứng với 2 kỳ nhân đã chọn)
+                  </span>
                 </label>
-                <Button
-                  type="button"
-                  onClick={addOption}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm flex items-center gap-2"
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  Thêm lựa chọn
-                </Button>
               </div>
             )}
             <div className="space-y-4">
-              {formData.allowSimilarAnswers ? (
+              {formData.answerOptionType === "TWO" ? (
+                // Hiển thị 2 ô đáp án cho cặp đôi
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Đáp án 1
+                    </label>
+                    <Input
+                      placeholder="Nhập đáp án cho kỳ nhân đầu tiên..."
+                      value={options.answer1 || ""}
+                      onChange={(e) =>
+                        handleOptionChange("answer1", e.target.value)
+                      }
+                      className="w-full border-gray-300 border-1 rounded-md"
+                      color="black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Đáp án 2
+                    </label>
+                    <Input
+                      placeholder="Nhập đáp án cho kỳ nhân thứ hai..."
+                      value={options.answer2 || ""}
+                      onChange={(e) =>
+                        handleOptionChange("answer2", e.target.value)
+                      }
+                      className="w-full border-gray-300 border-1 rounded-md"
+                      color="black"
+                    />
+                  </div>
+                </div>
+              ) : formData.allowSimilarAnswers ? (
                 // Hiển thị nhiều options với nút thêm/xóa
                 sortedOptions.map(([key, value]) => (
                   <div key={key} className="flex items-end gap-3">
@@ -638,7 +929,13 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
               disabled={isSubmitting}
               className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2 rounded-md font-medium"
             >
-              {isSubmitting ? "Đang tạo..." : "Tạo câu hỏi"}
+              {isSubmitting
+                ? editQuestion
+                  ? "Đang cập nhật..."
+                  : "Đang tạo..."
+                : editQuestion
+                ? "Cập nhật câu hỏi"
+                : "Tạo câu hỏi"}
             </Button>
           </div>
         </form>

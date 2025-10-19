@@ -12,6 +12,12 @@ const kyNhanSummaryService = {
       cache: "no-store",
     });
   },
+
+  getKyNhanWwithLand: async (landId: number) => {
+    return await http.get<IKyNhanSummaryResponseModel>(`/kynhan-summary/land/${landId}`, {
+      cache: "no-store",
+    });
+  },
 };
 
 export default kyNhanSummaryService;
