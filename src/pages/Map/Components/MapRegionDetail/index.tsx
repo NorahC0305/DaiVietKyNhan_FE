@@ -68,40 +68,88 @@ export default function FixedScrollsPageResponsive({
   };
 
   // Hàm xử lý khi submit câu trả lời
-  const handleQuestionSubmit = async (answerText: string) => {
+  const handleQuestionSubmit = async (answerText: string, secondAnswerText?: string) => {
     if (!selectedQuestion || !answerText.trim()) {
+      return;
+    }
+
+    // Kiểm tra nếu có answerOptionType là TWO thì cần cả 2 answers
+    if (selectedQuestion.answerOptionType === "TWO" && (!secondAnswerText || !secondAnswerText.trim())) {
       return;
     }
 
     setIsSubmittingAnswer(true);
 
     try {
-      const requestData: IUserAnswerLogRequest = {
-        questionId: selectedQuestion.id,
-        text: answerText.trim(),
-      };
+      let response;
+      
+      if (selectedQuestion.answerOptionType === "TWO" && secondAnswerText) {
+        // Gửi 2 request riêng biệt cho loại TWO
+        const firstRequestData: IUserAnswerLogRequest = {
+          questionId: selectedQuestion.id,
+          text: answerText.trim(),
+        };
 
-      const response = await userAnswerLogService.answerQuestion(requestData);
+        const secondRequestData: IUserAnswerLogRequest = {
+          questionId: selectedQuestion.id,
+          text: secondAnswerText.trim(),
+        };
 
-      if (response && response.statusCode === 201 && response.data) {
-        if (response.data.isCorrect) {
-          // Trả lời đúng - hiện toast và cập nhật state
-          toast.success("Chính xác! Bạn đã trả lời đúng.");
-          setAnsweredQuestions((prev) => {
-            const newSet = new Set([...prev, selectedQuestion.id]);
-            return newSet;
-          });
-          // Đóng question modal
-          setIsQuestionModalOpen(false);
-          setSelectedQuestion(null);
+        // Gửi cả 2 requests song song
+        const [firstResponse, secondResponse] = await Promise.all([
+          userAnswerLogService.answerQuestion(firstRequestData),
+          userAnswerLogService.answerQuestion(secondRequestData)
+        ]);
+
+        // Kiểm tra cả 2 responses
+        if (firstResponse && firstResponse.statusCode === 201 && firstResponse.data &&
+            secondResponse && secondResponse.statusCode === 201 && secondResponse.data) {
+          // Cả 2 câu trả lời đều đúng
+          if (firstResponse.data.isCorrect && secondResponse.data.isCorrect) {
+            toast.success("Chính xác! Bạn đã trả lời đúng cả hai câu.");
+            setAnsweredQuestions((prev) => {
+              const newSet = new Set([...prev, selectedQuestion.id]);
+              return newSet;
+            });
+            setIsQuestionModalOpen(false);
+            setSelectedQuestion(null);
+          } else {
+            // Ít nhất 1 câu trả lời sai
+            setIsQuestionModalOpen(false);
+            setIsWrongAnswerModalOpen(true);
+          }
         } else {
-          // Trả lời sai - hiện wrong answer modal
-          setIsQuestionModalOpen(false);
-          setIsWrongAnswerModalOpen(true);
+          toast.error("Có lỗi xảy ra khi gửi câu trả lời.");
         }
       } else {
-        // Handle error response
-        toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
+        // Xử lý như cũ cho loại ONE
+        const requestData: IUserAnswerLogRequest = {
+          questionId: selectedQuestion.id,
+          text: answerText.trim(),
+        };
+
+        response = await userAnswerLogService.answerQuestion(requestData);
+
+        if (response && response.statusCode === 201 && response.data) {
+          if (response.data.isCorrect) {
+            // Trả lời đúng - hiện toast và cập nhật state
+            toast.success("Chính xác! Bạn đã trả lời đúng.");
+            setAnsweredQuestions((prev) => {
+              const newSet = new Set([...prev, selectedQuestion.id]);
+              return newSet;
+            });
+            // Đóng question modal
+            setIsQuestionModalOpen(false);
+            setSelectedQuestion(null);
+          } else {
+            // Trả lời sai - hiện wrong answer modal
+            setIsQuestionModalOpen(false);
+            setIsWrongAnswerModalOpen(true);
+          }
+        } else {
+          // Handle error response
+          toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
+        }
       }
     } catch (error) {
       console.error("Error submitting answer:", error);

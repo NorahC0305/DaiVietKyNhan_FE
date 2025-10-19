@@ -15,6 +15,7 @@ export default function QuestionModal({
   isAnswered = false,
 }: ICOMPONENTS.QuestionModalProps) {
   const [answerText, setAnswerText] = useState("");
+  const [secondAnswerText, setSecondAnswerText] = useState("");
 
   // Kiểm tra câu hỏi đã trả lời đúng chưa
   const isQuestionAnswered = (question: any) => {
@@ -36,28 +37,58 @@ export default function QuestionModal({
     return "";
   };
 
+  // Lấy 2 câu trả lời cũ của người dùng (cho answerOptionType: "TWO")
+  const getPreviousAnswers = (question: any) => {
+    if (question?.userAnswerLogs && question.userAnswerLogs.length > 0) {
+      const correctAnswers = question.userAnswerLogs.filter(
+        (log: any) => log.isCorrect === true
+      );
+      // Giả sử câu trả lời đầu tiên là answer đầu, câu trả lời thứ 2 là answer thứ 2
+      return {
+        firstAnswer: correctAnswers[0]?.text || "",
+        secondAnswer: correctAnswers[1]?.text || "",
+      };
+    }
+    return { firstAnswer: "", secondAnswer: "" };
+  };
+
   // Sử dụng prop isAnswered từ parent thay vì chỉ dựa vào server data
   const isQuestionAnsweredFromServer = question ? isQuestionAnswered(question) : false;
   const finalIsAnswered = isAnswered || isQuestionAnsweredFromServer;
   const previousAnswer = question ? getPreviousAnswer(question) : "";
+  const previousAnswers = question ? getPreviousAnswers(question) : { firstAnswer: "", secondAnswer: "" };
+
+  // Xác định xem có phải loại TWO không
+  const isTwoAnswerType = question?.answerOptionType === "TWO";
 
   // Set câu trả lời cũ khi modal mở và câu hỏi đã được trả lời
   useEffect(() => {
     if (isOpen && question && finalIsAnswered) {
-      setAnswerText(previousAnswer);
+      if (isTwoAnswerType) {
+        setAnswerText(previousAnswers.firstAnswer);
+        setSecondAnswerText(previousAnswers.secondAnswer);
+      } else {
+        setAnswerText(previousAnswer);
+      }
     } else if (isOpen && question && !finalIsAnswered) {
       setAnswerText("");
+      setSecondAnswerText("");
     }
-  }, [isOpen, question, finalIsAnswered, previousAnswer]);
+  }, [isOpen, question, finalIsAnswered, previousAnswer, previousAnswers, isTwoAnswerType]);
 
   const handleSubmit = () => {
     if (question) {
-      onSubmit(answerText.trim());
+      if (isTwoAnswerType) {
+        onSubmit(answerText.trim(), secondAnswerText.trim());
+      } else {
+        onSubmit(answerText.trim());
+      }
     }
   };
 
   const handleClose = () => {
     setAnswerText("");
+    setSecondAnswerText("");
     onClose();
   };
 
@@ -148,11 +179,28 @@ export default function QuestionModal({
 
                 {/* Answer area using InputAnswer component */}
                 <div className="w-full flex flex-col items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-                  <InputAnswer
-                    value={answerText}
-                    onChange={setAnswerText}
-                    disabled={finalIsAnswered}
-                  />
+                  {isTwoAnswerType ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 w-full justify-center">
+                      <InputAnswer
+                        value={answerText}
+                        onChange={setAnswerText}
+                        disabled={finalIsAnswered}
+                        placeholder="Đáp án 1..."
+                      />
+                      <InputAnswer
+                        value={secondAnswerText}
+                        onChange={setSecondAnswerText}
+                        disabled={finalIsAnswered}
+                        placeholder="Đáp án 2..."
+                      />
+                    </div>
+                  ) : (
+                    <InputAnswer
+                      value={answerText}
+                      onChange={setAnswerText}
+                      disabled={finalIsAnswered}
+                    />
+                  )}
 
                   <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                     {finalIsAnswered ? (
@@ -165,7 +213,11 @@ export default function QuestionModal({
                     ) : (
                       <button
                         onClick={handleSubmit}
-                        disabled={!answerText.trim() || isSubmitting}
+                        disabled={
+                          !answerText.trim() || 
+                          isSubmitting ||
+                          (isTwoAnswerType && !secondAnswerText.trim())
+                        }
                         className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
                       >
                         {isSubmitting && <Loader2 className="animate-spin" />}

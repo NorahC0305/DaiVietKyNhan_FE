@@ -154,6 +154,7 @@ declare namespace ICOMPONENTS {
     content?: string;
     text?: string;
     category?: string;
+    answerOptionType?: "ONE" | "TWO";
     userAnswerLogs?: Array<{
       id: number;
       isCorrect: boolean;
@@ -165,7 +166,7 @@ declare namespace ICOMPONENTS {
     question: Question | null;
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (answerText: string) => void;
+    onSubmit: (answerText: string, secondAnswerText?: string) => void;
     isSubmitting?: boolean;
     isAnswered?: boolean;
   }

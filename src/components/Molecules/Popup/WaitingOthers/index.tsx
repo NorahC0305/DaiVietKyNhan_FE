@@ -10,7 +10,7 @@ export default function WaitingOthers({
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
       {/* Content */}
       <div className="text-center">
-        <p className="mt-3 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
+        <p className="mt-12 text-secondary text-base sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-extrabold">
           Đang chờ thêm các Kỳ Chủ khác mở được toàn bộ phong ấn.
         </p>
       </div>
