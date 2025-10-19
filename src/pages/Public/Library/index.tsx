@@ -1,12 +1,13 @@
 "use client";
 
-  import { useState, useEffect } from "react";
-import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
-import DailyCheckin from "@/components/Molecules/DailyCheckin";
+import { useState, useEffect } from "react";
+
 import { useLandscapeMobile } from "@/hooks/useLandscapeMobile";
-import kynhanService from "@services/kynhan";
-import { IKyNhanUserListResponseModel } from "@models/ky-nhan/response";
-import { IKyNhanUser } from "@models/ky-nhan/entity";
+import kynhanService from "@/services/kynhan";
+import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
+import type { IKyNhanUser } from "@/models/ky-nhan/entity";
+import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
+import DailyCheckin from "@components/Molecules/DailyCheckin";
 
 interface CardData {
   id: number;
@@ -14,11 +15,14 @@ interface CardData {
   imageSrc?: string;
   backContent?: {
     backgroundSrc?: string;
-    description?: string;
+    name?: string;
+    thoiKy?: string;
+    chienCong?: string;
     ctaText?: string;
     ctaHref?: string;
   };
 }
+
 const LibraryPage = () => {
   const [isDailyCheckinOpen, setIsDailyCheckinOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,8 +41,10 @@ const LibraryPage = () => {
     imageSrc: kynhanData.imgUrl || undefined,
     backContent: {
       backgroundSrc: "/revealedBG.svg",
-      description: `${kynhanData.name}\n${kynhanData.thoiKy}\n${kynhanData.chienCong}`,
-      ctaText: "Chi tiết",
+      name: kynhanData.name,
+      thoiKy: kynhanData.thoiKy,
+      chienCong: kynhanData.chienCong,
+      ctaText: "Xem Thêm",
       ctaHref: "#",
     },
   });
@@ -48,7 +54,8 @@ const LibraryPage = () => {
     const fetchKynhanList = async () => {
       try {
         setIsLoading(true);
-        const response = await kynhanService.getUserKyNhanList() as IKyNhanUserListResponseModel;
+        const response =
+          (await kynhanService.getUserKyNhanList()) as IKyNhanUserListResponseModel;
         if (response.data) {
           const cardData = response.data.map(convertToCardData);
           setCards(cardData);
@@ -85,7 +92,9 @@ const LibraryPage = () => {
     if (index === -1) {
       index = cards.findIndex((c) => {
         const haystack = [
-          normalizeText(c.backContent?.description),
+          normalizeText(c.backContent?.name),
+          normalizeText(c.backContent?.thoiKy),
+          normalizeText(c.backContent?.chienCong),
           normalizeText(c.backContent?.ctaText),
           normalizeText(c.imageSrc),
         ]
@@ -102,10 +111,10 @@ const LibraryPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden pt-12 sm:pt-0">
+    <div className="min-h-screen w-full relative overflow-x-hidden pt-8 sm:pt-12 lg:pt-0">
       {/* Thanh tìm kiếm (mobile landscape only) */}
       {isLandscapeMobile && (
-        <div className="lg:hidden absolute top-4 right-4 translate-x-0 z-10 w-[30%]">
+        <div className="lg:hidden absolute top-2 right-2 sm:top-4 sm:right-4 translate-x-0 z-10 w-[35%] sm:w-[30%]">
           <div className="relative">
             <input
               value={searchQuery}
@@ -115,17 +124,25 @@ const LibraryPage = () => {
               }}
               type="text"
               placeholder="Tìm kiếm kỳ nhân"
-              className="w-full h-10 pl-4 pr-12 rounded-full bg-white/90 backdrop-blur text-black placeholder-gray-500 shadow-[0_8px_24px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+              className="w-full h-8 sm:h-10 pl-3 sm:pl-4 pr-10 sm:pr-12 rounded-full bg-white/90 backdrop-blur text-black placeholder-gray-500 text-xs sm:text-sm shadow-[0_8px_24px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
             />
             <button
               aria-label="Tìm kiếm"
               onClick={triggerSearchScroll}
-              className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600"
+              className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-4 text-gray-600"
               type="button"
             >
-              {/* Icon tìm kiếm */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-                <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 0 1 5.276 10.917l4.279 4.278a.75.75 0 1 1-1.06 1.06l-4.279-4.278A6.75 6.75 0 1 1 10.5 3.75Zm0 1.5a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5Z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-4 h-4 sm:w-6 sm:h-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.5 3.75a6.75 6.75 0 0 1 5.276 10.917l4.279 4.278a.75.75 0 1 1-1.06 1.06l-4.279-4.278A6.75 6.75 0 1 1 10.5 3.75Zm0 1.5a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5Z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
           </div>
@@ -151,16 +168,24 @@ const LibraryPage = () => {
             className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600"
             type="button"
           >
-            {/* Icon tìm kiếm */}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-              <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 0 1 5.276 10.917l4.279 4.278a.75.75 0 1 1-1.06 1.06l-4.279-4.278A6.75 6.75 0 1 1 10.5 3.75Zm0 1.5a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5Z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10.5 3.75a6.75 6.75 0 0 1 5.276 10.917l4.279 4.278a.75.75 0 1 1-1.06 1.06l-4.279-4.278A6.75 6.75 0 1 1 10.5 3.75Zm0 1.5a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5Z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="min-h-screen w-full flex items-center justify-center py-6 sm:py-10 md:py-12 mt-16 sm:mt-0">
+      <div className="min-h-screen w-full flex items-center justify-center py-4 sm:py-6 md:py-10 lg:py-12 mt-12 sm:mt-16 lg:mt-0">
         {isLoading ? (
           <div className="flex items-center justify-center">
             <div className="text-white text-lg">Đang tải...</div>
