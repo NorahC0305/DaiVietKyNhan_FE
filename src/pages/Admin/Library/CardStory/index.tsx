@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@components/Atoms/ui/button";
 import { Input } from "@components/Atoms/ui/input";
 import TipTapEditor from "@components/Organisms/Tiptap";
@@ -29,6 +29,11 @@ import {
   FileText,
   BookOpen,
 } from "lucide-react";
+import kynhanService from "@services/kynhan";
+import KyNhanSelect from "@components/Atoms/KyNhanSelect";
+import { useForm, Controller } from "react-hook-form";
+import chiTietKyNhanService from "@services/chi-tiet-ky-nhan";
+import { toast } from "react-toastify";
 
 interface ImageInfo {
   id: string;
@@ -270,6 +275,11 @@ const CardStoryPage = () => {
     field: "title" | "content" | "source",
     value: string
   ) => {
+    setHasInteracted(true);
+    // Mark this specific field as touched
+    const fieldKey = `${type}-${id}-${field}`;
+    setTouchedFields(prev => new Set([...prev, fieldKey]));
+
     if (type === "basic") {
       setBasicInfo(
         basicInfo.map((section) =>
@@ -309,17 +319,22 @@ const CardStoryPage = () => {
     field: "content" | "source",
     value: string
   ) => {
+    setHasInteracted(true);
+    // Mark this specific field as touched
+    const fieldKey = `history-${sectionId}-${sentenceId}-${field}`;
+    setTouchedFields(prev => new Set([...prev, fieldKey]));
+
     setHistorySections((prev) =>
       prev.map((section) =>
         section.id === sectionId
           ? {
-              ...section,
-              sentences: section.sentences.map((sentence) =>
-                sentence.id === sentenceId
-                  ? { ...sentence, [field]: value }
-                  : sentence
-              ),
-            }
+            ...section,
+            sentences: section.sentences.map((sentence) =>
+              sentence.id === sentenceId
+                ? { ...sentence, [field]: value }
+                : sentence
+            ),
+          }
           : section
       )
     );
@@ -361,11 +376,11 @@ const CardStoryPage = () => {
       prev.map((section) =>
         section.id === sectionId
           ? {
-              ...section,
-              sentences: section.sentences.filter(
-                (sentence) => sentence.id !== sentenceId
-              ),
-            }
+            ...section,
+            sentences: section.sentences.filter(
+              (sentence) => sentence.id !== sentenceId
+            ),
+          }
           : section
       )
     );
@@ -480,6 +495,238 @@ const CardStoryPage = () => {
     setDraggedItem(null);
   };
 
+
+  const [selectedKyNhanId, setSelectedKyNhanId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const kyNhanSelectRef = useRef<HTMLDivElement>(null);
+
+  type FormValues = {
+    kyNhanId: number | null;
+    thamKhao: string;
+    boiCanhLichSuVaXuatThan: string;
+    suSachVietGi: string;
+    giaiThoaiDanGian: string;
+    thuVienAnh: File[];
+  };
+
+  const form = useForm<FormValues>({
+    defaultValues: {
+      kyNhanId: null,
+      thamKhao: "",
+      boiCanhLichSuVaXuatThan: "",
+      suSachVietGi: "",
+      giaiThoaiDanGian: "",
+      thuVienAnh: [],
+    },
+    mode: "onChange",
+  });
+
+  // Handle form errors
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (type === 'change' && name === 'kyNhanId' && !value.kyNhanId) {
+        // If kyNhanId becomes null/undefined, scroll to it
+        setTimeout(() => {
+          if (kyNhanSelectRef.current) {
+            kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  useEffect(() => {
+    form.setValue("kyNhanId", selectedKyNhanId);
+  }, [selectedKyNhanId]);
+
+  const onSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+
+      // Get current kyNhanId - values.kyNhanId should be the most reliable
+      const currentKyNhanId = values.kyNhanId || selectedKyNhanId;
+
+      if (!currentKyNhanId) {
+        toast.error("Vui lòng chọn Kỳ Nhân");
+
+        // Force scroll immediately
+        setTimeout(() => {
+          if (kyNhanSelectRef.current) {
+            kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            const kyNhanSelect = document.querySelector('[data-ky-nhan-select]');
+
+            if (kyNhanSelect) {
+              kyNhanSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              // Try to find the actual select component
+              const selectElement = document.querySelector('button[role="combobox"]') ||
+                document.querySelector('[role="combobox"]') ||
+                document.querySelector('input[placeholder*="Chọn Kỳ Nhân"]');
+
+              if (selectElement) {
+                selectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else {
+                const form = document.querySelector('form');
+                if (form) {
+                  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }
+            }
+          }
+        }, 100);
+
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate required fields
+      const errors: string[] = [];
+
+      // Check historical sections
+      historicalInfo.forEach((section, index) => {
+        const titleKey = `historical-${section.id}-title`;
+        const contentKey = `historical-${section.id}-content`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
+          errors.push(`Bối cảnh Lịch sử & Xuất thân - Phần ${index + 1}: Vui lòng nhập tiêu đề phần`);
+        }
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
+          errors.push(`Bối cảnh Lịch sử & Xuất thân - Phần ${index + 1}: Vui lòng nhập đoạn mô tả`);
+        }
+      });
+
+      // Check history sections
+      historySections.forEach((section, sectionIndex) => {
+        const titleKey = `history-${section.id}-title`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
+          errors.push(`Sử Sách Viết Gì - Phần ${sectionIndex + 1}: Vui lòng nhập tiêu đề phần`);
+        }
+        section.sentences.forEach((sentence, sentenceIndex) => {
+          const contentKey = `history-${section.id}-${sentence.id}-content`;
+
+          if (!sentence.content.trim() && touchedFields.has(contentKey)) {
+            errors.push(`Sử Sách Viết Gì - Phần ${sectionIndex + 1} - Câu ${sentenceIndex + 1}: Vui lòng nhập nội dung câu viết`);
+          }
+        });
+      });
+
+      // Check folklore sections
+      folkloreSections.forEach((section, index) => {
+        const titleKey = `folklore-${section.id}-title`;
+        const contentKey = `folklore-${section.id}-content`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
+          errors.push(`Giai thoại dân gian - Phần ${index + 1}: Vui lòng nhập tiêu đề phần`);
+        }
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
+          errors.push(`Giai thoại dân gian - Phần ${index + 1}: Vui lòng nhập nội dung`);
+        }
+      });
+
+      // Check reference sections
+      referenceSections.forEach((section, index) => {
+        const contentKey = `reference-${section.id}-content`;
+
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
+          errors.push(`Tham khảo - Phần ${index + 1}: Vui lòng nhập nội dung tham khảo`);
+        }
+      });
+
+      if (errors.length > 0) {
+        toast.error(errors[0]);
+        // Scroll to first error field
+        setTimeout(() => {
+          const firstErrorField = document.querySelector('[data-error="true"]');
+          if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+        return;
+      }
+
+      const fd = new FormData();
+
+      if (currentKyNhanId != null) fd.append("kyNhanId", String(currentKyNhanId));
+
+      // thamKhao: join reference sections' content
+      const thamKhaoText = referenceSections
+        .map((s) => s.content)
+        .filter((s) => !!s)
+        .join("\n\n");
+      fd.append("thamKhao", thamKhaoText);
+
+      // boiCanhLichSuVaXuatThan: [{ tieuDe, noiDung }]
+      const boiCanh = historicalInfo
+        .filter((s) => s.title || s.content)
+        .map((s) => ({ tieuDe: s.title || "", noiDung: s.content || "" }));
+      fd.append("boiCanhLichSuVaXuatThan", JSON.stringify(boiCanh));
+
+      // suSachVietGi: flatten sentences per section => [{ tieuDe, doanVan, nguon }]
+      const suSach = historySections.flatMap((section) =>
+        section.sentences
+          .filter((se) => se.content || se.source)
+          .map((se) => ({
+            tieuDe: section.title || "",
+            doanVan: se.content || "",
+            nguon: se.source || "",
+          }))
+      );
+      fd.append("suSachVietGi", JSON.stringify(suSach));
+
+      // giaiThoaiDanGian: [{ tieuDe, noiDung, nguon }]
+      const giaiThoai = folkloreSections
+        .filter((s) => s.title || s.content || s.source)
+        .map((s) => ({ tieuDe: s.title || "", noiDung: s.content || "", nguon: s.source || "" }));
+      fd.append("giaiThoaiDanGian", JSON.stringify(giaiThoai));
+
+      // append images
+      imageLibraries.forEach((img) => {
+        if (img.file) fd.append("thuVienAnh", img.file);
+      });
+
+      const response = await chiTietKyNhanService.createChiTietKyNhanForm(fd) as any;
+      if (response.statusCode === 200 || response.statusCode === 201) {
+        toast.success(response.message || "Tạo chi tiết kỳ nhân thành công!");
+
+        // Reset form values only, keep UI sections
+        form.reset({
+          thamKhao: "",
+          boiCanhLichSuVaXuatThan: "",
+          suSachVietGi: "",
+          giaiThoaiDanGian: "",
+          thuVienAnh: [],
+        });
+        setHasInteracted(false);
+        setTouchedFields(new Set());
+
+        // Clear content but keep sections
+        setBasicInfo([{ id: "1", title: "", content: "" }]);
+        setHistoricalInfo([{ id: "1", title: "", content: "" }]);
+        setHistorySections([{
+          id: "1",
+          title: "",
+          sentences: [{ id: "1", content: "", source: "" }],
+        }]);
+        setFolkloreSections([{ id: "1", title: "", content: "", source: "" }]);
+        setReferenceSections([{ id: "1", content: "" }]);
+        setImageLibraries([]);
+      } else {
+        toast.error(response.message || "Có lỗi xảy ra khi tạo chi tiết kỳ nhân");
+      }
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || error?.message || "Lỗi không xác định";
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
   return (
     <>
       {/* CSS for TipTap HTML rendering in preview */}
@@ -548,442 +795,402 @@ const CardStoryPage = () => {
 
       <div className="min-h-screen rounded-xl bg-admin-primary p-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Image Upload Sections */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Library Image Section */}
-            <Card className="border-2 border-gray-300">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">
-                  Thông tin hình ảnh thư viện
+          <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            setTimeout(() => {
+              if (kyNhanSelectRef.current) {
+                kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+          })}>
+            {/* KyNhan Selection Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00]">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Chọn Kỳ Nhân
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div
-                  onClick={() => handleImageUpload("library")}
-                  onDragOver={handleImageDragOver}
-                  onDragEnter={handleImageDragEnter}
-                  onDragLeave={handleImageDragLeave}
-                  onDrop={(e) => handleImageDrop(e, "library")}
-                  className="border-2 border-dashed border-gray-300 rounded-4xl p-8 text-center cursor-pointer hover:border-gray-400 transition-colors relative"
-                >
-                  {libraryImage ? (
-                    <div className="flex items-center justify-center max-h-64 overflow-hidden">
-                      <img
-                        src={URL.createObjectURL(libraryImage)}
-                        alt="Library preview"
-                        className="max-w-full max-h-full object-contain border border-yellow-500 rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                      <p className="text-gray-600">
-                        Nhấp để tải lên hoặc kéo thả hình ảnh
-                      </p>
-                      <Button
-                        className="mt-4 rounded-full border-gray-300"
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Thêm hình ảnh
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Background Removed Image Section */}
-            <Card className="border-2  border-gray-300">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">
-                  Thông tin hình ảnh chi tiết tách nền
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div
-                  onClick={() => handleImageUpload("background")}
-                  onDragOver={handleImageDragOver}
-                  onDragEnter={handleImageDragEnter}
-                  onDragLeave={handleImageDragLeave}
-                  onDrop={(e) => handleImageDrop(e, "background")}
-                  className="border-2 border-dashed border-gray-300 rounded-4xl p-8 text-center cursor-pointer hover:border-gray-400 transition-colors relative"
-                >
-                  {backgroundRemovedImage ? (
-                    <div className="flex items-center justify-center max-h-64 overflow-hidden">
-                      <img
-                        src={URL.createObjectURL(backgroundRemovedImage)}
-                        alt="Background removed preview"
-                        className="max-w-full max-h-full object-contain border border-yellow-500 rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <div>
-                      <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                      <p className="text-gray-600">
-                        Nhấp để tải lên hoặc kéo thả hình ảnh
-                      </p>
-                      <Button
-                        className="mt-4 rounded-full border-gray-300"
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Thêm hình ảnh
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Image Information Section */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Thông tin hình ảnh
-            </h3>
-            <Card
-              variant="leftBorder"
-              className="border-l-4 border-[#883C00] bg-amber-50"
-            >
               <CardContent className="p-6">
-                <div className="flex justify-end mb-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm thông tin hình
-                  </Button>
-                </div>
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Tên hình
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Kỳ Nhân
                     </label>
-                    <Input
-                      placeholder="VD: Trưng Trắc"
-                      value={imageInfo.title}
-                      onChange={(e) =>
-                        setImageInfo({ ...imageInfo, title: e.target.value })
-                      }
-                      color="black"
-                      className="rounded-4xl border-gray-300"
+                    <Controller
+                      control={form.control}
+                      name="kyNhanId"
+                      render={({ field, fieldState }) => (
+                        <div ref={kyNhanSelectRef} data-ky-nhan-select>
+                          <KyNhanSelect
+                            value={field.value || null}
+                            onChange={(val) => {
+                              field.onChange(val);
+                              setSelectedKyNhanId(val);
+                            }}
+                            placeholder="Chọn Kỳ Nhân để tạo thông tin chi tiết"
+                            className="w-full"
+                          />
+                          {fieldState.error && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {fieldState.error.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Tóm tắt hình
-                    </label>
-                    <Input
-                      placeholder="VD: Người mở đầu truyền thống đấu tranh chống Bắc thuộc"
-                      value={imageInfo.summary}
-                      onChange={(e) =>
-                        setImageInfo({ ...imageInfo, summary: e.target.value })
-                      }
-                      color="black"
-                      className="rounded-4xl  border-gray-300"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Mô tả ngắn
-                    </label>
-                    <TipTapEditor
-                      placeholder="VD: Hơn hai ngàn năm trước, khi đất nước chìm trong ách đô hộ nhà Hán, Trưng Trắc cùng em gái mình là Trưng Nhị đã phất cờ khởi nghĩa, lật đổ ách cai trị..."
-                      value={imageInfo.shortDescription}
-                      onChange={(value) =>
-                        setImageInfo({
-                          ...imageInfo,
-                          shortDescription: value,
-                        })
-                      }
-                      className="min-h-32 rounded-4xl border-gray-300"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2 pt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className=" border-gray-500 text-gray-700 hover:bg-gray-50"
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      Lưu
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa
-                    </Button>
-                  </div>
+                  {selectedKyNhanId && (
+                    <div className="text-sm text-gray-600">
+                      Đã chọn Kỳ Nhân ID: {selectedKyNhanId}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Basic Information Section */}
-          <Card
-            variant="leftBorder"
-            className="border-2 border-[#883C00] rounded-4xl"
-          >
-            <CardHeader className="bg-gray-100 rounded-tl-3xl ">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="FileText" iconSize={20} />
-                Thông tin cơ bản
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {basicInfo.map((section, index) => (
-                <div
-                  key={section.id}
-                  className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
-                  draggable={true}
-                  onDragStart={(e) => handleDragStart(e, section.id, "basic")}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, section.id, "basic")}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
-                    <label className="text-sm font-medium text-gray-700">
-                      Tiêu đề phần
-                    </label>
-                  </div>
-                  <Input
-                    placeholder="VD: Năm sinh - mất, Chức vụ, Phụ quân..."
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSection(
-                        "basic",
-                        section.id,
-                        "title",
-                        e.target.value
-                      )
-                    }
-                    color="black"
-                    className="rounded-4xl border-gray-300"
-                  />
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Nội dung
-                    </label>
-                    <TipTapEditor
-                      placeholder="Nhập mô tả chi tiết..."
-                      value={section.content}
-                      onChange={(value) =>
-                        updateSection("basic", section.id, "content", value)
-                      }
-                      className="min-h-24 rounded-4xl border-gray-300"
-                    />
-                  </div>
-                  {basicInfo.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeSection("basic", section.id)}
-                      className="self-start"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa phần
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 rounded-full border-gray-300"
-                onClick={() => addSection("basic")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm phần
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Historical Context Section */}
-          <Card variant="leftBorder" className="border-l-4 border-[#883C00] ">
-            <CardHeader className="bg-gray-100 rounded-tl-3xl">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="BookOpen" iconSize={20} />
-                Bối cảnh Lịch sử & Xuất thân
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {historicalInfo.map((section, index) => (
-                <div
-                  key={section.id}
-                  className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
-                  draggable={true}
-                  onDragStart={(e) =>
-                    handleDragStart(e, section.id, "historical")
-                  }
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, section.id, "historical")}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
-                    <label className="text-sm font-medium text-gray-700">
-                      Tiêu đề phần
-                    </label>
-                  </div>
-                  <Input
-                    placeholder="Bối cảnh thời đại"
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSection(
-                        "historical",
-                        section.id,
-                        "title",
-                        e.target.value
-                      )
-                    }
-                    color="black"
-                    className="rounded-4xl border-gray-300"
-                  />
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Đoạn văn mô tả
-                    </label>
-                    <TipTapEditor
-                      placeholder="Nhập đoạn văn mô tả dài..."
-                      value={section.content}
-                      onChange={(value) =>
+            {/* Historical Context Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00] mt-8">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Bối cảnh Lịch sử & Xuất thân
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {historicalInfo.map((section, index) => (
+                  <div
+                    key={section.id}
+                    className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, section.id, "historical")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+                        draggable={true}
+                        onDragStart={(e) =>
+                          handleDragStart(e, section.id, "historical")
+                        }
+                        onDragEnd={handleDragEnd}
+                      >
+                        <GripVertical className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Tiêu đề phần
+                      </label>
+                    </div>
+                    <Input
+                      placeholder="Bối cảnh thời đại"
+                      value={section.title}
+                      onChange={(e) =>
                         updateSection(
                           "historical",
                           section.id,
-                          "content",
-                          value
+                          "title",
+                          e.target.value
                         )
                       }
-                      className="min-h-32 rounded-4xl border-gray-300"
+                      color="black"
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`historical-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      data-error={!section.title.trim() && touchedFields.has(`historical-${section.id}-title`)}
                     />
+                    {!section.title.trim() && touchedFields.has(`historical-${section.id}-title`) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Vui lòng nhập tiêu đề phần
+                      </p>
+                    )}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Đoạn văn mô tả
+                      </label>
+                      <div>
+                        <TipTapEditor
+                          placeholder="Nhập đoạn văn mô tả dài..."
+                          value={section.content}
+                          onChange={(value) =>
+                            updateSection(
+                              "historical",
+                              section.id,
+                              "content",
+                              value
+                            )
+                          }
+                          className={`min-h-32 rounded-4xl ${!section.content.trim() && touchedFields.has(`historical-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          data-error={!section.content.trim() && touchedFields.has(`historical-${section.id}-content`)}
+                        />
+                        {!section.content.trim() && touchedFields.has(`historical-${section.id}-content`) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Vui lòng nhập đoạn mô tả
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {historicalInfo.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeSection("historical", section.id)}
+                        className="self-start"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Xóa phần
+                      </Button>
+                    )}
                   </div>
-                  {historicalInfo.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeSection("historical", section.id)}
-                      className="self-start"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa phần
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 rounded-full border-gray-300"
-                onClick={() => addSection("historical")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm phần
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Sử Sách Viết Gì Section */}
-          <Card variant="leftBorder" className="border-l-4 border-[#883C00] ">
-            <CardHeader className="bg-gray-100 rounded-tl-3xl">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="BookOpen" iconSize={20} />
-                Sử Sách Viết Gì?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {historySections.map((section, index) => (
-                <div
-                  key={section.id}
-                  className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
-                  draggable={true}
-                  onDragStart={(e) => handleDragStart(e, section.id, "history")}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, section.id, "history")}
-                  onDragEnd={handleDragEnd}
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-4 rounded-full border-gray-300"
+                  onClick={() => addSection("historical")}
                 >
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
-                    <label className="text-sm font-medium text-gray-700">
-                      Tiêu đề phần
-                    </label>
-                  </div>
-                  <Input
-                    placeholder="VD: Đại Việt Sử Ký Toàn Thư"
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSection(
-                        "history",
-                        section.id,
-                        "title",
-                        e.target.value
-                      )
-                    }
-                    color="black"
-                    className="rounded-4xl border-gray-300"
-                  />
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm phần
+                </Button>
+              </CardContent>
+            </Card>
 
-                  {section.sentences.map((sentence, sentenceIndex) => (
-                    <div
-                      key={sentence.id}
-                      className="space-y-4 border border-gray-200 rounded-lg p-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-gray-700">
-                            Câu viết {sentenceIndex + 1} - Nguồn
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => addHistorySentence(section.id)}
-                            className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Thêm câu viết
-                          </Button>
-                          {section.sentences.length > 1 && (
+            {/* Sử Sách Viết Gì Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00] mt-8">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Sử Sách Viết Gì?
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {historySections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, section.id, "history")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+                        draggable={true}
+                        onDragStart={(e) => handleDragStart(e, section.id, "history")}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <GripVertical className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Tiêu đề phần
+                      </label>
+                    </div>
+                    <Input
+                      placeholder="VD: Đại Việt Sử Ký Toàn Thư"
+                      value={section.title}
+                      onChange={(e) =>
+                        updateSection(
+                          "history",
+                          section.id,
+                          "title",
+                          e.target.value
+                        )
+                      }
+                      color="black"
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`history-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      data-error={!section.title.trim() && touchedFields.has(`history-${section.id}-title`)}
+                    />
+                    {!section.title.trim() && touchedFields.has(`history-${section.id}-title`) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Vui lòng nhập tiêu đề phần
+                      </p>
+                    )}
+
+                    {section.sentences.map((sentence, sentenceIndex) => (
+                      <div
+                        key={sentence.id}
+                        className="space-y-4 border border-gray-200 rounded-lg p-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-gray-700">
+                              Câu viết {sentenceIndex + 1} - Nguồn
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <Button
-                              variant="destructive"
+                              type="button"
+                              variant="outline"
                               size="sm"
-                              onClick={() =>
-                                removeHistorySentence(section.id, sentence.id)
-                              }
+                              onClick={() => addHistorySentence(section.id)}
+                              className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                             >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Xóa câu
+                              <Plus className="h-4 w-4 mr-2" />
+                              Thêm câu viết
                             </Button>
+                            {section.sentences.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                  removeHistorySentence(section.id, sentence.id)
+                                }
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Xóa câu
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <TipTapEditor
+                            placeholder="Nhập đoạn câu viết dài..."
+                            value={sentence.content}
+                            onChange={(value) =>
+                              updateHistorySentence(
+                                section.id,
+                                sentence.id,
+                                "content",
+                                value
+                              )
+                            }
+                            className={`min-h-24 rounded-4xl ${!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`) ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                            data-error={!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`)}
+                          />
+                          {!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`) && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Vui lòng nhập nội dung câu viết
+                            </p>
                           )}
                         </div>
+                        <Input
+                          placeholder='VD: — Lê Văn Hưu, "Đại Việt Sử Ký Toàn Thư" - Kỳ Trưng Nữ Vương'
+                          value={sentence.source}
+                          onChange={(e) =>
+                            updateHistorySentence(
+                              section.id,
+                              sentence.id,
+                              "source",
+                              e.target.value
+                            )
+                          }
+                          color="black"
+                          className="rounded-4xl border-gray-300"
+                        />
                       </div>
-                      <TipTapEditor
-                        placeholder="Nhập đoạn câu viết dài..."
-                        value={sentence.content}
-                        onChange={(value) =>
-                          updateHistorySentence(
-                            section.id,
-                            sentence.id,
-                            "content",
-                            value
-                          )
+                    ))}
+
+                    {historySections.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeSection("history", section.id)}
+                        className="self-start"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Xóa phần
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-4 rounded-full border-gray-300"
+                  onClick={() => addSection("history")}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm phần
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Giai thoại dân gian và Truyền thuyết Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00] mt-8">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Giai thoại dân gian và Truyền thuyết
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {folkloreSections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, section.id, "folklore")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+                        draggable={true}
+                        onDragStart={(e) =>
+                          handleDragStart(e, section.id, "folklore")
                         }
-                        className="min-h-24 rounded-4xl border-gray-300"
-                      />
+                        onDragEnd={handleDragEnd}
+                      >
+                        <GripVertical className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Tiêu đề phần
+                      </label>
+                    </div>
+                    <Input
+                      placeholder="VD: Cuộc hôn nhân giữa Trưng Trắc và Thi Sách:"
+                      value={section.title}
+                      onChange={(e) =>
+                        updateSection(
+                          "folklore",
+                          section.id,
+                          "title",
+                          e.target.value
+                        )
+                      }
+                      color="black"
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                      data-error={!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`)}
+                    />
+                    {!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`) && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Vui lòng nhập tiêu đề phần
+                      </p>
+                    )}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Nội dung
+                      </label>
+                      <div>
+                        <TipTapEditor
+                          placeholder="Nhập đoạn văn mô tả dài..."
+                          value={section.content}
+                          onChange={(value) =>
+                            updateSection("folklore", section.id, "content", value)
+                          }
+                          className={`min-h-32 rounded-4xl ${!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                          data-error={!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`)}
+                        />
+                        {!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`) && (
+                          <p className="text-red-500 text-sm mt-1">
+                            Vui lòng nhập nội dung
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Nguồn
+                      </label>
                       <Input
                         placeholder='VD: — Lê Văn Hưu, "Đại Việt Sử Ký Toàn Thư" - Kỳ Trưng Nữ Vương'
-                        value={sentence.source}
+                        value={section.source}
                         onChange={(e) =>
-                          updateHistorySentence(
+                          updateSection(
+                            "folklore",
                             section.id,
-                            sentence.id,
                             "source",
                             e.target.value
                           )
@@ -992,658 +1199,596 @@ const CardStoryPage = () => {
                         className="rounded-4xl border-gray-300"
                       />
                     </div>
-                  ))}
 
-                  {historySections.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeSection("history", section.id)}
-                      className="self-start"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa phần
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 rounded-full border-gray-300"
-                onClick={() => addSection("history")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm phần
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Giai thoại dân gian và Truyền thuyết Section */}
-          <Card variant="leftBorder" className="border-l-4 border-[#883C00] ">
-            <CardHeader className="bg-gray-100 rounded-tl-3xl">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="BookOpen" iconSize={20} />
-                Giai thoại dân gian và Truyền thuyết
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {folkloreSections.map((section, index) => (
-                <div
-                  key={section.id}
-                  className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
-                  draggable={true}
-                  onDragStart={(e) =>
-                    handleDragStart(e, section.id, "folklore")
-                  }
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, section.id, "folklore")}
-                  onDragEnd={handleDragEnd}
+                    {folkloreSections.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeSection("folklore", section.id)}
+                        className="self-start"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Xóa phần
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-4 rounded-full border-gray-300"
+                  onClick={() => addSection("folklore")}
                 >
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
-                    <label className="text-sm font-medium text-gray-700">
-                      Tiêu đề phần
-                    </label>
-                  </div>
-                  <Input
-                    placeholder="VD: Cuộc hôn nhân giữa Trưng Trắc và Thi Sách:"
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSection(
-                        "folklore",
-                        section.id,
-                        "title",
-                        e.target.value
-                      )
-                    }
-                    color="black"
-                    className="rounded-4xl border-gray-300"
-                  />
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Nội dung
-                    </label>
-                    <TipTapEditor
-                      placeholder="Nhập đoạn văn mô tả dài..."
-                      value={section.content}
-                      onChange={(value) =>
-                        updateSection("folklore", section.id, "content", value)
-                      }
-                      className="min-h-32 rounded-4xl border-gray-300"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Nguồn
-                    </label>
-                    <Input
-                      placeholder='VD: — Lê Văn Hưu, "Đại Việt Sử Ký Toàn Thư" - Kỳ Trưng Nữ Vương'
-                      value={section.source}
-                      onChange={(e) =>
-                        updateSection(
-                          "folklore",
-                          section.id,
-                          "source",
-                          e.target.value
-                        )
-                      }
-                      color="black"
-                      className="rounded-4xl border-gray-300"
-                    />
-                  </div>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm phần
+                </Button>
+              </CardContent>
+            </Card>
 
-                  {folkloreSections.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeSection("folklore", section.id)}
-                      className="self-start"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa phần
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 rounded-full border-gray-300"
-                onClick={() => addSection("folklore")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm phần
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Tham khảo Section */}
-          <Card variant="leftBorder" className="border-l-4 border-[#883C00] ">
-            <CardHeader className="bg-gray-100 rounded-tl-3xl">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="BookOpen" iconSize={20} />
-                Tham khảo
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {referenceSections.map((section, index) => (
-                <div
-                  key={section.id}
-                  className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
-                  draggable={true}
-                  onDragStart={(e) =>
-                    handleDragStart(e, section.id, "reference")
-                  }
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, section.id, "reference")}
-                  onDragEnd={handleDragEnd}
-                >
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="h-4 w-4 text-gray-400 cursor-grab active:cursor-grabbing" />
-                    <label className="text-sm font-medium text-gray-700">
-                      Nguồn tham khảo
-                    </label>
-                  </div>
-                  <TipTapEditor
-                    placeholder="Nhập các nguồn tham khảo..."
-                    value={section.content}
-                    onChange={(value) =>
-                      updateSection("reference", section.id, "content", value)
-                    }
-                    className="min-h-24 rounded-4xl border-gray-300"
-                  />
-
-                  {referenceSections.length > 1 && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeSection("reference", section.id)}
-                      className="self-start"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Xóa phần
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                className="w-full mt-4 rounded-full border-gray-300"
-                onClick={() => addSection("reference")}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm phần
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Thư viện ảnh Section */}
-          <Card variant="leftBorder" className="border-l-4 border-[#883C00] ">
-            <CardHeader className="bg-gray-100 rounded-tl-3xl">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <LucideIcon name="BookOpen" iconSize={20} />
-                Thư viện ảnh
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {/* Vùng drop chung cho nhiều ảnh */}
-              <div
-                onClick={() => handleImageUpload("imageLibrary")}
-                onDragOver={handleImageDragOver}
-                onDragEnter={handleImageDragEnter}
-                onDragLeave={handleImageDragLeave}
-                onDrop={(e) => handleImageDrop(e, "imageLibrary")}
-                className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors relative mb-6"
-              >
-                <div>
-                  <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600 mb-2">
-                    Kéo thả nhiều hình ảnh vào đây hoặc nhấp để chọn
-                  </p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Hỗ trợ nhiều file cùng lúc
-                  </p>
-                  <Button
-                    className="rounded-full border-gray-300"
-                    variant="outline"
-                    size="sm"
+            {/* Tham khảo Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00] mt-8">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Tham khảo
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {referenceSections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    className="space-y-4 mb-6 last:mb-0 border border-transparent hover:border-gray-200 rounded-lg p-4 transition-colors"
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, section.id, "reference")}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Chọn nhiều hình ảnh
-                  </Button>
-                </div>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="cursor-grab active:cursor-grabbing p-1 hover:bg-gray-100 rounded"
+                        draggable={true}
+                        onDragStart={(e) =>
+                          handleDragStart(e, section.id, "reference")
+                        }
+                        onDragEnd={handleDragEnd}
+                      >
+                        <GripVertical className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Nguồn tham khảo
+                      </label>
+                    </div>
+                    <div>
+                      <TipTapEditor
+                        placeholder="Nhập các nguồn tham khảo..."
+                        value={section.content}
+                        onChange={(value) =>
+                          updateSection("reference", section.id, "content", value)
+                        }
+                        className={`min-h-24 rounded-4xl ${!section.content.trim() && touchedFields.has(`reference-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                        data-error={!section.content.trim() && touchedFields.has(`reference-${section.id}-content`)}
+                      />
+                      {!section.content.trim() && touchedFields.has(`reference-${section.id}-content`) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Vui lòng nhập nội dung tham khảo
+                        </p>
+                      )}
+                    </div>
 
-              {/* Danh sách các ảnh đã upload */}
-              {imageLibraries.filter((img) => img.file).length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-md font-medium text-gray-700">
-                    Hình ảnh đã tải lên (
-                    {imageLibraries.filter((img) => img.file).length})
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {imageLibraries
-                      .filter((img) => img.file)
-                      .map((imageSection, index) => (
-                        <div
-                          key={imageSection.id}
-                          className="relative border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-center justify-center max-h-48 overflow-hidden rounded-lg">
-                            {imageSection.file && (
-                              <img
-                                src={imageSection.preview}
-                                alt={`Library preview ${index + 1}`}
-                                className="max-w-full max-h-full object-contain border border-yellow-500 rounded-lg"
-                              />
-                            )}
-                          </div>
-                          <div className="mt-3 flex justify-end">
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() =>
-                                removeSection("imageLibrary", imageSection.id)
-                              }
-                              className="text-xs"
-                            >
-                              <Trash2 className="h-3 w-3 mr-1" />
-                              Xóa
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                    {referenceSections.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeSection("reference", section.id)}
+                        className="self-start"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Xóa phần
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-4 rounded-full border-gray-300"
+                  onClick={() => addSection("reference")}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm phần
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Thư viện ảnh Section */}
+            <Card variant="leftBorder" className="border-l-4 border-[#883C00] mt-8">
+              <CardHeader className="bg-gray-100 rounded-tl-3xl">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <LucideIcon name="BookOpen" iconSize={20} />
+                  Thư viện ảnh
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {/* Vùng drop chung cho nhiều ảnh */}
+                <div
+                  onClick={() => handleImageUpload("imageLibrary")}
+                  onDragOver={handleImageDragOver}
+                  onDragEnter={handleImageDragEnter}
+                  onDragLeave={handleImageDragLeave}
+                  onDrop={(e) => handleImageDrop(e, "imageLibrary")}
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 transition-colors relative mb-6"
+                >
+                  <div>
+                    <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <p className="text-gray-600 mb-2">
+                      Kéo thả nhiều hình ảnh vào đây hoặc nhấp để chọn
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Hỗ trợ nhiều file cùng lúc
+                    </p>
+                    <Button
+                      type="button"
+                      className="rounded-full border-gray-300"
+                      variant="outline"
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Chọn nhiều hình ảnh
+                    </Button>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
 
-          {/* Preview Section */}
-          <Card className="border-2 border-stone-300">
-            <CardHeader className="bg-gray-100 rounded-t-lg">
-              <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
-                <Eye className="h-5 w-5" />
-                Xem trước
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {/* Document-style Preview */}
-              <div
-                data-preview="true"
-                className="relative bg-gradient-to-br from-amber-900 via-gray-800 to-amber-900 rounded-lg overflow-hidden shadow-2xl min-h-[800px]"
-                style={{
-                  background: `
+                {/* Danh sách các ảnh đã upload */}
+                {imageLibraries.filter((img) => img.file).length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-700">
+                      Hình ảnh đã tải lên (
+                      {imageLibraries.filter((img) => img.file).length})
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {imageLibraries
+                        .filter((img) => img.file)
+                        .map((imageSection, index) => (
+                          <div
+                            key={imageSection.id}
+                            className="relative border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex items-center justify-center max-h-48 overflow-hidden rounded-lg">
+                              {imageSection.file && (
+                                <img
+                                  src={imageSection.preview}
+                                  alt={`Library preview ${index + 1}`}
+                                  className="max-w-full max-h-full object-contain border border-yellow-500 rounded-lg"
+                                />
+                              )}
+                            </div>
+                            <div className="mt-3 flex justify-end">
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                  removeSection("imageLibrary", imageSection.id)
+                                }
+                                className="text-xs"
+                              >
+                                <Trash2 className="h-3 w-3 mr-1" />
+                                Xóa
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Preview Section */}
+            <Card className="border-2 border-stone-300 mt-8">
+              <CardHeader className="bg-gray-100 rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <Eye className="h-5 w-5" />
+                  Xem trước
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {/* Document-style Preview */}
+                <div
+                  data-preview="true"
+                  className="relative bg-gradient-to-br from-amber-900 via-gray-800 to-amber-900 rounded-lg overflow-hidden shadow-2xl min-h-[800px]"
+                  style={{
+                    background: `
                   linear-gradient(135deg, #451a03 0%, #1f2937 50%, #451a03 100%),
                   radial-gradient(circle at 20% 80%, rgba(120, 53, 15, 0.3) 0%, transparent 50%),
                   radial-gradient(circle at 80% 20%, rgba(120, 53, 15, 0.2) 0%, transparent 50%),
                   url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
                 `,
-                  backgroundAttachment: "fixed",
-                }}
-              >
-                {/* Scroll-style content */}
-                <div className="relative p-12 text-white max-w-4xl mx-auto">
-                  {/* Main Title */}
-                  <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-6 text-amber-300 tracking-wide leading-tight">
-                      {imageInfo.title || "BỐI CẢNH LỊCH SỬ VÀ XUẤT THÂN"}
-                    </h1>
-                  </div>
-
-                  {/* Library Image Preview */}
-                  {libraryImage && (
-                    <div className="flex justify-center mb-12">
-                      <div className="relative">
-                        <div className="absolute -inset-2 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg opacity-75 blur-sm"></div>
-                        <div className="relative border-4 border-amber-500 rounded-lg overflow-hidden max-w-lg shadow-2xl">
-                          <img
-                            src={URL.createObjectURL(libraryImage)}
-                            alt="Library preview"
-                            className="w-full h-auto object-contain"
-                          />
-                        </div>
-                      </div>
+                    backgroundAttachment: "fixed",
+                  }}
+                >
+                  {/* Scroll-style content */}
+                  <div className="relative p-12 text-white max-w-4xl mx-auto">
+                    {/* Main Title */}
+                    <div className="text-center mb-12">
+                      <h1 className="text-4xl font-bold mb-6 text-amber-300 tracking-wide leading-tight">
+                        {imageInfo.title || "BỐI CẢNH LỊCH SỬ VÀ XUẤT THÂN"}
+                      </h1>
                     </div>
-                  )}
 
-                  {/* Image Summary */}
-                  {imageInfo.summary && (
-                    <div className="text-center mb-12 px-8">
-                      <div className="inline-block border-l-4 border-r-4 border-amber-500 px-8 py-4">
-                        <div
-                          className="text-xl text-amber-100 leading-relaxed preview-content"
-                          dangerouslySetInnerHTML={{
-                            __html: imageInfo.summary,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Short Description */}
-                  {imageInfo.shortDescription && (
-                    <div className="mb-12">
-                      <div
-                        className="text-gray-200 leading-relaxed text-lg preview-content"
-                        style={{
-                          fontFamily: "Georgia, serif",
-                          lineHeight: "1.8",
-                        }}
-                        dangerouslySetInnerHTML={{
-                          __html: imageInfo.shortDescription,
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Basic Information Sections */}
-                  {basicInfo.filter(
-                    (section) => section.title || section.content
-                  ).length > 0 && (
-                    <div className="space-y-8 mb-12">
-                      {basicInfo
-                        .filter((section) => section.title || section.content)
-                        .map((section, index) => (
-                          <div key={section.id} className="space-y-4">
-                            {section.title && (
-                              <h3 className="text-2xl font-bold text-amber-300 border-b-2 border-amber-500 pb-3 mb-6">
-                                {section.title.toUpperCase()}
-                              </h3>
-                            )}
-                            {section.content && (
-                              <div
-                                className="text-gray-200 leading-relaxed text-lg preview-content"
-                                style={{
-                                  fontFamily: "Georgia, serif",
-                                  lineHeight: "1.8",
-                                }}
-                                dangerouslySetInnerHTML={{
-                                  __html: section.content,
-                                }}
-                              />
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {/* Historical Context Sections */}
-                  {historicalInfo.filter(
-                    (section) => section.title || section.content
-                  ).length > 0 && (
-                    <div className="space-y-8 mb-12">
-                      <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
-                          BỐI CẢNH LỊCH SỬ VÀ XUẤT THÂN
-                        </h2>
-                        <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
-                      </div>
-                      {historicalInfo
-                        .filter((section) => section.title || section.content)
-                        .map((section, index) => (
-                          <div key={section.id} className="space-y-4">
-                            {section.title && (
-                              <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
-                                {section.title.toUpperCase()}
-                              </h3>
-                            )}
-                            {section.content && (
-                              <div
-                                className="text-gray-200 leading-relaxed text-lg preview-content"
-                                style={{
-                                  fontFamily: "Georgia, serif",
-                                  lineHeight: "1.8",
-                                }}
-                                dangerouslySetInnerHTML={{
-                                  __html: section.content,
-                                }}
-                              />
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {/* History Books Sections */}
-                  {historySections.filter(
-                    (section) =>
-                      section.title || section.sentences.some((s) => s.content)
-                  ).length > 0 && (
-                    <div className="space-y-8 mb-12">
-                      <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
-                          SỬ SÁCH VIẾT GÌ?
-                        </h2>
-                        <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
-                      </div>
-                      {historySections
-                        .filter(
-                          (section) =>
-                            section.title ||
-                            section.sentences.some((s) => s.content)
-                        )
-                        .map((section, index) => (
-                          <div key={section.id} className="space-y-6">
-                            {section.title && (
-                              <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
-                                {section.title.toUpperCase()}
-                              </h3>
-                            )}
-
-                            <div className="space-y-6">
-                              {section.sentences
-                                .filter(
-                                  (sentence) =>
-                                    sentence.content || sentence.source
-                                )
-                                .map((sentence, sentenceIndex) => (
-                                  <div key={sentence.id} className="space-y-3">
-                                    {sentence.content && (
-                                      <div
-                                        className="text-gray-200 leading-relaxed text-lg pl-4 preview-content"
-                                        style={{
-                                          fontFamily: "Georgia, serif",
-                                          lineHeight: "1.8",
-                                          borderLeft: "3px solid #f59e0b",
-                                        }}
-                                        dangerouslySetInnerHTML={{
-                                          __html: sentence.content,
-                                        }}
-                                      />
-                                    )}
-                                    {sentence.source && (
-                                      <div className="ml-8">
-                                        <div
-                                          className="text-amber-200 italic text-base font-medium preview-content"
-                                          dangerouslySetInnerHTML={{
-                                            __html: sentence.source,
-                                          }}
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {/* Folklore Sections */}
-                  {folkloreSections.filter(
-                    (section) => section.title || section.content
-                  ).length > 0 && (
-                    <div className="space-y-8 mb-12">
-                      <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
-                          GIAI THOẠI DÂN GIAN VÀ TRUYỀN THUYẾT
-                        </h2>
-                        <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
-                      </div>
-                      {folkloreSections
-                        .filter((section) => section.title || section.content)
-                        .map((section, index) => (
-                          <div key={section.id} className="space-y-4">
-                            {section.title && (
-                              <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
-                                {section.title.toUpperCase()}
-                              </h3>
-                            )}
-                            {section.content && (
-                              <div
-                                className="text-gray-200 leading-relaxed text-lg preview-content"
-                                style={{
-                                  fontFamily: "Georgia, serif",
-                                  lineHeight: "1.8",
-                                }}
-                                dangerouslySetInnerHTML={{
-                                  __html: section.content,
-                                }}
-                              />
-                            )}
-                            {section.source && (
-                              <div className="ml-8 mt-4">
-                                <div
-                                  className="text-amber-200 italic text-base font-medium preview-content"
-                                  dangerouslySetInnerHTML={{
-                                    __html: section.source,
-                                  }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                    </div>
-                  )}
-
-                  {/* References */}
-                  {referenceSections.filter((section) => section.content)
-                    .length > 0 && (
-                    <div className="space-y-6 mb-12">
-                      <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
-                          THAM KHẢO
-                        </h2>
-                        <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
-                      </div>
-                      <div className="space-y-4">
-                        {referenceSections
-                          .filter((section) => section.content)
-                          .map((section, index) => (
-                            <div key={section.id}>
-                              <div
-                                className="text-gray-200 leading-relaxed text-lg preview-content"
-                                style={{
-                                  fontFamily: "Georgia, serif",
-                                  lineHeight: "1.8",
-                                }}
-                                dangerouslySetInnerHTML={{
-                                  __html: section.content,
-                                }}
-                              />
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Image Library */}
-                  {imageLibraries.filter((img) => img.file).length > 0 && (
-                    <div className="space-y-8 mb-12">
-                      <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
-                          THƯ VIỆN ẢNH
-                        </h2>
-                        <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {imageLibraries
-                          .filter((img) => img.file)
-                          .map((imageSection, index) => (
-                            <div
-                              key={imageSection.id}
-                              className="relative group"
-                            >
-                              <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg opacity-0 group-hover:opacity-75 transition-opacity duration-300 blur-sm"></div>
-                              <div className="relative border-2 border-amber-500 rounded-lg overflow-hidden bg-gray-800">
-                                {imageSection.file && (
-                                  <img
-                                    src={imageSection.preview}
-                                    alt={`Gallery ${index + 1}`}
-                                    className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Show message if no content */}
-                  {!imageInfo.title &&
-                    !imageInfo.summary &&
-                    !imageInfo.shortDescription &&
-                    basicInfo.filter((s) => s.title || s.content).length ===
-                      0 &&
-                    historicalInfo.filter((s) => s.title || s.content)
-                      .length === 0 &&
-                    historySections.filter(
-                      (s) => s.title || s.sentences.some((se) => se.content)
-                    ).length === 0 &&
-                    folkloreSections.filter((s) => s.title || s.content)
-                      .length === 0 &&
-                    referenceSections.filter((s) => s.content).length === 0 &&
-                    imageLibraries.filter((img) => img.file).length === 0 && (
-                      <div className="text-center text-gray-400 mt-32">
+                    {/* Library Image Preview */}
+                    {libraryImage && (
+                      <div className="flex justify-center mb-12">
                         <div className="relative">
-                          <div className="absolute -inset-4 bg-amber-500 opacity-20 rounded-full blur-xl"></div>
-                          <div className="relative bg-gray-800 bg-opacity-50 rounded-lg p-12 border border-amber-500 border-opacity-30">
-                            <Eye className="h-20 w-20 mx-auto mb-6 text-amber-400 opacity-60" />
-                            <p className="text-xl mb-2 font-medium">
-                              Chưa có nội dung để xem trước
-                            </p>
-                            <p className="text-sm opacity-75">
-                              Nhập thông tin ở các phần trên để xem preview
-                            </p>
+                          <div className="absolute -inset-2 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg opacity-75 blur-sm"></div>
+                          <div className="relative border-4 border-amber-500 rounded-lg overflow-hidden max-w-lg shadow-2xl">
+                            <img
+                              src={URL.createObjectURL(libraryImage)}
+                              alt="Library preview"
+                              className="w-full h-auto object-contain"
+                            />
                           </div>
                         </div>
                       </div>
                     )}
+
+                    {/* Image Summary */}
+                    {imageInfo.summary && (
+                      <div className="text-center mb-12 px-8">
+                        <div className="inline-block border-l-4 border-r-4 border-amber-500 px-8 py-4">
+                          <div
+                            className="text-xl text-amber-100 leading-relaxed preview-content"
+                            dangerouslySetInnerHTML={{
+                              __html: imageInfo.summary,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Short Description */}
+                    {imageInfo.shortDescription && (
+                      <div className="mb-12">
+                        <div
+                          className="text-gray-200 leading-relaxed text-lg preview-content"
+                          style={{
+                            fontFamily: "Georgia, serif",
+                            lineHeight: "1.8",
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html: imageInfo.shortDescription,
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Basic Information Sections */}
+                    {basicInfo.filter(
+                      (section) => section.title || section.content
+                    ).length > 0 && (
+                        <div className="space-y-8 mb-12">
+                          {basicInfo
+                            .filter((section) => section.title || section.content)
+                            .map((section, index) => (
+                              <div key={section.id} className="space-y-4">
+                                {section.title && (
+                                  <h3 className="text-2xl font-bold text-amber-300 border-b-2 border-amber-500 pb-3 mb-6">
+                                    {section.title.toUpperCase()}
+                                  </h3>
+                                )}
+                                {section.content && (
+                                  <div
+                                    className="text-gray-200 leading-relaxed text-lg preview-content"
+                                    style={{
+                                      fontFamily: "Georgia, serif",
+                                      lineHeight: "1.8",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                      __html: section.content,
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+
+                    {/* Historical Context Sections */}
+                    {historicalInfo.filter(
+                      (section) => section.title || section.content
+                    ).length > 0 && (
+                        <div className="space-y-8 mb-12">
+                          <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
+                              BỐI CẢNH LỊCH SỬ VÀ XUẤT THÂN
+                            </h2>
+                            <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
+                          </div>
+                          {historicalInfo
+                            .filter((section) => section.title || section.content)
+                            .map((section, index) => (
+                              <div key={section.id} className="space-y-4">
+                                {section.title && (
+                                  <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
+                                    {section.title.toUpperCase()}
+                                  </h3>
+                                )}
+                                {section.content && (
+                                  <div
+                                    className="text-gray-200 leading-relaxed text-lg preview-content"
+                                    style={{
+                                      fontFamily: "Georgia, serif",
+                                      lineHeight: "1.8",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                      __html: section.content,
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+
+                    {/* History Books Sections */}
+                    {historySections.filter(
+                      (section) =>
+                        section.title || section.sentences.some((s) => s.content)
+                    ).length > 0 && (
+                        <div className="space-y-8 mb-12">
+                          <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
+                              SỬ SÁCH VIẾT GÌ?
+                            </h2>
+                            <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
+                          </div>
+                          {historySections
+                            .filter(
+                              (section) =>
+                                section.title ||
+                                section.sentences.some((s) => s.content)
+                            )
+                            .map((section, index) => (
+                              <div key={section.id} className="space-y-6">
+                                {section.title && (
+                                  <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
+                                    {section.title.toUpperCase()}
+                                  </h3>
+                                )}
+
+                                <div className="space-y-6">
+                                  {section.sentences
+                                    .filter(
+                                      (sentence) =>
+                                        sentence.content || sentence.source
+                                    )
+                                    .map((sentence, sentenceIndex) => (
+                                      <div key={sentence.id} className="space-y-3">
+                                        {sentence.content && (
+                                          <div
+                                            className="text-gray-200 leading-relaxed text-lg pl-4 preview-content"
+                                            style={{
+                                              fontFamily: "Georgia, serif",
+                                              lineHeight: "1.8",
+                                              borderLeft: "3px solid #f59e0b",
+                                            }}
+                                            dangerouslySetInnerHTML={{
+                                              __html: sentence.content,
+                                            }}
+                                          />
+                                        )}
+                                        {sentence.source && (
+                                          <div className="ml-8">
+                                            <div
+                                              className="text-amber-200 italic text-base font-medium preview-content"
+                                              dangerouslySetInnerHTML={{
+                                                __html: sentence.source,
+                                              }}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+
+                    {/* Folklore Sections */}
+                    {folkloreSections.filter(
+                      (section) => section.title || section.content
+                    ).length > 0 && (
+                        <div className="space-y-8 mb-12">
+                          <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
+                              GIAI THOẠI DÂN GIAN VÀ TRUYỀN THUYẾT
+                            </h2>
+                            <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
+                          </div>
+                          {folkloreSections
+                            .filter((section) => section.title || section.content)
+                            .map((section, index) => (
+                              <div key={section.id} className="space-y-4">
+                                {section.title && (
+                                  <h3 className="text-2xl font-bold text-amber-300 border-b border-amber-500 pb-3 mb-6">
+                                    {section.title.toUpperCase()}
+                                  </h3>
+                                )}
+                                {section.content && (
+                                  <div
+                                    className="text-gray-200 leading-relaxed text-lg preview-content"
+                                    style={{
+                                      fontFamily: "Georgia, serif",
+                                      lineHeight: "1.8",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                      __html: section.content,
+                                    }}
+                                  />
+                                )}
+                                {section.source && (
+                                  <div className="ml-8 mt-4">
+                                    <div
+                                      className="text-amber-200 italic text-base font-medium preview-content"
+                                      dangerouslySetInnerHTML={{
+                                        __html: section.source,
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+
+                    {/* References */}
+                    {referenceSections.filter((section) => section.content)
+                      .length > 0 && (
+                        <div className="space-y-6 mb-12">
+                          <div className="text-center mb-8">
+                            <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
+                              THAM KHẢO
+                            </h2>
+                            <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
+                          </div>
+                          <div className="space-y-4">
+                            {referenceSections
+                              .filter((section) => section.content)
+                              .map((section, index) => (
+                                <div key={section.id}>
+                                  <div
+                                    className="text-gray-200 leading-relaxed text-lg preview-content"
+                                    style={{
+                                      fontFamily: "Georgia, serif",
+                                      lineHeight: "1.8",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                      __html: section.content,
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {/* Image Library */}
+                    {imageLibraries.filter((img) => img.file).length > 0 && (
+                      <div className="space-y-8 mb-12">
+                        <div className="text-center mb-8">
+                          <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
+                            THƯ VIỆN ẢNH
+                          </h2>
+                          <div className="w-32 h-1 bg-amber-500 mx-auto rounded"></div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                          {imageLibraries
+                            .filter((img) => img.file)
+                            .map((imageSection, index) => (
+                              <div
+                                key={imageSection.id}
+                                className="relative group"
+                              >
+                                <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg opacity-0 group-hover:opacity-75 transition-opacity duration-300 blur-sm"></div>
+                                <div className="relative border-2 border-amber-500 rounded-lg overflow-hidden bg-gray-800">
+                                  {imageSection.file && (
+                                    <img
+                                      src={imageSection.preview}
+                                      alt={`Gallery ${index + 1}`}
+                                      className="w-full h-auto object-cover hover:scale-105 transition-transform duration-300"
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Show message if no content */}
+                    {!imageInfo.title &&
+                      !imageInfo.summary &&
+                      !imageInfo.shortDescription &&
+                      basicInfo.filter((s) => s.title || s.content).length ===
+                      0 &&
+                      historicalInfo.filter((s) => s.title || s.content)
+                        .length === 0 &&
+                      historySections.filter(
+                        (s) => s.title || s.sentences.some((se) => se.content)
+                      ).length === 0 &&
+                      folkloreSections.filter((s) => s.title || s.content)
+                        .length === 0 &&
+                      referenceSections.filter((s) => s.content).length === 0 &&
+                      imageLibraries.filter((img) => img.file).length === 0 && (
+                        <div className="text-center text-gray-400 mt-32">
+                          <div className="relative">
+                            <div className="absolute -inset-4 bg-amber-500 opacity-20 rounded-full blur-xl"></div>
+                            <div className="relative bg-gray-800 bg-opacity-50 rounded-lg p-12 border border-amber-500 border-opacity-30">
+                              <Eye className="h-20 w-20 mx-auto mb-6 text-amber-400 opacity-60" />
+                              <p className="text-xl mb-2 font-medium">
+                                Chưa có nội dung để xem trước
+                              </p>
+                              <p className="text-sm opacity-75">
+                                Nhập thông tin ở các phần trên để xem preview
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </div>
+
+                  {/* Scroll-like decorative elements */}
+                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-30"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-30"></div>
                 </div>
 
-                {/* Scroll-like decorative elements */}
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-30"></div>
-                <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-30"></div>
-              </div>
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    type="button"
+                    className="bg-stone-600 hover:bg-stone-700 text-white"
+                    onClick={() => {
+                      // Scroll to preview
+                      const previewElement = document.querySelector(
+                        '[data-preview="true"]'
+                      );
+                      previewElement?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Xem trước dạng bài viết
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-              <div className="mt-4 flex justify-center">
-                <Button
-                  className="bg-stone-600 hover:bg-stone-700 text-white"
-                  onClick={() => {
-                    // Scroll to preview
-                    const previewElement = document.querySelector(
-                      '[data-preview="true"]'
-                    );
-                    previewElement?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Xem trước dạng bài viết
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4 pb-6">
-            <Button variant="outline" className="bg-stone-50 border-stone-300">
-              Hủy
-            </Button>
-            <Button className="bg-stone-600 hover:bg-stone-700">
-              Lưu thay đổi
-            </Button>
-          </div>
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-4 pb-6 mt-8">
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-stone-50 border-stone-300"
+                disabled={isSubmitting}
+              >
+                Hủy
+              </Button>
+              <Button
+                type="submit"
+                className="bg-stone-600 hover:bg-stone-700"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "Lưu thay đổi"
+                )}
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </>

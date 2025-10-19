@@ -24,7 +24,7 @@ import kynhanService from "@services/kynhan";
 import { IKyNhan } from "@models/ky-nhan/entity";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 import { IBackendResponse } from "@models/backend";
-import { ILandEntity } from "@models/land/entity";
+import { ILandEntity } from "@models/Land/entity";
 import { toast } from "react-toastify";
 
 const KyNhanListPage = ({
@@ -410,11 +410,10 @@ const KyNhanListPage = ({
                         <Button
                           variant="outline"
                           size="sm"
-                          className={`rounded-full ${
-                            kyNhan.active
+                          className={`rounded-full ${kyNhan.active
                               ? "text-green-600 hover:text-green-700 hover:bg-green-50"
                               : "text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                          }`}
+                            }`}
                           title={kyNhan.active ? "Ẩn" : "Hiện"}
                           onClick={() => handleToggleStatus(kyNhan)}
                         >

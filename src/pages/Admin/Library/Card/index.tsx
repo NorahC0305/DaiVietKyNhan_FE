@@ -23,7 +23,7 @@ import {
 import { Upload, Save, X, Plus } from "lucide-react";
 import kynhanService from "@services/kynhan";
 import landService from "@services/land";
-import { ILandEntity } from "@models/land/entity";
+import { ILandEntity } from "@models/Land/entity";
 import { IBackendResponse } from "@models/backend";
 import { IKyNhanResponseModel } from "@models/ky-nhan/response";
 import { toast } from "react-toastify";
@@ -85,11 +85,11 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
         toast.error(error.message || "Không thể tải danh sách đất");
       } finally {
         setIsLoading(false);
-        }
-      };
+      }
+    };
 
-      fetchLands();
-    }, []);
+    fetchLands();
+  }, []);
 
   // Handle image selection
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -351,9 +351,8 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   placeholder="Nhập tên kỳ nhân"
                   color="black"
-                  className={`rounded-4xl border-gray-300 ${
-                    validationErrors.name ? "border-red-500" : ""
-                  }`}
+                  className={`rounded-4xl border-gray-300 ${validationErrors.name ? "border-red-500" : ""
+                    }`}
                 />
                 {validationErrors.name && (
                   <p className="text-sm text-red-600">
@@ -373,9 +372,8 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
                   onChange={(e) => handleInputChange("thoiky", e.target.value)}
                   placeholder="Nhập thời kỳ"
                   color="black"
-                  className={`rounded-4xl border-gray-300 ${
-                    validationErrors.thoiky ? "border-red-500" : ""
-                  }`}
+                  className={`rounded-4xl border-gray-300 ${validationErrors.thoiky ? "border-red-500" : ""
+                    }`}
                 />
                 {validationErrors.thoiky && (
                   <p className="text-sm text-red-600">
@@ -397,9 +395,8 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
                   }
                   placeholder="Nhập mô tả chiến công"
                   rows={4}
-                  className={`rounded-4xl border-gray-300 ${
-                    validationErrors.chienCong ? "border-red-500" : ""
-                  }`}
+                  className={`rounded-4xl border-gray-300 ${validationErrors.chienCong ? "border-red-500" : ""
+                    }`}
                 />
                 {validationErrors.chienCong && (
                   <p className="text-sm text-red-600">
@@ -420,9 +417,8 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
                   }
                 >
                   <SelectTrigger
-                    className={`rounded-4xl border-gray-300 ${
-                      validationErrors.landId ? "border-red-500" : ""
-                    }`}
+                    className={`rounded-4xl border-gray-300 ${validationErrors.landId ? "border-red-500" : ""
+                      }`}
                   >
                     <SelectValue placeholder="Chọn đất">
                       {lands?.find(

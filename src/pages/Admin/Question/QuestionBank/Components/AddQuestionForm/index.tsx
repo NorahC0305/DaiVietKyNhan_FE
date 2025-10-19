@@ -32,7 +32,7 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import kyNhanSummaryService from "@services/ky-nhan-summary";
 import { ICreateQuestionRequest } from "@models/question/request";
-import { ILandEntity } from "@models/land/entity";
+import { ILandEntity } from "@models/Land/entity";
 import { IQuestion } from "@models/question/entity";
 
 interface AddQuestionFormProps {
@@ -521,13 +521,12 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
 
       return (
         <div
-          className={`relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md h-48 overflow-hidden ${
-            isSelected
+          className={`relative cursor-pointer rounded-lg border-2 transition-all hover:shadow-md h-48 overflow-hidden ${isSelected
               ? "border-blue-500 bg-blue-50"
               : isDisabled
-              ? "border-gray-100 bg-gray-50 cursor-not-allowed opacity-50"
-              : "border-gray-200 hover:border-gray-300"
-          }`}
+                ? "border-gray-100 bg-gray-50 cursor-not-allowed opacity-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
           onClick={() => !isDisabled && handleToggleKyNhanSummary(kyNhan.id)}
         >
           {isSelected && (
@@ -934,8 +933,8 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
                   ? "Đang cập nhật..."
                   : "Đang tạo..."
                 : editQuestion
-                ? "Cập nhật câu hỏi"
-                : "Tạo câu hỏi"}
+                  ? "Cập nhật câu hỏi"
+                  : "Tạo câu hỏi"}
             </Button>
           </div>
         </form>

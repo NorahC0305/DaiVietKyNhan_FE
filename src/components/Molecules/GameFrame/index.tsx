@@ -16,6 +16,7 @@ import BuyMoreLife from '../Popup/BuyMoreLife';
 import CorrectGiftCode from '../Popup/CorrectGiftCode';
 import InputGiftCode from '../Popup/InputGiftCode';
 import IncorrectGiftCode from '../Popup/IncorrectGiftCode';
+import Guide from '../Popup/Guide';
 interface GameFrameProps {
     children: React.ReactNode;
     className?: string;
@@ -91,6 +92,17 @@ export const GameFrame: React.FC<GameFrameProps> = ({
         setIsCorrectGiftCodeModalOpen(!isCorrectGiftCodeModalOpen);
     }, [isCorrectGiftCodeModalOpen]);
     //--------------------------End--------------------------//
+
+    /**
+     * Guide Modal
+     */
+    const [isGuideModalOpen, setIsGuideModalOpen] = useState<boolean>(false);
+    const land = 'Sơn Tinh' as 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
+    const onGuideClick = useCallback(() => {
+        setIsGuideModalOpen(!isGuideModalOpen);
+    }, [isGuideModalOpen]);
+    //--------------------------End--------------------------//
+
     return (
         <div className={cn('relative w-full h-full z-50', className)}>
             {/* Avatar */}
@@ -168,7 +180,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
                     <div className='relative w-[100px] h-[60px] lg:w-[180px] lg:h-[100px] hover:opacity-80 transition-all duration-300 cursor-pointer' onClick={onAirEventClick}>
                         <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760815558/Vi%E1%BA%BFt_Th%C6%B0_hmaabr.svg' alt='achievement' className='cursor-pointer' fill />
                     </div>
-                    <div className='relative w-[50px] h-[50px] lg:w-[80px] lg:h-[80px] right-2 lg:right-4 hover:opacity-80 transition-all duration-300 cursor-pointer'>
+                    <div className='relative w-[50px] h-[50px] lg:w-[80px] lg:h-[80px] right-2 lg:right-4 hover:opacity-80 transition-all duration-300 cursor-pointer' onClick={onGuideClick}>
                         <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760726885/guide_pvrmm1.svg' alt='gift' className='cursor-pointer' fill />
                     </div>
                 </div>
@@ -181,6 +193,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
             <InputGiftCode isOpen={isInputGiftCodeModalOpen} onClose={() => setIsInputGiftCodeModalOpen(false)} />
             <CorrectGiftCode isOpen={isCorrectGiftCodeModalOpen} onClose={() => setIsCorrectGiftCodeModalOpen(false)} coinsReward={500} />
             <IncorrectGiftCode isOpen={isIncorrectGiftCodeModalOpen} onClose={() => setIsIncorrectGiftCodeModalOpen(false)} coinsReward={500} />
+            <Guide isOpen={isGuideModalOpen} onClose={() => setIsGuideModalOpen(false)} land={land} />
         </div >
     );
 };
