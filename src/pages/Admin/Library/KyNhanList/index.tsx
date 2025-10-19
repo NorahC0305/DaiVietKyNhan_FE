@@ -24,7 +24,7 @@ import kynhanService from "@services/kynhan";
 import { IKyNhan } from "@models/ky-nhan/entity";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 import { IBackendResponse } from "@models/backend";
-import { ILandEntity } from "@models/Land/entity";
+import { ILandEntity } from "@models/land/entity";
 import { toast } from "react-toastify";
 
 const KyNhanListPage = ({
