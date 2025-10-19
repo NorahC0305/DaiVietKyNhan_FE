@@ -76,11 +76,10 @@ interface ImageLibrary {
   id: string;
   file: File | null;
   preview: string;
+  mediaData?: any; // Store original media data for reference
 }
 
-const CardStoryPage = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
   const [libraryImage, setLibraryImage] = useState<File | null>(null);
   const [backgroundRemovedImage, setBackgroundRemovedImage] =
     useState<File | null>(null);
@@ -169,9 +168,14 @@ const CardStoryPage = () => {
       }));
 
       setImageLibraries((prev) => {
-        // Loại bỏ item trống đầu tiên nếu có, sau đó thêm các file mới
-        const nonEmptyItems = prev.filter((item) => item.file !== null);
-        return [...nonEmptyItems, ...newImageSections];
+        // Giữ lại tất cả items có file hoặc preview, sau đó thêm các file mới
+        const existingItems = prev.filter((item) => {
+          const hasFile = item.file !== null && item.file !== undefined;
+          const hasPreview = item.preview && item.preview.trim() !== "";
+          return hasFile || hasPreview;
+        });
+
+        return [...existingItems, ...newImageSections];
       });
     }
   };
@@ -249,8 +253,8 @@ const CardStoryPage = () => {
       const newSection: ReferenceSection = { id, content: "" };
       setReferenceSections([...referenceSections, newSection]);
     } else if (type === "imageLibrary") {
-      const newSection: ImageLibrary = { id, file: null, preview: "" };
-      setImageLibraries([...imageLibraries, newSection]);
+      // Don't add empty image library sections, use upload button instead
+      handleImageUpload("imageLibrary");
     }
   };
 
@@ -513,7 +517,7 @@ const CardStoryPage = () => {
 
   const form = useForm<FormValues>({
     defaultValues: {
-      kyNhanId: null,
+      kyNhanId: chiTietKyNhan?.kyNhanId || null,
       thamKhao: "",
       boiCanhLichSuVaXuatThan: "",
       suSachVietGi: "",
@@ -538,9 +542,88 @@ const CardStoryPage = () => {
     return () => subscription.unsubscribe();
   }, [form]);
 
+  // Fill data from chiTietKyNhan when component mounts
   useEffect(() => {
-    form.setValue("kyNhanId", selectedKyNhanId);
-  }, [selectedKyNhanId]);
+    if (chiTietKyNhan) {
+      console.log("Filling data for kyNhanId:", chiTietKyNhan.kyNhanId);
+      // Set selected ky nhan
+      setSelectedKyNhanId(chiTietKyNhan.kyNhanId);
+
+      // Fill historical info (boiCanhLichSuVaSuuThan)
+      if (chiTietKyNhan.boiCanhLichSuVaSuuThan && chiTietKyNhan.boiCanhLichSuVaSuuThan.length > 0) {
+        const historicalSections = chiTietKyNhan.boiCanhLichSuVaSuuThan.map((item: any, index: number) => ({
+          id: item.id?.toString() || `historical-${index + 1}`,
+          title: item.tieuDe || "",
+          content: item.noiDung || "",
+        }));
+        setHistoricalInfo(historicalSections);
+      }
+
+      // Fill history sections (suSachVietGi)
+      if (chiTietKyNhan.suSachVietGi && chiTietKyNhan.suSachVietGi.length > 0) {
+        const historySections = chiTietKyNhan.suSachVietGi.map((item: any, index: number) => ({
+          id: item.id?.toString() || `history-${index + 1}`,
+          title: item.tieuDe || "",
+          sentences: [{
+            id: `sentence-${index + 1}`,
+            content: item.doanVan || "",
+            source: item.nguon || "",
+          }],
+        }));
+        setHistorySections(historySections);
+      }
+
+      // Fill folklore sections (giaiThoaiDanGian)
+      if (chiTietKyNhan.giaiThoaiDanGian && chiTietKyNhan.giaiThoaiDanGian.length > 0) {
+        const folkloreSections = chiTietKyNhan.giaiThoaiDanGian.map((item: any, index: number) => ({
+          id: item.id?.toString() || `folklore-${index + 1}`,
+          title: item.tieuDe || "",
+          content: item.noiDung || "",
+          source: item.nguon || "",
+        }));
+        setFolkloreSections(folkloreSections);
+      }
+
+      // Fill reference sections (thamKhao)
+      if (chiTietKyNhan.thamKhao && chiTietKyNhan.thamKhao.trim()) {
+        const referenceSections = [{
+          id: "reference-1",
+          content: chiTietKyNhan.thamKhao,
+        }];
+        setReferenceSections(referenceSections);
+      }
+
+      // Fill media if available (only if no existing images)
+      if (chiTietKyNhan.media && chiTietKyNhan.media.length > 0) {
+        console.log("Media available:", chiTietKyNhan.media.length, "items");
+
+        // Convert media URLs to imageLibraries format
+        const mediaSections = chiTietKyNhan.media.map((mediaItem: any) => ({
+          id: mediaItem.id?.toString() || `media-${Date.now()}`,
+          file: null, // We can't convert URL back to File object
+          preview: mediaItem.url, // Use URL directly as preview
+          mediaData: mediaItem // Store original media data for reference
+        }));
+
+        // Only set if no existing images to avoid overriding uploaded files
+        setImageLibraries(prev => {
+          if (prev.length === 0) {
+            return mediaSections;
+          } else {
+            return prev;
+          }
+        });
+      }
+    }
+  }, [chiTietKyNhan, form]);
+
+  // Sync selectedKyNhanId with form
+  useEffect(() => {
+    if (selectedKyNhanId !== null && selectedKyNhanId !== form.getValues("kyNhanId")) {
+      form.setValue("kyNhanId", selectedKyNhanId);
+      console.log("Syncing selectedKyNhanId to form:", selectedKyNhanId);
+    }
+  }, [selectedKyNhanId, form]);
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -684,37 +767,63 @@ const CardStoryPage = () => {
         .map((s) => ({ tieuDe: s.title || "", noiDung: s.content || "", nguon: s.source || "" }));
       fd.append("giaiThoaiDanGian", JSON.stringify(giaiThoai));
 
-      // append images
+      // Collect existing media IDs and new files
+      const existingMediaIds: number[] = [];
+
       imageLibraries.forEach((img) => {
-        if (img.file) fd.append("thuVienAnh", img.file);
+        if (img.file) {
+          // New uploaded file
+          fd.append("thuVienAnh", img.file);
+        } else if (img.mediaData && img.mediaData.id) {
+          // Existing media from database
+          existingMediaIds.push(img.mediaData.id);
+        }
       });
+
+      // Send existing media IDs to preserve them
+      if (existingMediaIds.length > 0) {
+        fd.append("existingMediaIds", JSON.stringify(existingMediaIds));
+        console.log("Sending existing media IDs:", existingMediaIds);
+      }
+
+      // Debug: Log form data
+      console.log("FormData contents:");
+      for (let [key, value] of fd.entries()) {
+        console.log(`${key}:`, value);
+      }
 
       const response = await chiTietKyNhanService.createChiTietKyNhanForm(fd) as any;
       if (response.statusCode === 200 || response.statusCode === 201) {
-        toast.success(response.message || "Tạo chi tiết kỳ nhân thành công!");
+        const successMessage = chiTietKyNhan
+          ? (response.message || "Cập nhật chi tiết kỳ nhân thành công!")
+          : (response.message || "Tạo chi tiết kỳ nhân thành công!");
+        toast.success(successMessage);
 
-        // Reset form values only, keep UI sections
-        form.reset({
-          thamKhao: "",
-          boiCanhLichSuVaXuatThan: "",
-          suSachVietGi: "",
-          giaiThoaiDanGian: "",
-          thuVienAnh: [],
-        });
-        setHasInteracted(false);
-        setTouchedFields(new Set());
+        // Only reset form if creating new (not updating)
+        if (!chiTietKyNhan) {
+          // Reset form values only, keep UI sections
+          form.reset({
+            thamKhao: "",
+            boiCanhLichSuVaXuatThan: "",
+            suSachVietGi: "",
+            giaiThoaiDanGian: "",
+            thuVienAnh: [],
+          });
+          setHasInteracted(false);
+          setTouchedFields(new Set());
 
-        // Clear content but keep sections
-        setBasicInfo([{ id: "1", title: "", content: "" }]);
-        setHistoricalInfo([{ id: "1", title: "", content: "" }]);
-        setHistorySections([{
-          id: "1",
-          title: "",
-          sentences: [{ id: "1", content: "", source: "" }],
-        }]);
-        setFolkloreSections([{ id: "1", title: "", content: "", source: "" }]);
-        setReferenceSections([{ id: "1", content: "" }]);
-        setImageLibraries([]);
+          // Clear content but keep sections
+          setBasicInfo([{ id: "1", title: "", content: "" }]);
+          setHistoricalInfo([{ id: "1", title: "", content: "" }]);
+          setHistorySections([{
+            id: "1",
+            title: "",
+            sentences: [{ id: "1", content: "", source: "" }],
+          }]);
+          setFolkloreSections([{ id: "1", title: "", content: "", source: "" }]);
+          setReferenceSections([{ id: "1", content: "" }]);
+          setImageLibraries([]);
+        }
       } else {
         toast.error(response.message || "Có lỗi xảy ra khi tạo chi tiết kỳ nhân");
       }
@@ -844,6 +953,9 @@ const CardStoryPage = () => {
                       Đã chọn Kỳ Nhân ID: {selectedKyNhanId}
                     </div>
                   )}
+                  <div className="text-xs text-gray-500 mt-2">
+                    Debug: Form value = {form.watch("kyNhanId")}, Selected = {selectedKyNhanId}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1340,22 +1452,22 @@ const CardStoryPage = () => {
                 </div>
 
                 {/* Danh sách các ảnh đã upload */}
-                {imageLibraries.filter((img) => img.file).length > 0 && (
+                {imageLibraries.filter((img) => img.file || img.preview).length > 0 && (
                   <div className="space-y-4">
                     <h4 className="text-md font-medium text-gray-700">
                       Hình ảnh đã tải lên (
-                      {imageLibraries.filter((img) => img.file).length})
+                      {imageLibraries.filter((img) => img.file || img.preview).length})
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {imageLibraries
-                        .filter((img) => img.file)
+                        .filter((img) => img.file || img.preview)
                         .map((imageSection, index) => (
                           <div
                             key={imageSection.id}
                             className="relative border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                           >
                             <div className="flex items-center justify-center max-h-48 overflow-hidden rounded-lg">
-                              {imageSection.file && (
+                              {(imageSection.file || imageSection.preview) && (
                                 <img
                                   src={imageSection.preview}
                                   alt={`Library preview ${index + 1}`}
@@ -1675,7 +1787,7 @@ const CardStoryPage = () => {
                       )}
 
                     {/* Image Library */}
-                    {imageLibraries.filter((img) => img.file).length > 0 && (
+                    {imageLibraries.filter((img) => img.file || img.preview).length > 0 && (
                       <div className="space-y-8 mb-12">
                         <div className="text-center mb-8">
                           <h2 className="text-3xl font-bold text-amber-300 mb-2 tracking-wide">
@@ -1685,7 +1797,7 @@ const CardStoryPage = () => {
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                           {imageLibraries
-                            .filter((img) => img.file)
+                            .filter((img) => img.file || img.preview)
                             .map((imageSection, index) => (
                               <div
                                 key={imageSection.id}
@@ -1693,7 +1805,7 @@ const CardStoryPage = () => {
                               >
                                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-600 rounded-lg opacity-0 group-hover:opacity-75 transition-opacity duration-300 blur-sm"></div>
                                 <div className="relative border-2 border-amber-500 rounded-lg overflow-hidden bg-gray-800">
-                                  {imageSection.file && (
+                                  {(imageSection.file || imageSection.preview) && (
                                     <img
                                       src={imageSection.preview}
                                       alt={`Gallery ${index + 1}`}
@@ -1721,7 +1833,7 @@ const CardStoryPage = () => {
                       folkloreSections.filter((s) => s.title || s.content)
                         .length === 0 &&
                       referenceSections.filter((s) => s.content).length === 0 &&
-                      imageLibraries.filter((img) => img.file).length === 0 && (
+                      imageLibraries.filter((img) => img.file || img.preview).length === 0 && (
                         <div className="text-center text-gray-400 mt-32">
                           <div className="relative">
                             <div className="absolute -inset-4 bg-amber-500 opacity-20 rounded-full blur-xl"></div>
@@ -1784,7 +1896,7 @@ const CardStoryPage = () => {
                     Đang xử lý...
                   </>
                 ) : (
-                  "Lưu thay đổi"
+                  chiTietKyNhan ? "Cập nhật" : "Tạo mới"
                 )}
               </Button>
             </div>

@@ -68,6 +68,35 @@ const KyNhanSelect: React.FC<KyNhanSelectProps> = ({
         }
     }, [debouncedQuery, pageSize, landId])
 
+    // Pre-load selected option when value is provided but not in options
+    useEffect(() => {
+        if (value != null && !options.find(o => o.id === value)) {
+            let mounted = true
+            const loadSelected = async () => {
+                try {
+                    const res = await kynhanService.getKyNhan(`id=${value}`, 1, 1)
+                    const selectedItem = res?.data?.results?.[0]
+                    if (selectedItem && mounted) {
+                        setOptions(prev => {
+                            // Add selected item if not already in options
+                            if (!prev.find(o => o.id === selectedItem.id)) {
+                                return [selectedItem, ...prev]
+                            }
+                            return prev
+                        })
+                    }
+                } catch (error) {
+                    console.error('Error loading selected ky nhan:', error)
+                }
+            }
+            loadSelected()
+
+            return () => {
+                mounted = false
+            }
+        }
+    }, [value, options])
+
     // Reset search when dropdown closes
     useEffect(() => {
         if (!isOpen) {
