@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Button } from "@components/Atoms/ui/button";
 import { Input } from "@components/Atoms/ui/input";
 import TipTapEditor from "@components/Organisms/Tiptap";
@@ -275,6 +275,11 @@ const CardStoryPage = () => {
     field: "title" | "content" | "source",
     value: string
   ) => {
+    setHasInteracted(true);
+    // Mark this specific field as touched
+    const fieldKey = `${type}-${id}-${field}`;
+    setTouchedFields(prev => new Set([...prev, fieldKey]));
+
     if (type === "basic") {
       setBasicInfo(
         basicInfo.map((section) =>
@@ -314,6 +319,11 @@ const CardStoryPage = () => {
     field: "content" | "source",
     value: string
   ) => {
+    setHasInteracted(true);
+    // Mark this specific field as touched
+    const fieldKey = `history-${sectionId}-${sentenceId}-${field}`;
+    setTouchedFields(prev => new Set([...prev, fieldKey]));
+
     setHistorySections((prev) =>
       prev.map((section) =>
         section.id === sectionId
@@ -488,6 +498,9 @@ const CardStoryPage = () => {
 
   const [selectedKyNhanId, setSelectedKyNhanId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const kyNhanSelectRef = useRef<HTMLDivElement>(null);
 
   type FormValues = {
     kyNhanId: number | null;
@@ -510,6 +523,21 @@ const CardStoryPage = () => {
     mode: "onChange",
   });
 
+  // Handle form errors
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (type === 'change' && name === 'kyNhanId' && !value.kyNhanId) {
+        // If kyNhanId becomes null/undefined, scroll to it
+        setTimeout(() => {
+          if (kyNhanSelectRef.current) {
+            kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   useEffect(() => {
     form.setValue("kyNhanId", selectedKyNhanId);
   }, [selectedKyNhanId]);
@@ -517,9 +545,41 @@ const CardStoryPage = () => {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      // Validation
-      if (!values.kyNhanId) {
+
+      // Get current kyNhanId - values.kyNhanId should be the most reliable
+      const currentKyNhanId = values.kyNhanId || selectedKyNhanId;
+
+      if (!currentKyNhanId) {
         toast.error("Vui lòng chọn Kỳ Nhân");
+
+        // Force scroll immediately
+        setTimeout(() => {
+          if (kyNhanSelectRef.current) {
+            kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            const kyNhanSelect = document.querySelector('[data-ky-nhan-select]');
+
+            if (kyNhanSelect) {
+              kyNhanSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              // Try to find the actual select component
+              const selectElement = document.querySelector('button[role="combobox"]') ||
+                document.querySelector('[role="combobox"]') ||
+                document.querySelector('input[placeholder*="Chọn Kỳ Nhân"]');
+
+              if (selectElement) {
+                selectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              } else {
+                const form = document.querySelector('form');
+                if (form) {
+                  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }
+            }
+          }
+        }, 100);
+
+        setIsSubmitting(false);
         return;
       }
 
@@ -528,21 +588,28 @@ const CardStoryPage = () => {
 
       // Check historical sections
       historicalInfo.forEach((section, index) => {
-        if (!section.title.trim()) {
+        const titleKey = `historical-${section.id}-title`;
+        const contentKey = `historical-${section.id}-content`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
           errors.push(`Bối cảnh Lịch sử & Xuất thân - Phần ${index + 1}: Vui lòng nhập tiêu đề phần`);
         }
-        if (!section.content.trim()) {
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
           errors.push(`Bối cảnh Lịch sử & Xuất thân - Phần ${index + 1}: Vui lòng nhập đoạn mô tả`);
         }
       });
 
       // Check history sections
       historySections.forEach((section, sectionIndex) => {
-        if (!section.title.trim()) {
+        const titleKey = `history-${section.id}-title`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
           errors.push(`Sử Sách Viết Gì - Phần ${sectionIndex + 1}: Vui lòng nhập tiêu đề phần`);
         }
         section.sentences.forEach((sentence, sentenceIndex) => {
-          if (!sentence.content.trim()) {
+          const contentKey = `history-${section.id}-${sentence.id}-content`;
+
+          if (!sentence.content.trim() && touchedFields.has(contentKey)) {
             errors.push(`Sử Sách Viết Gì - Phần ${sectionIndex + 1} - Câu ${sentenceIndex + 1}: Vui lòng nhập nội dung câu viết`);
           }
         });
@@ -550,17 +617,22 @@ const CardStoryPage = () => {
 
       // Check folklore sections
       folkloreSections.forEach((section, index) => {
-        if (!section.title.trim()) {
+        const titleKey = `folklore-${section.id}-title`;
+        const contentKey = `folklore-${section.id}-content`;
+
+        if (!section.title.trim() && touchedFields.has(titleKey)) {
           errors.push(`Giai thoại dân gian - Phần ${index + 1}: Vui lòng nhập tiêu đề phần`);
         }
-        if (!section.content.trim()) {
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
           errors.push(`Giai thoại dân gian - Phần ${index + 1}: Vui lòng nhập nội dung`);
         }
       });
 
       // Check reference sections
       referenceSections.forEach((section, index) => {
-        if (!section.content.trim()) {
+        const contentKey = `reference-${section.id}-content`;
+
+        if (!section.content.trim() && touchedFields.has(contentKey)) {
           errors.push(`Tham khảo - Phần ${index + 1}: Vui lòng nhập nội dung tham khảo`);
         }
       });
@@ -579,7 +651,7 @@ const CardStoryPage = () => {
 
       const fd = new FormData();
 
-      if (values.kyNhanId != null) fd.append("kyNhanId", String(values.kyNhanId));
+      if (currentKyNhanId != null) fd.append("kyNhanId", String(currentKyNhanId));
 
       // thamKhao: join reference sections' content
       const thamKhaoText = referenceSections
@@ -620,20 +692,28 @@ const CardStoryPage = () => {
       const response = await chiTietKyNhanService.createChiTietKyNhanForm(fd) as any;
       if (response.statusCode === 200 || response.statusCode === 201) {
         toast.success(response.message || "Tạo chi tiết kỳ nhân thành công!");
+
+        // Reset form values only, keep UI sections
         form.reset({
-          kyNhanId: null,
           thamKhao: "",
           boiCanhLichSuVaXuatThan: "",
           suSachVietGi: "",
           giaiThoaiDanGian: "",
           thuVienAnh: [],
         });
-        setSelectedKyNhanId(null);
-        setBasicInfo([]);
-        setHistoricalInfo([]);
-        setHistorySections([]);
-        setFolkloreSections([]);
-        setReferenceSections([]);
+        setHasInteracted(false);
+        setTouchedFields(new Set());
+
+        // Clear content but keep sections
+        setBasicInfo([{ id: "1", title: "", content: "" }]);
+        setHistoricalInfo([{ id: "1", title: "", content: "" }]);
+        setHistorySections([{
+          id: "1",
+          title: "",
+          sentences: [{ id: "1", content: "", source: "" }],
+        }]);
+        setFolkloreSections([{ id: "1", title: "", content: "", source: "" }]);
+        setReferenceSections([{ id: "1", content: "" }]);
         setImageLibraries([]);
       } else {
         toast.error(response.message || "Có lỗi xảy ra khi tạo chi tiết kỳ nhân");
@@ -715,7 +795,13 @@ const CardStoryPage = () => {
 
       <div className="min-h-screen rounded-xl bg-admin-primary p-6">
         <div className="max-w-7xl mx-auto space-y-6">
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            setTimeout(() => {
+              if (kyNhanSelectRef.current) {
+                kyNhanSelectRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 100);
+          })}>
             {/* KyNhan Selection Section */}
             <Card variant="leftBorder" className="border-l-4 border-[#883C00]">
               <CardHeader className="bg-gray-100 rounded-tl-3xl">
@@ -733,11 +819,10 @@ const CardStoryPage = () => {
                     <Controller
                       control={form.control}
                       name="kyNhanId"
-                      rules={{ required: "Vui lòng chọn Kỳ Nhân" }}
                       render={({ field, fieldState }) => (
-                        <div>
+                        <div ref={kyNhanSelectRef} data-ky-nhan-select>
                           <KyNhanSelect
-                            value={field.value}
+                            value={field.value || null}
                             onChange={(val) => {
                               field.onChange(val);
                               setSelectedKyNhanId(val);
@@ -806,11 +891,11 @@ const CardStoryPage = () => {
                         )
                       }
                       color="black"
-                      className={`rounded-4xl ${!section.title.trim() ? 'border-red-500' : 'border-gray-300'
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`historical-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
                         }`}
-                      data-error={!section.title.trim()}
+                      data-error={!section.title.trim() && touchedFields.has(`historical-${section.id}-title`)}
                     />
-                    {!section.title.trim() && (
+                    {!section.title.trim() && touchedFields.has(`historical-${section.id}-title`) && (
                       <p className="text-red-500 text-sm mt-1">
                         Vui lòng nhập tiêu đề phần
                       </p>
@@ -831,11 +916,11 @@ const CardStoryPage = () => {
                               value
                             )
                           }
-                          className={`min-h-32 rounded-4xl ${!section.content.trim() ? 'border-red-500' : 'border-gray-300'
+                          className={`min-h-32 rounded-4xl ${!section.content.trim() && touchedFields.has(`historical-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
                             }`}
-                          data-error={!section.content.trim()}
+                          data-error={!section.content.trim() && touchedFields.has(`historical-${section.id}-content`)}
                         />
-                        {!section.content.trim() && (
+                        {!section.content.trim() && touchedFields.has(`historical-${section.id}-content`) && (
                           <p className="text-red-500 text-sm mt-1">
                             Vui lòng nhập đoạn mô tả
                           </p>
@@ -844,6 +929,7 @@ const CardStoryPage = () => {
                     </div>
                     {historicalInfo.length > 1 && (
                       <Button
+                        type="button"
                         variant="destructive"
                         size="sm"
                         onClick={() => removeSection("historical", section.id)}
@@ -856,6 +942,7 @@ const CardStoryPage = () => {
                   </div>
                 ))}
                 <Button
+                  type="button"
                   variant="outline"
                   className="w-full mt-4 rounded-full border-gray-300"
                   onClick={() => addSection("historical")}
@@ -907,11 +994,11 @@ const CardStoryPage = () => {
                         )
                       }
                       color="black"
-                      className={`rounded-4xl ${!section.title.trim() ? 'border-red-500' : 'border-gray-300'
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`history-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
                         }`}
-                      data-error={!section.title.trim()}
+                      data-error={!section.title.trim() && touchedFields.has(`history-${section.id}-title`)}
                     />
-                    {!section.title.trim() && (
+                    {!section.title.trim() && touchedFields.has(`history-${section.id}-title`) && (
                       <p className="text-red-500 text-sm mt-1">
                         Vui lòng nhập tiêu đề phần
                       </p>
@@ -930,6 +1017,7 @@ const CardStoryPage = () => {
                           </div>
                           <div className="flex items-center gap-2">
                             <Button
+                              type="button"
                               variant="outline"
                               size="sm"
                               onClick={() => addHistorySentence(section.id)}
@@ -940,6 +1028,7 @@ const CardStoryPage = () => {
                             </Button>
                             {section.sentences.length > 1 && (
                               <Button
+                                type="button"
                                 variant="destructive"
                                 size="sm"
                                 onClick={() =>
@@ -964,11 +1053,11 @@ const CardStoryPage = () => {
                                 value
                               )
                             }
-                            className={`min-h-24 rounded-4xl ${!sentence.content.trim() ? 'border-red-500' : 'border-gray-300'
+                            className={`min-h-24 rounded-4xl ${!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`) ? 'border-red-500' : 'border-gray-300'
                               }`}
-                            data-error={!sentence.content.trim()}
+                            data-error={!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`)}
                           />
-                          {!sentence.content.trim() && (
+                          {!sentence.content.trim() && touchedFields.has(`history-${section.id}-${sentence.id}-content`) && (
                             <p className="text-red-500 text-sm mt-1">
                               Vui lòng nhập nội dung câu viết
                             </p>
@@ -993,6 +1082,7 @@ const CardStoryPage = () => {
 
                     {historySections.length > 1 && (
                       <Button
+                        type="button"
                         variant="destructive"
                         size="sm"
                         onClick={() => removeSection("history", section.id)}
@@ -1005,6 +1095,7 @@ const CardStoryPage = () => {
                   </div>
                 ))}
                 <Button
+                  type="button"
                   variant="outline"
                   className="w-full mt-4 rounded-full border-gray-300"
                   onClick={() => addSection("history")}
@@ -1058,11 +1149,11 @@ const CardStoryPage = () => {
                         )
                       }
                       color="black"
-                      className={`rounded-4xl ${!section.title.trim() ? 'border-red-500' : 'border-gray-300'
+                      className={`rounded-4xl ${!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`) ? 'border-red-500' : 'border-gray-300'
                         }`}
-                      data-error={!section.title.trim()}
+                      data-error={!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`)}
                     />
-                    {!section.title.trim() && (
+                    {!section.title.trim() && touchedFields.has(`folklore-${section.id}-title`) && (
                       <p className="text-red-500 text-sm mt-1">
                         Vui lòng nhập tiêu đề phần
                       </p>
@@ -1078,11 +1169,11 @@ const CardStoryPage = () => {
                           onChange={(value) =>
                             updateSection("folklore", section.id, "content", value)
                           }
-                          className={`min-h-32 rounded-4xl ${!section.content.trim() ? 'border-red-500' : 'border-gray-300'
+                          className={`min-h-32 rounded-4xl ${!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
                             }`}
-                          data-error={!section.content.trim()}
+                          data-error={!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`)}
                         />
-                        {!section.content.trim() && (
+                        {!section.content.trim() && touchedFields.has(`folklore-${section.id}-content`) && (
                           <p className="text-red-500 text-sm mt-1">
                             Vui lòng nhập nội dung
                           </p>
@@ -1111,6 +1202,7 @@ const CardStoryPage = () => {
 
                     {folkloreSections.length > 1 && (
                       <Button
+                        type="button"
                         variant="destructive"
                         size="sm"
                         onClick={() => removeSection("folklore", section.id)}
@@ -1123,6 +1215,7 @@ const CardStoryPage = () => {
                   </div>
                 ))}
                 <Button
+                  type="button"
                   variant="outline"
                   className="w-full mt-4 rounded-full border-gray-300"
                   onClick={() => addSection("folklore")}
@@ -1171,11 +1264,11 @@ const CardStoryPage = () => {
                         onChange={(value) =>
                           updateSection("reference", section.id, "content", value)
                         }
-                        className={`min-h-24 rounded-4xl ${!section.content.trim() ? 'border-red-500' : 'border-gray-300'
+                        className={`min-h-24 rounded-4xl ${!section.content.trim() && touchedFields.has(`reference-${section.id}-content`) ? 'border-red-500' : 'border-gray-300'
                           }`}
-                        data-error={!section.content.trim()}
+                        data-error={!section.content.trim() && touchedFields.has(`reference-${section.id}-content`)}
                       />
-                      {!section.content.trim() && (
+                      {!section.content.trim() && touchedFields.has(`reference-${section.id}-content`) && (
                         <p className="text-red-500 text-sm mt-1">
                           Vui lòng nhập nội dung tham khảo
                         </p>
@@ -1184,6 +1277,7 @@ const CardStoryPage = () => {
 
                     {referenceSections.length > 1 && (
                       <Button
+                        type="button"
                         variant="destructive"
                         size="sm"
                         onClick={() => removeSection("reference", section.id)}
@@ -1196,6 +1290,7 @@ const CardStoryPage = () => {
                   </div>
                 ))}
                 <Button
+                  type="button"
                   variant="outline"
                   className="w-full mt-4 rounded-full border-gray-300"
                   onClick={() => addSection("reference")}
@@ -1233,6 +1328,7 @@ const CardStoryPage = () => {
                       Hỗ trợ nhiều file cùng lúc
                     </p>
                     <Button
+                      type="button"
                       className="rounded-full border-gray-300"
                       variant="outline"
                       size="sm"
@@ -1269,6 +1365,7 @@ const CardStoryPage = () => {
                             </div>
                             <div className="mt-3 flex justify-end">
                               <Button
+                                type="button"
                                 variant="destructive"
                                 size="sm"
                                 onClick={() =>
@@ -1649,6 +1746,7 @@ const CardStoryPage = () => {
 
                 <div className="mt-4 flex justify-center">
                   <Button
+                    type="button"
                     className="bg-stone-600 hover:bg-stone-700 text-white"
                     onClick={() => {
                       // Scroll to preview
