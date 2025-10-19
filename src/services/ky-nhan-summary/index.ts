@@ -1,5 +1,13 @@
 import http from "@configs/fetch";
-import { IKyNhanSummaryResponseModel } from "@models/ky-nhan/response";
+import {
+  IKyNhanSummaryResponseModel,
+  CreateKyNhanSummaryResponseModel,
+  ICreateKyNhanSummaryResponseModel,
+} from "@models/kynhanSummary/response";
+import {
+  CreateKyNhanSummaryRequestSchema,
+  ICreateKyNhanSummaryRequest,
+} from "@models/kynhanSummary/request";
 
 export interface KyNhanSummaryResponse {
   summary: string;
@@ -14,9 +22,20 @@ const kyNhanSummaryService = {
   },
 
   getKyNhanWwithLand: async (landId: number) => {
-    return await http.get<IKyNhanSummaryResponseModel>(`/kynhan-summary/land/${landId}`, {
-      cache: "no-store",
-    });
+    return await http.get<IKyNhanSummaryResponseModel>(
+      `/kynhan-summary/land/${landId}`,
+      {
+        cache: "no-store",
+      }
+    );
+  },
+
+  // Create new kỳ nhân summary
+  createKyNhanSummary: async (formData: ICreateKyNhanSummaryRequest | FormData) => {
+    return await http.post<ICreateKyNhanSummaryResponseModel>(
+      `/kynhan-summary`,
+      formData
+    );
   },
 };
 

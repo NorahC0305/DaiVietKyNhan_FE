@@ -4,13 +4,9 @@ import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
 
 const kynhanService = {
-  getKyNhanSummary: async () => {
-    return await http.get<IKyNhanSummaryResponseModel>(`/kynhan-summary`, {
-      cache: "no-store",
-    });
-  },
-  getKyNhan: async () => {
-    return await http.get<IKyNhanResponseModel>(`/kynhan`, {
+
+  getKyNhan: async (qs?: string) => {
+    return await http.get<IKyNhanResponseModel>(`/kynhan?qs=${qs}`, {
       cache: "no-store",
     });
   },
