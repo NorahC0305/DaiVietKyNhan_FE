@@ -41,7 +41,7 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     subItems: [
       { id: "audience-info", label: "Thông tin khán giả", icon: "User" },
       { id: "scores-edit", label: "Điểm số & chỉnh sửa điểm", icon: "Star" },
-      { id: "photo-submission", label: "Hòm nộp ảnh", icon: "Image" },
+     
       {
         id: "received-letters",
         label: "Các bức thư được gửi về",
@@ -50,25 +50,16 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     ],
   },
   {
-    id: "content-management",
-    label: "Quản lý Nội dung",
-    icon: "FileText",
-    subItems: [
-      { id: "content-info", label: "Thông tin nội dung", icon: "FileText" },
-      { id: "content-edit", label: "Chỉnh sửa nội dung", icon: "FileText" },
-    ],
-  },
-  {
     id: "question-game-management",
     label: "Quản lý Câu hỏi & Trò chơi",
     icon: "HelpCircle",
     subItems: [
       { id: "question-bank", label: "Ngân hàng câu hỏi", icon: "Plus" },
-      {
-        id: "question-statistics",
-        label: "Thống kê tỷ lệ trả lời",
-        icon: "TrendingUp",
-      },
+      // {
+      //   id: "question-statistics",
+      //   label: "Thống kê tỷ lệ trả lời",
+      //   icon: "TrendingUp",
+      // },
     ],
   },
   {

@@ -16,11 +16,13 @@ const numberWithinRange = (number: number, min: number, max: number): number =>
 
 interface CardData {
   id: number;
-  isLocked: boolean;
+  unlocked: boolean;
   imageSrc?: string;
   backContent?: {
     backgroundSrc?: string;
-    description?: string;
+    name?: string;
+    thoiKy?: string;
+    chienCong?: string;
     ctaText?: string;
     ctaHref?: string;
   };
@@ -75,10 +77,11 @@ const DotButton: React.FC<{
     onClick={onClick}
   >
     <div
-      className={`w-3 h-3 rounded-full transition-all duration-200 ${className?.includes("embla__dot--selected")
-        ? "bg-white scale-125"
-        : "bg-white/40 hover:bg-white/60"
-        }`}
+      className={`w-3 h-3 rounded-full transition-all duration-200 ${
+        className?.includes("embla__dot--selected")
+          ? "bg-white scale-125"
+          : "bg-white/40 hover:bg-white/60"
+      }`}
     />
   </button>
 );
@@ -244,23 +247,27 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
   useEffect(() => {
     if (!emblaApi) return;
     if (typeof scrollToIndex === "number" && !Number.isNaN(scrollToIndex)) {
-      const boundedIndex = numberWithinRange(scrollToIndex, 0, cards?.length - 1);
+      const boundedIndex = numberWithinRange(
+        scrollToIndex,
+        0,
+        cards?.length - 1
+      );
       emblaApi.scrollTo(boundedIndex);
     }
   }, [emblaApi, scrollToIndex, cards?.length]);
 
   return (
-    <div className="w-full max-w-none px-4 sm:px-6 lg:px-10">
+    <div className="w-full max-w-none px-2 sm:px-4 md:px-6 lg:px-10">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex touch-pan-y touch-pinch-zoom -ml-1 sm:-ml-2 md:-ml-3 lg:-ml-4">
           {cards?.map((card, index) => (
             <div
-              className="transform-gpu flex-none w-[240px] sm:w-[300px] md:w-[380px] lg:w-[460px] min-w-0 pl-3 sm:pl-6 md:pl-8 cursor-pointer"
+              className="transform-gpu flex-none w-[200px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px] min-w-0 pl-2 sm:pl-4 md:pl-6 lg:pl-8 cursor-pointer"
               key={card.id}
               onClick={() => {
                 if (!emblaApi) return;
                 const isCenter = index === selectedIndex;
-                if (isCenter && !card.isLocked) {
+                if (isCenter && card.unlocked) {
                   setFlippedIndex((prev) => (prev === index ? null : index));
                 } else {
                   emblaApi.scrollTo(index);

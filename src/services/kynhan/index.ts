@@ -1,5 +1,5 @@
 import http from "@configs/fetch";
-import { IKyNhanSummaryResponseModel, IKyNhanResponseModel } from "@models/ky-nhan/response";
+import { IKyNhanSummaryResponseModel, IKyNhanResponseModel, IKyNhanUserListResponseModel } from "@models/ky-nhan/response";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
 
@@ -7,6 +7,11 @@ const kynhanService = {
 
   getKyNhan: async (qs?: string, currentPage?: number, pageSize?: number) => {
     return await http.get<IKyNhanResponseModel>(`/kynhan?qs=${qs}&currentPage=${currentPage}&pageSize=${pageSize}`, {
+      cache: "no-store",
+    });
+  },
+  getUserKyNhanList: async () => {
+    return await http.get<IKyNhanUserListResponseModel>("/kynhan/list/user", {
       cache: "no-store",
     });
   },

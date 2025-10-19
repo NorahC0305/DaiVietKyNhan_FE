@@ -1,8 +1,9 @@
 import { cn } from "@utils/CN";
 import Image from "next/image";
+import FramedImage from "../ImageInFrame";
 
 export default function Card({
-  isLocked,
+  unlocked,
   isCenter,
   cardNumber,
   imageSrc,
@@ -10,13 +11,15 @@ export default function Card({
   isFlipped,
   highlightQuery,
 }: {
-  isLocked: boolean;
+  unlocked: boolean;
   isCenter: boolean;
   cardNumber: number;
   imageSrc?: string;
   backContent?: {
     backgroundSrc?: string;
-    description?: string;
+    name?: string;
+    thoiKy?: string;
+    chienCong?: string;
     ctaText?: string;
     ctaHref?: string;
   };
@@ -61,11 +64,12 @@ export default function Card({
     const normToOrig: number[] = [];
     let iOrig = 0;
     let iNorm = 0;
-    while (iOrig < originalCodePoints.length && iNorm < normalizedCodePoints.length) {
+    while (
+      iOrig < originalCodePoints.length &&
+      iNorm < normalizedCodePoints.length
+    ) {
       const origChar = originalCodePoints[iOrig];
-      const folded = origChar
-        .normalize("NFD")
-        .replace(/\p{Diacritic}+/gu, "");
+      const folded = origChar.normalize("NFD").replace(/\p{Diacritic}+/gu, "");
       // folded may have length 0 (for pure combining), 1 or more; advance norm by its length
       const len = Array.from(folded).length || 0;
       for (let k = 0; k < len; k += 1) {
@@ -76,13 +80,12 @@ export default function Card({
     }
 
     const startOrig = normToOrig[start] ?? 0;
-    const endOrig = normToOrig[start + normalizedQuery.length - 1] ??
+    const endOrig =
+      normToOrig[start + normalizedQuery.length - 1] ??
       originalCodePoints.length - 1;
 
     const before = originalCodePoints.slice(0, startOrig).join("");
-    const match = originalCodePoints
-      .slice(startOrig, endOrig + 1)
-      .join("");
+    const match = originalCodePoints.slice(startOrig, endOrig + 1).join("");
     const after = originalCodePoints.slice(endOrig + 1).join("");
 
     return (
@@ -98,20 +101,20 @@ export default function Card({
       <div
         className={cn(
           "relative p-1 shadow-2xl",
-          isCenter && !isLocked && "group"
+          isCenter && unlocked && "group"
         )}
       >
-        <div className="relative aspect-[3/5] w-52 sm:w-64 md:w-80 lg:w-96 [perspective:1200px]">
+        <div className="relative aspect-[3/5] w-48 sm:w-56 md:w-64 lg:w-80 xl:w-96 [perspective:1200px]">
           <div
             className={cn(
               "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-              isCenter && !isLocked && "group-hover:[transform:rotateY(180deg)]",
-              isFlipped && !isLocked && "[transform:rotateY(180deg)]"
+              isCenter && unlocked && "group-hover:[transform:rotateY(180deg)]",
+              isFlipped && unlocked && "[transform:rotateY(180deg)]"
             )}
           >
             {/* Front side */}
             <div className="absolute inset-0 [backface-visibility:hidden]">
-              {isLocked ? (
+              {!unlocked ? (
                 <>
                   <Image
                     src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
@@ -121,59 +124,71 @@ export default function Card({
                     className="object-contain"
                     priority={isCenter}
                   />
-                  {/* <div className="absolute inset-0">
-                    <Image
-                      src="/Group 104.svg"
-                      alt="Locked"
-                      fill
-                      sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                      className={cn(
-                        "object-contain w-full h-full transition-all duration-300",
-                        isCenter ? "scale-90" : "scale-85"
-                      )}
-                    />
-                  </div> */}
                 </>
               ) : (
-                <Image
-                  src="https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
-                  alt="Hidden framed card"
-                  fill
-                  sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                  className="object-contain"
-                  priority={isCenter}
-                />
+                <>
+                  <FramedImage
+                    src={
+                      imageSrc ||
+                      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
+                    }
+                    alt="Kỳ nhân card"
+                  />
+                </>
               )}
             </div>
 
             {/* Back side (shown on flip for unlocked center card) */}
-            {!isLocked && (
+            {unlocked && (
               <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
                 <Image
-                  src={backContent?.backgroundSrc || "/revealedBG.svg"}
+                  src={
+                    backContent?.backgroundSrc ||
+                    "https://res.cloudinary.com/dznt9yias/image/upload/v1760726112/revealedBG_gzuiid.svg" ||
+                    "/placeholder.svg"
+                  }
                   alt="Revealed background"
                   fill
                   sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
                   className="object-contain"
                   priority={isCenter}
                 />
-                <div className="absolute inset-3 sm:inset-4 md:inset-6 lg:inset-8 border border-[#be9b36]/60 rounded-md px-4 sm:px-5 py-6 flex flex-col justify-between">
-                  {backContent?.description && (
-                    <div className="text-[10px] sm:text-xs md:text-sm leading-relaxed text-black/90 whitespace-pre-line break-words">
-                      {renderHighlighted(backContent.description)}
-                    </div>
-                  )}
+                <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between">
+                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4">
+                    {/* Name - Section 1 */}
+                    {backContent?.name && (
+                      <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left">
+                        {renderHighlighted(backContent.name)}
+                      </div>
+                    )}
+
+                    {/* Thoi Ky - Section 2 */}
+                    {backContent?.thoiKy && (
+                      <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left">
+                        {renderHighlighted(backContent.thoiKy)}
+                      </div>
+                    )}
+
+                    {/* Chien Cong - Section 3 */}
+                    {backContent?.chienCong && (
+                      <div className="text-xs sm:text-sm md:text-base font-extrabold leading-relaxed text-black text-left flex-1">
+                        {renderHighlighted(backContent.chienCong)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CTA Button */}
                   {(backContent?.ctaText || backContent?.ctaHref) && (
-                    <div className="w-full flex justify-center">
+                    <div className="w-full flex justify-center mt-3 sm:mt-4">
                       {backContent?.ctaHref ? (
                         <a
                           href={backContent.ctaHref}
-                          className="mt-3 rounded-md bg-[#be9b36] text-black px-4 py-2 text-xs sm:text-sm shadow-md"
+                          className="rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
                         >
                           {backContent?.ctaText || "Xem Thêm"}
                         </a>
                       ) : (
-                        <button className="mt-3 rounded-md bg-[#be9b36] text-black px-4 py-2 text-xs sm:text-sm shadow-md">
+                        <button className="rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md">
                           {backContent?.ctaText || "Xem Thêm"}
                         </button>
                       )}
