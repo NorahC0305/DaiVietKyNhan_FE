@@ -5,8 +5,8 @@ import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
 const kynhanService = {
 
-  getKyNhan: async (qs?: string) => {
-    return await http.get<IKyNhanResponseModel>(`/kynhan?qs=${qs}`, {
+  getKyNhan: async (qs?: string, currentPage?: number, pageSize?: number) => {
+    return await http.get<IKyNhanResponseModel>(`/kynhan?qs=${qs}&currentPage=${currentPage}&pageSize=${pageSize}`, {
       cache: "no-store",
     });
   },
