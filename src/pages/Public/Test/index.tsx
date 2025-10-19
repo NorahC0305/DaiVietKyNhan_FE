@@ -1,20 +1,34 @@
 'use client'
 
 import { GameFrame } from "@components/Molecules/GameFrame"
-import CompleteLand from "@components/Molecules/Popup/CompleteLand"
+// import CompleteLand from "@components/Molecules/Popup/CompleteLand"
+import KhaiNhanMoAn from "@components/Molecules/Popup/KhaiNhanMoAn"
 import { useState } from "react"
 
 const TestPageClient = () => {
-    const [isOpenCompleteLand, setIsOpenCompleteLand] = useState<boolean>(true)
+    /**
+     * Complete Land
+     */
+    // const [isOpenCompleteLand, setIsOpenCompleteLand] = useState<boolean>(true)
+    // const handleCloseCompleteLand = () => {
+    //     setIsOpenCompleteLand(false)
+    // }
+    // const land = 'Chử Đồng Tử' as 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
+    // const kyChu = LAND_CONFIG[land]
+    //--------------------------------End--------------------------------//
 
-    const handleCloseCompleteLand = () => {
-        setIsOpenCompleteLand(false)
+    /**
+     * Khai Nhan Mo An
+     */
+    const [isOpenKhaiNhanMoAn, setIsOpenKhaiNhanMoAn] = useState<boolean>(true)
+    const handleCloseKhaiNhanMoAn = () => {
+        setIsOpenKhaiNhanMoAn(false)
     }
-
-    const land = 'Chử Đồng Tử' as 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
+    //--------------------------------End--------------------------------//
     return (
         <GameFrame>
-            <CompleteLand isOpen={isOpenCompleteLand} onClose={handleCloseCompleteLand} land={land} />
+            {/* <CompleteLand isOpen={isOpenCompleteLand} onClose={handleCloseCompleteLand} land={land} /> */}
+            <KhaiNhanMoAn isOpen={isOpenKhaiNhanMoAn} onClose={handleCloseKhaiNhanMoAn} onClaim={() => { }} />
         </GameFrame>
 
     )
