@@ -1,0 +1,32 @@
+import { z } from "zod";
+
+export const RewardSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  requireValue: z.number(),
+  gift: z.string(),
+  type: z.enum(["CODE", "COIN", "POINT"]),
+  limit: z.number().nullable(),
+  startDate: z.string(),
+  endDate: z.string().nullable(),
+  isActive: z.boolean(),
+  imageUrl: z.string().nullable(),
+  createdById: z.number().nullable(),
+  updatedById: z.number().nullable(),
+  deletedById: z.number().nullable(),
+  deletedAt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type IReward = z.infer<typeof RewardSchema>;
+
+export const RewardListResponseSchema = z.array(RewardSchema);
+export type IRewardListResponse = z.infer<typeof RewardListResponseSchema>;
+
+export const ExchangeRewardRequestSchema = z.object({
+  rewardId: z.number(),
+});
+
+export type IExchangeRewardRequest = z.infer<typeof ExchangeRewardRequestSchema>;

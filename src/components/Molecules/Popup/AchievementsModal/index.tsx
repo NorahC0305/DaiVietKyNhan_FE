@@ -3,27 +3,19 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useMemo } from "react";
+import { Loader2 } from "lucide-react";
+import { useAchievements, Achievement } from "@hooks/useAchievements";
 
 type RewardDisplay =
   | { type: "coins"; amount: number }
   | { type: "text"; label: string };
 
-export type Achievement = {
-  id: string;
-  title: string;
-  description?: string;
-  canClaim: boolean;
-  // Back-compat fields (old API)
-  rewardLabel?: string;
-  // Preferred BE/FE schema
-  reward?: { unit: "COIN"; amount: number } | { unit: "TEXT"; label: string };
-};
+// Achievement type is now imported from the hook
 
 export type AchievementsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onClaim: (achievementId: string) => void;
-  achievements?: Achievement[];
 };
 
 function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
@@ -46,38 +38,59 @@ function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
   return { type: "text", label: raw };
 }
 
+// Function to get the correct button image based on status
+function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
+  switch (status) {
+    case "COMPLETED":
+      return "/Property 1=Đủ để nhận.svg"; // Sáng nút để người dùng nhận
+    case "CLAIMED":
+    case "PENDING":
+    default:
+      return "/Property 1=Chưa đủ để nhận.svg"; // Xám nút cho PENDING và CLAIMED
+  }
+}
+
+
 export default function AchievementsModal({
   isOpen,
   onClose,
   onClaim,
-  achievements,
 }: AchievementsModalProps) {
-  const displayItems = useMemo(
-    () =>
-      (
-        achievements ?? [
-          {
-            id: "a1",
-            title: "Thu thập được 5 Kỳ Ấn",
-            rewardLabel: "100 xu",
-            canClaim: false,
-          },
-          {
-            id: "a2",
-            title: "Thu thập được 15 Kỳ Ấn",
-            rewardLabel: "200 xu",
-            canClaim: false,
-          },
-          {
-            id: "a3",
-            title: "Thu thập được Núi Tản Viên",
-            rewardLabel: "200 xu",
-            canClaim: false,
-          },
-        ]
-      ).map((a) => ({ achievement: a, reward: normalizeRewardDisplay(a) })),
-    [achievements]
-  );
+  const { achievements, loading, error } = useAchievements(isOpen);
+  const displayItems = useMemo(() => {
+    // Show default data while loading or if no data fetched yet
+    const itemsToDisplay =
+      achievements.length > 0
+        ? achievements
+        : [
+            {
+              id: "a1",
+              title: "Thu thập được 5 Kỳ Ấn",
+              rewardLabel: "100 xu",
+              canClaim: false,
+              status: "PENDING" as const,
+            },
+            {
+              id: "a2",
+              title: "Thu thập được 15 Kỳ Ấn",
+              rewardLabel: "200 xu",
+              canClaim: false,
+              status: "PENDING" as const,
+            },
+            {
+              id: "a3",
+              title: "Thu thập được Núi Tản Viên",
+              rewardLabel: "200 xu",
+              canClaim: false,
+              status: "PENDING" as const,
+            },
+          ];
+
+    return itemsToDisplay.map((a) => ({
+      achievement: a,
+      reward: normalizeRewardDisplay(a),
+    }));
+  }, [achievements]);
 
   return (
     <AnimatePresence>
@@ -136,64 +149,74 @@ export default function AchievementsModal({
                 </div>
 
                 <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5 mt-2 sm:mt-4 lg:mt-6 px-2 sm:px-4 lg:px-6 max-w-3xl overflow-y-auto custom-scrollbar flex-1">
-                  {displayItems.map(({ achievement, reward }) => (
-                    <div
-                      key={achievement.id}
-                      className="rounded-tr-4xl rounded-b-2xl bg-[#F7E6BB] shadow-sm p-0"
-                    >
-                      <div className="bg-[#E8A64D] text-white rounded-tr-4xl rounded-tl-md px-5 py-3 sm:px-6 sm:py-3.5 font-semibold text-lg sm:text-xl lg:text-2xl leading-tight">
-                        {achievement.title}
-                      </div>
-                      <div className="h-[2px] w-full bg-[#EBD9A8]" />
-                      <div className="p-3 sm:p-4">
-                        <div className="mt-1 sm:mt-2 flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="text-[#2B2B2B] font-semibold">
-                              Thưởng:
-                            </span>
-                            {reward.type === "coins" ? (
-                              <div className="flex items-center gap-2">
-                                <span className="text-[#2B2B2B] text-lg sm:text-xl font-semibold">
-                                  {reward.amount}
-                                </span>
-                                <Image
-                                  src="/DVKN coin.svg"
-                                  alt="coin"
-                                  width={28}
-                                  height={28}
-                                  className="w-6 h-6 sm:w-7 sm:h-7"
-                                />
-                              </div>
-                            ) : (
-                              <span className="text-[#2B2B2B] text-lg sm:text-xl font-semibold">
-                                {reward.label}
-                              </span>
-                            )}
-                          </div>
-
-                          <button
-                            onClick={() =>
-                              achievement.canClaim && onClaim(achievement.id)
-                            }
-                            disabled={!achievement.canClaim}
-                            className="relative cursor-pointer px-4 sm:px-5 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[72px] min-h-[36px] overflow-hidden"
-                          >
-                            <Image
-                              src={
-                                achievement.canClaim
-                                  ? "/Property 1=Đủ để nhận.svg"
-                                  : "/Property 1=Chưa đủ để nhận.svg"
-                              }
-                              alt="Button background"
-                              fill
-                              className="absolute inset-0 object-cover transition-all duration-300"
-                              sizes="(max-width: 640px) 72px, (max-width: 1024px) 90px, 100px"
-                            />
-                          </button>
-                        </div>
+                  {loading ? (
+                    <div className="col-span-full flex flex-col items-center justify-center py-8 gap-3">
+                      <Loader2 className="h-8 w-8 text-[#835D26] animate-spin" />
+                      <div className="text-[#835D26] font-medium">
+                        Đang tải dữ liệu...
                       </div>
                     </div>
-                  ))}
+                  ) : error ? (
+                    <div className="col-span-full flex items-center justify-center py-8">
+                      <div className="text-red-600 font-medium">{error}</div>
+                    </div>
+                  ) : (
+                    displayItems.map(({ achievement, reward }) => (
+                      <div
+                        key={achievement.id}
+                        className="rounded-tr-4xl rounded-b-2xl bg-[#F7E6BB] shadow-sm p-0"
+                      >
+                        <div className="bg-[#E8A64D] text-white rounded-tr-4xl rounded-tl-md px-5 py-3 sm:px-6 sm:py-3.5 font-semibold text-lg sm:text-xl lg:text-2xl leading-tight">
+                          {achievement.title}
+                        </div>
+                        <div className="h-[2px] w-full bg-[#EBD9A8]" />
+                        <div className="p-3 sm:p-4">
+                          <div className="mt-1 sm:mt-2 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span className="text-[#2B2B2B] font-semibold">
+                                Thưởng:
+                              </span>
+                              {reward.type === "coins" ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[#2B2B2B] text-lg sm:text-xl font-semibold">
+                                    {reward.amount}
+                                  </span>
+                                  <Image
+                                    src="/DVKN coin.svg"
+                                    alt="coin"
+                                    width={28}
+                                    height={28}
+                                    className="w-6 h-6 sm:w-7 sm:h-7"
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-[#2B2B2B] text-lg sm:text-xl font-semibold">
+                                  {reward.label}
+                                </span>
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                achievement.status === "COMPLETED" &&
+                                onClaim(achievement.id)
+                              }
+                              disabled={achievement.status !== "COMPLETED"}
+                              className="relative cursor-pointer px-4 sm:px-5 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[72px] min-h-[36px] overflow-hidden"
+                            >
+                              <Image
+                                src={getButtonImage(achievement.status)}
+                                alt="Button background"
+                                fill
+                                className="absolute inset-0 object-cover transition-all duration-300"
+                                sizes="(max-width: 640px) 72px, (max-width: 1024px) 90px, 100px"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
