@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import MapRegion from "./Components/MapRegion";
 import MobileRegion from "./Components/MobileRegion";
@@ -11,6 +11,7 @@ import WaitingOthers from "@/components/Molecules/Popup/WaitingOthers";
 import { IUserLandWithLandEntity } from "@models/user-land/entity";
 import { IUserLandWithLandResponseModel } from "@models/user-land/response";
 import { LAND } from "@constants/land";
+import userLandService from "@services/user-land";
 
 // --- Dữ liệu gốc của các regions, bao gồm `position` ---
 const baseRegions: ICOMPONENTS.Region[] = [
@@ -115,7 +116,7 @@ const regionToLandIdMap: Record<string, number | null> = {
 };
 
 export default function MapPageClient({
-  userLand,
+  userLand: initialUserLand,
 }: {
   userLand: IUserLandWithLandResponseModel[];
 }) {
@@ -124,7 +125,103 @@ export default function MapPageClient({
     useState(false);
   const [isWaitingOthersModalOpen, setIsWaitingOthersModalOpen] =
     useState(false);
-  console.log(userLand);
+  const [userLand, setUserLand] =
+    useState<IUserLandWithLandResponseModel[]>(initialUserLand);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastRefreshTimestamp, setLastRefreshTimestamp] = useState<number>(0);
+
+  // Function to fetch fresh userLand data
+  const fetchUserLandData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await userLandService.getUserLand();
+      if (response && response.data) {
+        // Check if the data has actually changed by comparing land statuses
+        setUserLand((prevData) => {
+          if (!prevData) {
+            return response.data;
+          }
+
+          // Create maps for easier comparison
+          const prevStatusMap = new Map(
+            prevData.map((item) => [item.landId, item.status])
+          );
+          const newStatusMap = new Map(
+            response.data.map((item) => [item.landId, item.status])
+          );
+
+          // Check if any status has actually changed
+          const hasStatusChange = Array.from(newStatusMap.entries()).some(
+            ([landId, newStatus]) => {
+              const prevStatus = prevStatusMap.get(landId);
+              return prevStatus !== newStatus;
+            }
+          );
+
+          // Only update if there's actually a status change
+          return hasStatusChange ? response.data : prevData;
+        });
+        setLastRefreshTimestamp(Date.now());
+      }
+    } catch (error) {
+      console.error("Error fetching userLand data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Effect to handle data refresh when returning from detail page
+  useEffect(() => {
+    // Check if we should refresh data (set when navigating to detail page)
+    const shouldRefresh = sessionStorage.getItem("shouldRefreshMapData");
+    const navigationTimestamp = sessionStorage.getItem("navigationTimestamp");
+
+    if (shouldRefresh === "true") {
+      // Clear the flag immediately
+      sessionStorage.removeItem("shouldRefreshMapData");
+
+      // Only refresh if we haven't refreshed recently (within 5 seconds) or if this is a fresh navigation
+      const now = Date.now();
+      const navTime = navigationTimestamp ? parseInt(navigationTimestamp) : 0;
+
+      if (now - lastRefreshTimestamp > 5000 || navTime > lastRefreshTimestamp) {
+        fetchUserLandData();
+      }
+    }
+
+    const handlePageFocus = () => {
+      // Check again for refresh flag when page regains focus
+      const shouldRefresh = sessionStorage.getItem("shouldRefreshMapData");
+      const navigationTimestamp = sessionStorage.getItem("navigationTimestamp");
+
+      if (shouldRefresh === "true") {
+        sessionStorage.removeItem("shouldRefreshMapData");
+
+        // Only refresh if we haven't refreshed recently
+        const now = Date.now();
+        const navTime = navigationTimestamp ? parseInt(navigationTimestamp) : 0;
+
+        if (
+          now - lastRefreshTimestamp > 5000 ||
+          navTime > lastRefreshTimestamp
+        ) {
+          fetchUserLandData();
+        }
+      }
+    };
+
+    // Listen for when the page regains focus
+    window.addEventListener("focus", handlePageFocus);
+
+    return () => {
+      window.removeEventListener("focus", handlePageFocus);
+    };
+  }, [fetchUserLandData, lastRefreshTimestamp]);
+
+  // Effect to update userLand state when initialUserLand prop changes
+  useEffect(() => {
+    setUserLand(initialUserLand);
+  }, [initialUserLand]);
 
   // Function to check if all previous 4 lands are completed
   const areAllPreviousLandsCompleted = (): boolean => {
@@ -164,6 +261,10 @@ export default function MapPageClient({
   const handleRegionClick = (regionId: string) => {
     // Only allow navigation if region is unlocked
     if (isRegionUnlocked(regionId)) {
+      // Set a flag to refresh data when user returns from detail page
+      sessionStorage.setItem("shouldRefreshMapData", "true");
+      // Set navigation timestamp to track when user navigated away
+      sessionStorage.setItem("navigationTimestamp", Date.now().toString());
       router.push(`/map/${regionId}`);
     } else {
       // Special case for "ky-linh-viet-hoa" - show WaitingOthers popup
