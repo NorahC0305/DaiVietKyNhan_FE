@@ -280,7 +280,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                     <div className="flex items-center gap-3">
                       <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0">
                         {(() => {
-                          const selectedKyNhan = kyNhanList.find(
+                          const selectedKyNhan = kyNhanList?.find(
                             (k) => k.id.toString() === formData.kyNhanId
                           );
                           return selectedKyNhan?.imgUrl ? (
@@ -297,14 +297,14 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                       <div className="flex-1">
                         <h3 className="font-medium text-gray-900">
                           {
-                            kyNhanList.find(
+                            kyNhanList?.find(
                               (k) => k.id.toString() === formData.kyNhanId
                             )?.name
                           }
                         </h3>
                         <p className="text-sm text-gray-600">
                           {
-                            kyNhanList.find(
+                            kyNhanList?.find(
                               (k) => k.id.toString() === formData.kyNhanId
                             )?.thoiKy
                           }
@@ -344,8 +344,8 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
 
                     {/* Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      {kyNhanList.length > 0 ? (
-                        kyNhanList.map((kyNhan) => (
+                      {kyNhanList?.length > 0 ? (
+                        kyNhanList?.map((kyNhan) => (
                           <div
                             key={kyNhan.id}
                             onClick={() =>
