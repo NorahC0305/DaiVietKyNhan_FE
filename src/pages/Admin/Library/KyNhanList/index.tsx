@@ -88,7 +88,7 @@ const KyNhanListPage = ({
 
   // Helper function to get land name by id
   const getLandName = (landId: number) => {
-    const land = landList.find((land) => land.id === landId);
+    const land = landList?.find((land) => land.id === landId);
     return land ? land.name : `Đất ID: ${landId}`;
   };
 
@@ -98,15 +98,15 @@ const KyNhanListPage = ({
 
     // Filter by active status
     if (activeFilter === "active") {
-      filtered = filtered.filter((kyNhan) => kyNhan.active);
+      filtered = filtered?.filter((kyNhan) => kyNhan.active);
     } else if (activeFilter === "inactive") {
-      filtered = filtered.filter((kyNhan) => !kyNhan.active);
+      filtered = filtered?.filter((kyNhan) => !kyNhan.active);
     }
 
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
+      filtered = filtered?.filter(
         (kyNhan) =>
           kyNhan.name.toLowerCase().includes(query) ||
           kyNhan.thoiKy.toLowerCase().includes(query) ||
@@ -270,21 +270,21 @@ const KyNhanListPage = ({
                   onClick={() => setActiveFilter("all")}
                   className="rounded-full"
                 >
-                  Tất cả ({kyNhans.length})
+                  Tất cả ({kyNhans?.length})
                 </Button>
                 <Button
                   variant={activeFilter === "active" ? "default" : "outline"}
                   onClick={() => setActiveFilter("active")}
                   className="rounded-full"
                 >
-                  Hoạt động ({kyNhans.filter((k) => k.active).length})
+                  Hoạt động ({kyNhans?.filter((k) => k.active)?.length})
                 </Button>
                 <Button
                   variant={activeFilter === "inactive" ? "default" : "outline"}
                   onClick={() => setActiveFilter("inactive")}
                   className="rounded-full"
                 >
-                  Không hoạt động ({kyNhans.filter((k) => !k.active).length})
+                  Không hoạt động ({kyNhans?.filter((k) => !k.active)?.length})
                 </Button>
               </div>
             </div>
@@ -304,12 +304,12 @@ const KyNhanListPage = ({
           <>
             {/* Results Summary */}
             <div className="text-sm text-gray-600">
-              Hiển thị {filteredKyNhans.length} trong tổng số {kyNhans.length}{" "}
+              Hiển thị {filteredKyNhans?.length} trong tổng số {kyNhans?.length}{" "}
               kỳ nhân
             </div>
 
             {/* KyNhan List */}
-            {filteredKyNhans.length === 0 ? (
+            {filteredKyNhans?.length === 0 ? (
               <Card className="border-2 border-gray-300">
                 <CardContent className="p-12 text-center">
                   <div className="text-gray-400 mb-4">
@@ -323,7 +323,7 @@ const KyNhanListPage = ({
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredKyNhans.map((kyNhan) => (
+                {filteredKyNhans?.map((kyNhan) => (
                   <Card
                     key={kyNhan.id}
                     className="border-2 border-gray-300 hover:shadow-lg transition-shadow"

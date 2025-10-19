@@ -24,41 +24,39 @@ import SummaryCards from "./Components/SummaryCards";
 import SearchFilters from "./Components/Toolbar";
 import AddQuestionForm from "./Components/AddQuestionForm";
 import QuestionsTable from "./Components/QuestionsTable";
-import { IKyNhanSummary } from "@models/ky-nhan/entity";
 import {
   useCreateQuestion,
+  useUpdateQuestion,
+  useGetQuestionById,
   useQuestions,
   UIQuestion,
 } from "@hooks/use-question-queries";
 import questionService from "@services/question";
 import { IDeleteQuestionResponse } from "@models/question/response";
+import { ICreateQuestionRequest } from "@models/question/request";
+import { IQuestion } from "@models/question/entity";
 import { ILandEntity } from "@models/Land/entity";
 
-interface QuestionData {
-  text: string;
-  questionType: "TEXT_INPUT";
-  allowSimilarAnswers: boolean;
-  landId: number;
-  kynhanSummaries: number[];
-  answers: string[];
-}
 
 const QuestionBankPage = ({
-  kyNhanSummary,
   lands,
 }: {
-  kyNhanSummary: IKyNhanSummary[];
   lands: ILandEntity[];
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLandId, setSelectedLandId] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingQuestionId, setEditingQuestionId] = useState<number | null>(null);
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const createQuestionMutation = useCreateQuestion();
+  const updateQuestionMutation = useUpdateQuestion();
 
   // Fetch questions data using the hook
   const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
+  
+  // Fetch editing question data
+  const { data: editingQuestion, isLoading: isLoadingEditQuestion } = useGetQuestionById(editingQuestionId);
 
   // Filter questions based on search and category using query data directly
   const filteredQuestions = useMemo(() => {
@@ -96,15 +94,26 @@ const QuestionBankPage = ({
     }
   }, [createQuestionMutation.error]);
 
-  const handleAddQuestion = async (questionData: QuestionData) => {
+  const handleAddQuestion = async (questionData: ICreateQuestionRequest) => {
     try {
-      await createQuestionMutation.mutate(questionData, {
-        onSuccess: () => {
-          setShowAddForm(false);
-          // Refetch data để cập nhật UI với câu hỏi mới
-          refetch();
-        },
-      });
+      if (editingQuestionId) {
+        // Update existing question
+        await updateQuestionMutation.mutate(editingQuestionId, questionData, {
+          onSuccess: () => {
+            setShowAddForm(false);
+            setEditingQuestionId(null);
+            refetch();
+          },
+        });
+      } else {
+        // Create new question
+        await createQuestionMutation.mutate(questionData, {
+          onSuccess: () => {
+            setShowAddForm(false);
+            refetch();
+          },
+        });
+      }
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -115,7 +124,13 @@ const QuestionBankPage = ({
   };
 
   const handleEdit = (id: string) => {
-    console.log("Edit question:", id);
+    setEditingQuestionId(Number(id));
+    setShowAddForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingQuestionId(null);
+    setShowAddForm(false);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -172,7 +187,10 @@ const QuestionBankPage = ({
             onLandIdChange={(value: string) =>
               setSelectedLandId(value === "all" ? null : Number(value))
             }
-            onAddQuestion={() => setShowAddForm(!showAddForm)}
+            onAddQuestion={() => {
+              setEditingQuestionId(null);
+              setShowAddForm(!showAddForm);
+            }}
             lands={lands}
           />
 
@@ -189,7 +207,8 @@ const QuestionBankPage = ({
             <AddQuestionForm
               onSubmit={handleAddQuestion}
               lands={lands || []}
-              kyNhanSummary={kyNhanSummary || []}
+              editQuestion={editingQuestion}
+              onCancel={handleCancelEdit}
             />
           )}
 

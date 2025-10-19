@@ -16,6 +16,11 @@ const questionService = {
   getAllQuestionsAdmin: async () => {
     return await http.get<IQuestionResponse>(`/question`);
   },
+
+  // Get a single question by ID
+  getQuestionById: async (id: number) => {
+    return await http.get<ICreateQuestionResponse>(`/question/${id}`);
+  },
   updateQuestion: async (id: number, data: ICreateQuestionRequest) => {
     return await http.put<IQuestionResponse>(`/question/${id}`, data);
   },
