@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import userAnswerLogService from "@services/user-answer-log";
 import { IUserAnswerLogRequest } from "@models/user-answer-log/request";
 import { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
+import KyNhanResult from "@components/Molecules/Popup/KyNhanResult";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -83,8 +84,12 @@ export default function FixedScrollsPageResponsive({
       };
 
       const response = await userAnswerLogService.answerQuestion(requestData);
-
-      if (response && response.statusCode === 201 && response.data) {
+      // console.log(response);
+      if (
+        response &&
+        (response.statusCode === 200 || response.statusCode === 201) &&
+        response.data
+      ) {
         if (response.data.isCorrect) {
           // Trả lời đúng - hiện toast và cập nhật state
           toast.success("Chính xác! Bạn đã trả lời đúng.");
@@ -151,7 +156,10 @@ export default function FixedScrollsPageResponsive({
         requestData
       );
 
-      if (response && (response.statusCode === 200 || response.statusCode === 201)) {
+      if (
+        response &&
+        (response.statusCode === 200 || response.statusCode === 201)
+      ) {
         // Successfully skipped the question with coins
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
 
@@ -199,6 +207,7 @@ export default function FixedScrollsPageResponsive({
             priority
           />
         </div> */}
+        {/* <KyNhanResult isOpen={true} onClose={() => {}} title="Kết quả" content="Bạn đã trả lời đúng." points={100} kyNhan={[]} /> */}
 
         {/* Wrapper 50vh: mọi toạ độ top/left tính trong nửa dưới */}
         <div className="relative w-full h-full z-10">
