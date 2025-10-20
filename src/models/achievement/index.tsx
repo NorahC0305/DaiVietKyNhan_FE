@@ -18,14 +18,14 @@ export const AchievementModel = z.object({
   reward: z.number(),
   isActive: z.boolean(),
   order: z.number(),
-  landId: z.number(),
-  createdById: z.number(),
+  landId: z.number().nullable(),
+  createdById: z.number().nullable(),
   updatedById: z.number().nullable(),
   deletedById: z.number().nullable(),
   deletedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
-  land: LandModel,
+  land: LandModel.nullable(),
 });
 
 export type IAchievement = z.infer<typeof AchievementModel>;

@@ -36,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${StreetSignSans.variable} ${DFVNGraphit.variable} antialiased`}
       >
-        <ToastContainer />
+        <ToastContainer  />
         <SessionProviderWrapper>
           <AntdProvider>
             <Suspense fallback={<VietnameseHistoryLoading />}>

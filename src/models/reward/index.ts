@@ -25,6 +25,29 @@ export type IReward = z.infer<typeof RewardSchema>;
 export const RewardListResponseSchema = z.array(RewardSchema);
 export type IRewardListResponse = z.infer<typeof RewardListResponseSchema>;
 
+// User Reward Exchange Schema
+export const UserRewardExchangeSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  rewardId: z.number(),
+  status: z.enum(["COMPLETED", "PENDING"]),
+  exchangedAt: z.string().nullable(),
+  code: z.string().nullable(),
+  valuePaid: z.number(),
+  createdById: z.number(),
+  updatedById: z.number().nullable(),
+  deletedById: z.number().nullable(),
+  deletedAt: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  reward: RewardSchema,
+});
+
+export type IUserRewardExchange = z.infer<typeof UserRewardExchangeSchema>;
+
+export const UserRewardExchangeListResponseSchema = z.array(UserRewardExchangeSchema);
+export type IUserRewardExchangeListResponse = z.infer<typeof UserRewardExchangeListResponseSchema>;
+
 export const ExchangeRewardRequestSchema = z.object({
   rewardId: z.number(),
 });

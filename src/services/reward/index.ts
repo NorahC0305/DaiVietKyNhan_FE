@@ -4,6 +4,8 @@ import {
   IRewardListResponse,
   RewardListResponseSchema,
   IExchangeRewardRequest,
+  IUserRewardExchange,
+  IUserRewardExchangeListResponse,
 } from "@models/reward";
 import { IReward } from "@models/reward";
 import qs from "qs";
@@ -29,6 +31,22 @@ const rewardService = {
       next: { tags: ["userRewards"] },
     });
   },
+
+  getUserRewards: async (params?: {
+    currentPage?: number;
+    pageSize?: number;
+    sort?: string;
+  }) => {
+    const queryParams = qs.stringify({
+      ...params,
+      qs: params?.sort || "sort:-id",
+    });
+
+    return await http.get(`/user-reward/my-rewards?${queryParams}`, {
+      next: { tags: ["userRewards"] },
+    });
+  },
+
 };
 
 export default rewardService;

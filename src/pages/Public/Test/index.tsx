@@ -39,7 +39,7 @@ const TestPageClient = () => {
     //--------------------------------End--------------------------------//
 
     return (
-        <GameFrame>
+        <GameFrame user={null as any}>
             {/* <CompleteLand isOpen={isOpenCompleteLand} onClose={handleCloseCompleteLand} land={land} /> */}
             {/* <KhaiNhanMoAn isOpen={isOpenKhaiNhanMoAn} onClose={handleCloseKhaiNhanMoAn} onClaim={() => { }} /> */}
             <Guide isOpen={isOpenGuide} onClose={handleCloseGuide} land={land} />

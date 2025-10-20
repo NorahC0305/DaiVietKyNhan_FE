@@ -16,6 +16,7 @@ export type AchievementsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onClaim: (achievementId: string) => void;
+  isClaiming?: boolean;
 };
 
 function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
@@ -41,12 +42,13 @@ function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
 // Function to get the correct button image based on status
 function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
   switch (status) {
-    case "COMPLETED":
-      return "/Property 1=Đủ để nhận.svg"; // Sáng nút để người dùng nhận
-    case "CLAIMED":
     case "PENDING":
+      return "/Property 1=Chưa đủ để nhận.svg"; // PENDING means chưa đủ để nhận
+    case "COMPLETED":
+      return "/Property 1=Đủ để nhận.svg"; // COMPLETED means đủ để nhận
+    case "CLAIMED":
     default:
-      return "/Property 1=Chưa đủ để nhận.svg"; // Xám nút cho PENDING và CLAIMED
+      return "/Property 1=Chưa đủ để nhận.svg"; // CLAIMED shows chưa đủ để nhận
   }
 }
 
@@ -55,38 +57,17 @@ export default function AchievementsModal({
   isOpen,
   onClose,
   onClaim,
+  isClaiming = false,
 }: AchievementsModalProps) {
-  const { achievements, loading, error } = useAchievements(isOpen);
-  const displayItems = useMemo(() => {
-    // Show default data while loading or if no data fetched yet
-    const itemsToDisplay =
-      achievements.length > 0
-        ? achievements
-        : [
-            {
-              id: "a1",
-              title: "Thu thập được 5 Kỳ Ấn",
-              rewardLabel: "100 xu",
-              canClaim: false,
-              status: "PENDING" as const,
-            },
-            {
-              id: "a2",
-              title: "Thu thập được 15 Kỳ Ấn",
-              rewardLabel: "200 xu",
-              canClaim: false,
-              status: "PENDING" as const,
-            },
-            {
-              id: "a3",
-              title: "Thu thập được Núi Tản Viên",
-              rewardLabel: "200 xu",
-              canClaim: false,
-              status: "PENDING" as const,
-            },
-          ];
+  const { achievements, loading, error, fetchAchievements } = useAchievements(isOpen);
 
-    return itemsToDisplay.map((a) => ({
+  const handleClaim = async (achievementId: string) => {
+    await onClaim(achievementId);
+    // Refresh achievements data after successful claim
+    await fetchAchievements();
+  };
+  const displayItems = useMemo(() => {
+    return achievements.map((a) => ({
       achievement: a,
       reward: normalizeRewardDisplay(a),
     }));
@@ -160,6 +141,12 @@ export default function AchievementsModal({
                     <div className="col-span-full flex items-center justify-center py-8">
                       <div className="text-red-600 font-medium">{error}</div>
                     </div>
+                  ) : achievements.length === 0 ? (
+                    <div className="col-span-full flex flex-col items-center justify-center py-8 gap-3">
+                      <div className="text-[#835D26] font-medium text-lg">
+                        Không có dữ liệu
+                      </div>
+                    </div>
                   ) : (
                     displayItems.map(({ achievement, reward }) => (
                       <div
@@ -199,9 +186,9 @@ export default function AchievementsModal({
                             <button
                               onClick={() =>
                                 achievement.status === "COMPLETED" &&
-                                onClaim(achievement.id)
+                                handleClaim(achievement.id)
                               }
-                              disabled={achievement.status !== "COMPLETED"}
+                              disabled={achievement.status !== "COMPLETED" || isClaiming}
                               className="relative cursor-pointer px-4 sm:px-5 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[72px] min-h-[36px] overflow-hidden"
                             >
                               <Image
