@@ -250,15 +250,10 @@ export default function EntryTestPage({ testHome }: { testHome: ITestHome[] }) {
       if (currentQuestion && apiAnswer) {
         (async () => {
           try {
-            const resp = await userTestHomeService.saveAnswer({
+            await userTestHomeService.saveAnswer({
               questionId: currentQuestion.id,
               answer: apiAnswer,
             });
-            if (resp.statusCode === 201) {
-              toast.success(resp.message || "Đã lưu câu trả lời");
-            } else {
-              toast.error(resp.message || "Lưu thất bại");
-            }
           } catch (error) {
             console.error("Failed to save user test answer", error);
             toast.error("Không thể lưu câu trả lời. Vui lòng thử lại.");
