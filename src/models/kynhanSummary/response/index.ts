@@ -22,3 +22,21 @@ export const CreateKyNhanSummaryResponseModel =
 export type ICreateKyNhanSummaryResponseModel = z.infer<
   typeof CreateKyNhanSummaryResponseModel
 >; //-----------------End-CreateKyNhanSummaryResponseModel-----------------//
+
+/**
+ * Update KyNhan summary response model
+ */
+export const UpdateKyNhanSummaryResponseModel =
+  BackendResponseModel(KyNhanSummarySchema);
+export type IUpdateKyNhanSummaryResponseModel = z.infer<
+  typeof UpdateKyNhanSummaryResponseModel
+>; //-----------------End-UpdateKyNhanSummaryResponseModel-----------------//
+
+/**
+ * Get single KyNhan summary response model
+ */
+export const GetKyNhanSummaryByIdResponseModel =
+  BackendResponseModel(KyNhanSummarySchema);
+export type IGetKyNhanSummaryByIdResponseModel = z.infer<
+  typeof GetKyNhanSummaryByIdResponseModel
+>; //-----------------End-GetKyNhanSummaryByIdResponseModel-----------------//

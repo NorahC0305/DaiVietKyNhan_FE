@@ -68,10 +68,10 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     icon: "BookOpen",
     subItems: [
       { id: "ky-nhan-list", label: "Danh sách kỳ nhân", icon: "Users" },
-      { id: "card", label: "Thư viện card", icon: "CreditCard" },
-      { id: "ky-nhan-summary", label: "Tóm tắt kỳ nhân", icon: "FileText" },
-      { id: "lib-card", label: "Thư viện lib card", icon: "Library" },
-      { id: "card-story", label: "Thư viện card story", icon: "ScrollText" },
+      { id: "card", label: "Thẻ kỳ nhân", icon: "CreditCard" },
+      { id: "ky-nhan-summary", label: "Tóm tắt kỳ nhân( Dành cho câu hỏi)", icon: "FileText" },
+      { id: "lib-card", label: "Chi tiết kỳ nhân", icon: "Library" },
+      { id: "card-story", label: "Chi tiết kỳ nhân (Câu chuyện mở rộng)", icon: "ScrollText" },
     ],
   },
   {

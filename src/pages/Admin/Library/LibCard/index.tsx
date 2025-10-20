@@ -481,7 +481,7 @@ const LibCardPage = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Khởi nghĩa
+                  Sự nghiệp
                 </label>
                 <Textarea
                   id="khoiNghia"
@@ -489,7 +489,7 @@ const LibCardPage = () => {
                   onChange={(e) =>
                     handleInputChange("khoiNghia", e.target.value)
                   }
-                  placeholder="Nhập thông tin về cuộc khởi nghĩa"
+                  placeholder="Nhập thông tin về sự nghiệp"
                   rows={3}
                   className="rounded-4xl border-gray-300"
                 />
@@ -515,7 +515,7 @@ const LibCardPage = () => {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
-                    Phu quân
+                    Phu quân/Phu nhân
                   </label>
                   <Input
                     id="phuQuan"
@@ -523,7 +523,7 @@ const LibCardPage = () => {
                     onChange={(e) =>
                       handleInputChange("phuQuan", e.target.value)
                     }
-                    placeholder="Nhập thông tin phu quân"
+                    placeholder="Nhập thông tin phu quân/phu nhân"
                     color="black"
                     className="rounded-4xl border-gray-300"
                   />
@@ -549,13 +549,13 @@ const LibCardPage = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Đỉnh cao
+                  Vai trò
                 </label>
                 <Textarea
                   id="dinhCao"
                   value={formData.dinhCao || ""}
                   onChange={(e) => handleInputChange("dinhCao", e.target.value)}
-                  placeholder="Nhập thông tin về đỉnh cao trong sự nghiệp"
+                  placeholder="Nhập thông tin về vai trò"
                   rows={3}
                   className="rounded-4xl border-gray-300"
                 />
