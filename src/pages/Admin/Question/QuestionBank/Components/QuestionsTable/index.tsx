@@ -83,7 +83,6 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
         return status;
     }
   };
-
   return (
     <div className="bg-admin-primary rounded-lg border border-gray-300">
       <div className="p-6">
@@ -171,14 +170,14 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {question.correctRate > 0 ? (
+                      {question.rate > 0 ? (
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-gray-600 font-bold">
-                            {question.correctRate}%
+                            {question.rate}%
                           </span>
                           <Progress
-                            value={question.correctRate}
-                            className="bg-[#f9e6d2]"
+                            value={question.rate}
+                            className="bg-white"
                             style={{ height: "8px", width: "80px" }}
                           />
                         </div>

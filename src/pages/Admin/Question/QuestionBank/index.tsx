@@ -29,6 +29,7 @@ import {
   useUpdateQuestion,
   useGetQuestionById,
   useQuestions,
+  useQuestionStats,
   UIQuestion,
 } from "@hooks/use-question-queries";
 import questionService from "@services/question";
@@ -54,9 +55,10 @@ const QuestionBankPage = ({
 
   // Fetch questions data using the hook
   const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
-
   // Fetch editing question data
   const { data: editingQuestion, isLoading: isLoadingEditQuestion } = useGetQuestionById(editingQuestionId);
+  // Fetch questions statistics from BE
+  const { data: questionStats, isLoading: isLoadingStats, error: statsError, refetch: refetchStats } = useQuestionStats();
 
   // Filter questions based on search and category using query data directly
   const filteredQuestions = useMemo(() => {
@@ -70,22 +72,9 @@ const QuestionBankPage = ({
     });
   }, [allQuestions, searchTerm, selectedLandId]);
 
-  // Calculate summary statistics based on query data directly
-  const totalQuestions = allQuestions.length;
-  const activeQuestions = useMemo(() =>
-    allQuestions.filter((q) => q.status === "active").length,
-    [allQuestions]
-  );
-  const draftQuestions = useMemo(() =>
-    allQuestions.filter((q) => q.status === "draft").length,
-    [allQuestions]
-  );
-  const averageCorrectRate = useMemo(() =>
-    totalQuestions > 0
-      ? allQuestions.reduce((sum, q) => sum + q.correctRate, 0) / totalQuestions
-      : 0,
-    [allQuestions, totalQuestions]
-  );
+  // Use statistics from BE instead of calculating
+  const totalQuestions = questionStats?.countQuestion || 0;
+  const averageCorrectRate = questionStats?.rateCorrect || 0;
 
   // Handle mutation errors with toast notification
   useEffect(() => {
@@ -103,6 +92,7 @@ const QuestionBankPage = ({
             setShowAddForm(false);
             setEditingQuestionId(null);
             refetch();
+            refetchStats();
           },
         });
       } else {
@@ -111,6 +101,7 @@ const QuestionBankPage = ({
           onSuccess: () => {
             setShowAddForm(false);
             refetch();
+            refetchStats();
           },
         });
       }
@@ -150,6 +141,7 @@ const QuestionBankPage = ({
 
         // Refetch data từ server để cập nhật UI
         refetch();
+        refetchStats();
       } else {
         toast.error(response.message);
       }
@@ -197,9 +189,8 @@ const QuestionBankPage = ({
           {/* Summary Cards */}
           <SummaryCards
             totalQuestions={totalQuestions}
-            activeQuestions={activeQuestions}
-            draftQuestions={draftQuestions}
             averageCorrectRate={averageCorrectRate}
+            isLoading={isLoadingStats}
           />
 
           {/* Add Question Form */}
