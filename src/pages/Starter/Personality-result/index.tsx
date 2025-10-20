@@ -146,19 +146,27 @@ const PersonalityResultPage = React.memo(() => {
     },
   };
 
-  // Build guardian cards from BE profiles to avoid order/mapping issues
+  // Build guardian cards with fixed order from guardianMetaByTrait
   const guardianDeities = useMemo(() => {
-    return (profiles || []).map((p) => ({
-      ...guardianMetaByTrait[p.traitType],
-      personalityId:
-        p.traitType === "SANGUINE"
-          ? "diem-tinh"
-          : p.traitType === "CHOLERIC"
-          ? "manh-me"
-          : p.traitType === "MELANCHOLIC"
-          ? "vui-tuoi"
-          : "uu-tu",
-    }));
+    // Define fixed order for guardian cards
+    const traitOrder = ['SANGUINE', 'MELANCHOLIC', 'CHOLERIC', 'PHLEGMATIC'];
+
+    return traitOrder.map((traitType) => {
+      const profile = profiles?.find((p) => p.traitType === traitType);
+      return {
+        ...guardianMetaByTrait[traitType],
+        personalityId:
+          traitType === "SANGUINE"
+            ? "diem-tinh"
+            : traitType === "CHOLERIC"
+              ? "manh-me"
+              : traitType === "MELANCHOLIC"
+                ? "vui-tuoi"
+                : "uu-tu",
+        // Include profile data if available
+        ...(profile && { profileData: profile }),
+      };
+    });
   }, [profiles]);
 
   const selectedOption = personalityOptions?.find(
@@ -242,7 +250,7 @@ const PersonalityResultPage = React.memo(() => {
             {guardianDeities.map((guardian) => {
               const isSelected = selectedGuardian?.id === guardian.id;
               // Use BE flag to determine availability
-              const correspondingProfile = getProfileById(
+              const correspondingProfile = guardian.profileData || getProfileById(
                 guardian.personalityId
               );
               const isAchieved = Boolean(correspondingProfile?.isAchieved);
@@ -268,13 +276,11 @@ const PersonalityResultPage = React.memo(() => {
                       ? () => setSelectedGuardian(guardian)
                       : undefined
                   }
-                  className={`relative transition-all duration-300 transform ${
-                    isClickable
-                      ? "cursor-pointer hover:scale-105"
-                      : "cursor-not-allowed"
-                  } ${isSelected ? "scale-105" : "scale-100"} ${
-                    shouldDim ? "opacity-40" : "opacity-100"
-                  }`}
+                  className={`relative transition-all duration-300 transform ${isClickable
+                    ? "cursor-pointer hover:scale-105"
+                    : "cursor-not-allowed"
+                    } ${isSelected ? "scale-105" : "scale-100"} ${shouldDim ? "opacity-40" : "opacity-100"
+                    }`}
                 >
                   {/* Guardian Card */}
                   <div
@@ -349,11 +355,10 @@ const PersonalityResultPage = React.memo(() => {
             <button
               onClick={handleNext}
               disabled={!selectedGuardian || submitting}
-              className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${
-                selectedGuardian
-                  ? "hover:scale-105"
-                  : "opacity-50 cursor-not-allowed"
-              }`}
+              className={`cursor-pointer relative flex items-center justify-center transition-all duration-300 ${selectedGuardian
+                ? "hover:scale-105"
+                : "opacity-50 cursor-not-allowed"
+                }`}
               style={{ width: "180px", height: "50px" }}
             >
               <Image
@@ -391,24 +396,20 @@ const PersonalityResultPage = React.memo(() => {
 
     return (
       <div
-        className={`${
-          isMobileLandscape ? "flex flex-row" : "flex flex-col lg:flex-row"
-        } gap-6 lg:gap-10 w-full items-center`}
+        className={`${isMobileLandscape ? "flex flex-row" : "flex flex-col lg:flex-row"
+          } gap-6 lg:gap-10 w-full items-center`}
       >
         {/* Left Side - Personality Options */}
         <div
-          className={`${
-            isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
-          } flex flex-col justify-center items-center ${
-            isMobileLandscape ? "space-y-2" : "space-y-5"
-          }`}
+          className={`${isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
+            } flex flex-col justify-center items-center ${isMobileLandscape ? "space-y-2" : "space-y-5"
+            }`}
         >
           {/* Title */}
           <div className="text-center mb-4">
             <h1
-              className={`${
-                isMobileLandscape ? "text-lg" : "text-3xl lg:text-4xl"
-              } font-extrabold uppercase`}
+              className={`${isMobileLandscape ? "text-lg" : "text-3xl lg:text-4xl"
+                } font-extrabold uppercase`}
               style={{
                 color:
                   getProfileById(selectedPersonality || "")?.text_color ||
@@ -420,9 +421,8 @@ const PersonalityResultPage = React.memo(() => {
             </h1>
           </div>
           <div
-            className={`flex flex-col lg:flex-col ${
-              isMobileLandscape ? "gap-2" : "gap-4"
-            }`}
+            className={`flex flex-col lg:flex-col ${isMobileLandscape ? "gap-2" : "gap-4"
+              }`}
           >
             {personalityOptions.map((option) => {
               const isSelected = selectedPersonality === option.id;
@@ -439,11 +439,10 @@ const PersonalityResultPage = React.memo(() => {
                       ? () => handleOptionSelect(option.id)
                       : undefined
                   }
-                  className={`transition-all duration-300 ${
-                    isClickable
-                      ? "cursor-pointer hover:opacity-80"
-                      : "cursor-not-allowed"
-                  } ${shouldDim ? "opacity-40" : "opacity-100"}`}
+                  className={`transition-all duration-300 ${isClickable
+                    ? "cursor-pointer hover:opacity-80"
+                    : "cursor-not-allowed"
+                    } ${shouldDim ? "opacity-40" : "opacity-100"}`}
                 >
                   <div className="flex items-center">
                     {/* Left Frame - Text */}
@@ -451,9 +450,8 @@ const PersonalityResultPage = React.memo(() => {
                       text={
                         getProfileById(option.id)?.textEmotion || option.title
                       }
-                      className={`text-base lg:text-lg transition-all duration-300 ${
-                        isSelected ? "scale-105" : "scale-100"
-                      }`}
+                      className={`text-base lg:text-lg transition-all duration-300 ${isSelected ? "scale-105" : "scale-100"
+                        }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
                         fontSize: isMobile ? "22px" : "36px",
@@ -468,9 +466,8 @@ const PersonalityResultPage = React.memo(() => {
                     {/* Right Frame - Number */}
                     <FrameNumber
                       text={option.number}
-                      className={`text-base lg:text-lg transition-all duration-300 ${
-                        isSelected ? "scale-105" : "scale-100"
-                      }`}
+                      className={`text-base lg:text-lg transition-all duration-300 ${isSelected ? "scale-105" : "scale-100"
+                        }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
                         fontSize: isMobile ? "20px" : "30px",
@@ -488,9 +485,8 @@ const PersonalityResultPage = React.memo(() => {
           </div>
           {/* Footer */}
           <div
-            className={`${
-              isMobileLandscape ? "mt-2" : "mt-6"
-            } text-left self-start w-full max-w-[460px]`}
+            className={`${isMobileLandscape ? "mt-2" : "mt-6"
+              } text-left self-start w-full max-w-[460px]`}
           >
             <span
               className={`${isMobileLandscape ? "text-xs" : "text-xs"}`}
@@ -503,24 +499,20 @@ const PersonalityResultPage = React.memo(() => {
 
         {/* Right Side - Description */}
         <div
-          className={`${
-            isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
-          } flex justify-center items-center`}
+          className={`${isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
+            } flex justify-center items-center`}
         >
           {selectedOption && (
             <div
-              className={`bg-gray-400/40 rounded-xl ${
-                isMobileLandscape ? "p-3" : "p-8 lg:p-10"
-              } border border-gray-300 ${
-                isMobileLandscape
+              className={`bg-gray-400/40 rounded-xl ${isMobileLandscape ? "p-3" : "p-8 lg:p-10"
+                } border border-gray-300 ${isMobileLandscape
                   ? "max-h-[15rem]"
                   : "max-h-[24rem] lg:max-h-[30rem]"
-              } w-full flex flex-col`}
+                } w-full flex flex-col`}
             >
               <div
-                className={`${
-                  isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
-                } leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2`}
+                className={`${isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
+                  } leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2`}
                 style={{
                   color:
                     getProfileById(selectedPersonality || "")?.text_color ||
@@ -575,17 +567,15 @@ const PersonalityResultPage = React.memo(() => {
           <div className="p-5 md:p-8 lg:p-10">
             {/* This container hides overflow */}
             <div
-              className={`relative overflow-hidden ${
-                isMobile && window.innerWidth > window.innerHeight
-                  ? "min-h-[20rem] max-h-[25rem]"
-                  : "min-h-[30rem] md:min-h-[38rem] lg:min-h-[44rem]"
-              }`}
+              className={`relative overflow-hidden ${isMobile && window.innerWidth > window.innerHeight
+                ? "min-h-[20rem] max-h-[25rem]"
+                : "min-h-[30rem] md:min-h-[38rem] lg:min-h-[44rem]"
+                }`}
             >
               {/* Personality slides in from left */}
               <div
-                className={`absolute inset-0 flex transition-transform duration-500 ease-in-out ${
-                  mounted ? "translate-x-0" : "-translate-x-full"
-                }`}
+                className={`absolute inset-0 flex transition-transform duration-500 ease-in-out ${mounted ? "translate-x-0" : "-translate-x-full"
+                  }`}
               >
                 {PersonalitySelection}
               </div>
@@ -596,11 +586,10 @@ const PersonalityResultPage = React.memo(() => {
           <button
             onClick={handleNext}
             disabled={!selectedPersonality}
-            className={`cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 rounded-full flex items-center justify-center transition-all duration-300 ${
-              selectedPersonality
-                ? "hover:bg-amber-200/80"
-                : "opacity-50 cursor-not-allowed"
-            }`}
+            className={`cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 rounded-full flex items-center justify-center transition-all duration-300 ${selectedPersonality
+              ? "hover:bg-amber-200/80"
+              : "opacity-50 cursor-not-allowed"
+              }`}
             aria-label="Next"
           >
             <Image
