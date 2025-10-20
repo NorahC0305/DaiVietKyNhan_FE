@@ -6,6 +6,7 @@ import { ROUTES } from "@routes";
 import { toast } from "react-toastify";
 type CustomOptions = RequestInit & {
   baseUrl?: string;
+  skipAuth?: boolean; // Thêm option để skip auth check
 };
 
 const request = async <Response>(
@@ -15,33 +16,36 @@ const request = async <Response>(
 ) => {
   let accessToken: string | undefined;
 
-  try {
-    let session: any;
-    if (typeof window !== "undefined") {
-      session = await getSession();
-    } else {
-      session = await getServerSession(authOptions);
-    }
-
-    // Kiểm tra nếu session không tồn tại (token đã bị xóa)
-    if (!session || !session.user || !session.accessToken) {
-      console.log("No session found, redirecting to login...");
+  // Skip auth check nếu được chỉ định (cho Google OAuth, register, etc.)
+  if (!options.skipAuth) {
+    try {
+      let session: any;
       if (typeof window !== "undefined") {
-        // Chỉ hiển thị toast nếu không phải đang ở trang login/register
-        const currentPath = window.location.pathname;
-        const isAuthPage = currentPath.includes('/auth/') || currentPath.includes('/login') || currentPath.includes('/register');
-
-        if (!isAuthPage) {
-          await signOut({ callbackUrl: ROUTES.AUTH.LOGIN });
-          toast.error("Phiên làm việc hết hạn, vui lòng đăng nhập lại");
-        }
+        session = await getSession();
+      } else {
+        session = await getServerSession(authOptions);
       }
-      return { error: "Session expired" } as Response;
-    }
 
-    accessToken = (session as any)?.accessToken;
-  } catch (error) {
-    console.error("Error getting session:", error);
+      // Kiểm tra nếu session không tồn tại (token đã bị xóa)
+      if (!session || !session.user || !session.accessToken) {
+        console.log("No session found, redirecting to login...");
+        if (typeof window !== "undefined") {
+          // Chỉ hiển thị toast nếu không phải đang ở trang login/register
+          const currentPath = window.location.pathname;
+          const isAuthPage = currentPath.includes('/auth/') || currentPath.includes('/login') || currentPath.includes('/register');
+
+          if (!isAuthPage) {
+            await signOut({ callbackUrl: ROUTES.AUTH.LOGIN });
+            toast.error("Phiên làm việc hết hạn, vui lòng đăng nhập lại");
+          }
+        }
+        return { error: "Session expired" } as Response;
+      }
+
+      accessToken = (session as any)?.accessToken;
+    } catch (error) {
+      console.error("Error getting session:", error);
+    }
   }
 
   const isFormData = options.body instanceof FormData;
@@ -75,6 +79,9 @@ const http = {
   put: <T>(url: string, body: any, options?: Omit<CustomOptions, "body">) => request<T>("PUT", url, { ...options, body }),
   patch: <T>(url: string, body: any, options?: Omit<CustomOptions, "body">) => request<T>("PATCH", url, { ...options, body }),
   delete: <T>(url: string, body: any, options?: Omit<CustomOptions, "body">) => request<T>("DELETE", url, { ...options, body }),
+  // Thêm method không cần auth
+  getPublic: <T>(url: string, options?: Omit<CustomOptions, "body">) => request<T>("GET", url, { ...options, skipAuth: true }),
+  postPublic: <T>(url: string, body: any, options?: Omit<CustomOptions, "body">) => request<T>("POST", url, { ...options, body, skipAuth: true }),
 };
 
 export default http;

@@ -278,7 +278,7 @@ const PersonalityResultPage = React.memo(() => {
                 >
                   {/* Guardian Card */}
                   <div
-                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-amber-200/40 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-primary-light rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
                   >
                     {/* Large Image aligned left */}
                     <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">

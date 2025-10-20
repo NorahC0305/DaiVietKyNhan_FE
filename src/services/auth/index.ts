@@ -7,7 +7,7 @@ const authService = {
     },
     googleLogin: async () => {
         try {
-            const response = await http.get("/auth/google-link");
+            const response = await http.getPublic("/auth/google-link");
             return response;
         } catch (error: any) {
             console.error("Google login service error:", error);
