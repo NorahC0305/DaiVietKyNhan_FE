@@ -23,8 +23,13 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
 
     const openImageModal = (index: number) => {
-        setCurrentImageIndex(index)
-        setIsModalOpen(true)
+        if (chiTietKyNhan?.media && index >= 0 && index < chiTietKyNhan.media.length) {
+            console.log('Setting image index to:', index, 'Valid range: 0 to', chiTietKyNhan.media.length - 1)
+            setCurrentImageIndex(index)
+            setIsModalOpen(true)
+        } else {
+            console.error('Invalid image index:', index, 'Media length:', chiTietKyNhan?.media?.length)
+        }
     }
 
     const closeImageModal = () => {
@@ -68,15 +73,21 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
                         key={`row-${rowNumber}`}
                         className={`grid gap-4 ${isTwoColumnRow ? 'grid-cols-2 max-w-2xl mx-auto' : 'grid-cols-3'}`}
                     >
-                        {images.slice(currentIndex, currentIndex + actualImagesInRow).map((image, index) => (
-                            <div
-                                key={image.id}
-                                className="relative w-full aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => openImageModal(currentIndex + index)}
-                            >
-                                <Image src={image.url} alt={image.alt || 'media'} fill className="object-cover" />
-                            </div>
-                        ))}
+                        {images.slice(currentIndex, currentIndex + actualImagesInRow).map((image, index) => {
+                            const actualIndex = currentIndex + index
+                            return (
+                                <div
+                                    key={image.id}
+                                    className="relative w-full aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => {
+                                        console.log('Opening image modal with index:', actualIndex, 'Total images:', images.length)
+                                        openImageModal(actualIndex)
+                                    }}
+                                >
+                                    <Image src={image.url} alt={image.alt || 'media'} fill className="object-cover" />
+                                </div>
+                            )
+                        })}
                     </div>
                 )
                 currentIndex += actualImagesInRow
