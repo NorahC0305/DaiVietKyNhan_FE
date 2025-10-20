@@ -46,3 +46,69 @@ const mePaginationResponse = BackendPaginationResponseModel(meResponseData)
 export type IMeResponse = z.infer<typeof meResponse>
 export type IMePaginationResponse = z.infer<typeof mePaginationResponse>
 //----------------------End----------------------//
+
+// Point stats response
+const pointStatsResponseData = z.object({
+    averagePoint: z.number(),
+    maxPoint: z.number(),
+    totalUserLargePoint: z.number(),
+})
+
+const pointStatsResponse = BackendResponseModel(pointStatsResponseData)
+
+export type IPointStatsResponseData = z.infer<typeof pointStatsResponseData>
+export type IPointStatsResponse = z.infer<typeof pointStatsResponse>
+//----------------------End----------------------//
+
+// Point change log user data
+const pointChangeLogUserData = z.object({
+    id: z.number(),
+    email: z.string(),
+    name: z.string(),
+    password: z.string(),
+    phoneNumber: z.string(),
+    avatar: z.string().nullable(),
+    status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
+    roleId: z.number(),
+    createdById: z.number().nullable(),
+    updatedById: z.number().nullable(),
+    deletedById: z.number().nullable(),
+    deletedAt: z.string().nullable(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    birthDate: z.string().nullable(),
+    gender: z.enum([USER.GENDER.MALE, USER.GENDER.FEMALE, USER.GENDER.OTHER]).nullable(),
+    coin: z.number(),
+    point: z.number(),
+    pointTestHome: z.boolean(),
+    figureId: z.number().nullable(),
+    godProfileId: z.number().nullable(),
+    heart: z.number(),
+});
+
+// Point change log data
+const pointChangeLogData = z.object({
+    id: z.number(),
+    userId: z.number(),
+    reason: z.string(),
+    newPoint: z.number(),
+    snapshotPoint: z.number(),
+    newCoin: z.number(),
+    snapshotCoin: z.number(),
+    newHeart: z.number(),
+    snapshotHeart: z.number(),
+    createdById: z.number(),
+    deletedById: z.number().nullable(),
+    updatedById: z.number().nullable(),
+    deletedAt: z.string().nullable(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    user: pointChangeLogUserData,
+});
+
+// Point change log pagination response
+const pointChangeLogPaginationResponse = BackendPaginationResponseModel(pointChangeLogData);
+
+export type IPointChangeLogData = z.infer<typeof pointChangeLogData>;
+export type IPointChangeLogPaginationResponse = z.infer<typeof pointChangeLogPaginationResponse>;
+//----------------------End----------------------//

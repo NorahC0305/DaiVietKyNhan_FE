@@ -4,13 +4,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Check, Circle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import QuestionModal from "@components/Molecules/Popup/QuestionModal";
 import WrongAnswer from "@components/Molecules/Popup/WrongAnswer";
 import { toast } from "react-toastify";
 import userAnswerLogService from "@services/user-answer-log";
 import { IUserAnswerLogRequest } from "@models/user-answer-log/request";
 import { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
-import KyNhanResult from "@components/Molecules/Popup/KyNhanResult";
+import KyNhanResult, { KyNhan } from "@components/Molecules/Popup/KyNhanResult";
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
@@ -18,16 +19,24 @@ export default function FixedScrollsPageResponsive({
   questions: questionsWithUser,
   answeredQuestionIds,
 }: ICOMPONENTS.MapRegionDetailProps) {
+  const router = useRouter();
   // Đặt thành `false` để ẩn đường viền và nhãn gỡ lỗi
   const DEBUG_HOTSPOTS = false;
   const [open, setOpen] = useState(false);
   // State cho question modal
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
-
   // State cho wrong answer modal
   const [isWrongAnswerModalOpen, setIsWrongAnswerModalOpen] = useState(false);
   const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
+
+  // State cho KyNhanResult modal
+  const [isKyNhanResultModalOpen, setIsKyNhanResultModalOpen] = useState(false);
+  const [kyNhanSummaries, setKyNhanSummaries] = useState<KyNhan[]>([]);
+  const [kyNhanResultData, setKyNhanResultData] = useState<{
+    summary: string;
+    points: number;
+  } | null>(null);
 
   // State để track các câu hỏi đã được trả lời
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(
@@ -61,8 +70,39 @@ export default function FixedScrollsPageResponsive({
     const question = questionsWithUser[scrollIndex];
 
     if (question) {
-      setSelectedQuestion(question);
-      setIsQuestionModalOpen(true);
+      // Kiểm tra xem câu hỏi đã được trả lời đúng chưa
+      const isAnswered =
+        isQuestionAnswered(question) || answeredQuestions.has(question.id);
+
+      if (
+        isAnswered &&
+        question?.kynhanSummaries &&
+        question.kynhanSummaries.length > 0
+      ) {
+        // Nếu đã trả lời đúng và có kynhanSummaries, hiển thị KyNhanResult popup
+        const transformedKyNhan: KyNhan[] = question.kynhanSummaries.map(
+          (summary: any) => ({
+            id: summary.id,
+            src: summary.imgUrl,
+            alt: `Kỳ nhân ${summary.kyNhanId}`,
+            name: `Kỳ nhân ${summary.kyNhanId}`,
+          })
+        );
+
+        setKyNhanSummaries(transformedKyNhan);
+        setKyNhanResultData({
+          summary:
+            question.kynhanSummaries[0]?.summary ||
+            "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+          points: question.point || 0,
+        });
+        setSelectedQuestion(question);
+        setIsKyNhanResultModalOpen(true);
+      } else {
+        // Nếu chưa trả lời hoặc không có kynhanSummaries, hiển thị question modal bình thường
+        setSelectedQuestion(question);
+        setIsQuestionModalOpen(true);
+      }
     } else {
       toast.warning(`Không tìm thấy câu hỏi với index: ${scrollIndex}`);
     }
@@ -97,6 +137,31 @@ export default function FixedScrollsPageResponsive({
             const newSet = new Set([...prev, selectedQuestion.id]);
             return newSet;
           });
+
+          // Transform kynhanSummaries to KyNhan format for the popup
+          if (
+            selectedQuestion?.kynhanSummaries &&
+            selectedQuestion.kynhanSummaries.length > 0
+          ) {
+            const transformedKyNhan: KyNhan[] =
+              selectedQuestion.kynhanSummaries.map((summary: any) => ({
+                id: summary.id,
+                src: summary.imgUrl,
+                alt: `Kỳ nhân ${summary.kyNhanId}`,
+                name: `Kỳ nhân ${summary.kyNhanId}`, // You might want to get the actual name from somewhere else
+              }));
+            setKyNhanSummaries(transformedKyNhan);
+
+            // Store the result data before closing the modal
+            setKyNhanResultData({
+              summary:
+                selectedQuestion.kynhanSummaries[0]?.summary ||
+                "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+              points: selectedQuestion.point || 0,
+            });
+            setIsKyNhanResultModalOpen(true);
+          }
+
           // Đóng question modal
           setIsQuestionModalOpen(false);
           setSelectedQuestion(null);
@@ -163,9 +228,40 @@ export default function FixedScrollsPageResponsive({
         // Successfully skipped the question with coins
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
 
-        // Close the wrong answer modal and reset state
+        // Find the question that was skipped to get its kynhanSummaries
+        const skippedQuestion = questionsWithUser.find(
+          (q) => q.id === questionId
+        );
+
+        if (
+          skippedQuestion?.kynhanSummaries &&
+          skippedQuestion.kynhanSummaries.length > 0
+        ) {
+          // Transform kynhanSummaries to KyNhan format for the popup
+          const transformedKyNhan: KyNhan[] =
+            skippedQuestion.kynhanSummaries.map((summary: any) => ({
+              id: summary.id,
+              src: summary.imgUrl,
+              alt: `Kỳ nhân ${summary.kyNhanId}`,
+              name: `Kỳ nhân ${summary.kyNhanId}`,
+            }));
+
+          setKyNhanSummaries(transformedKyNhan);
+          setKyNhanResultData({
+            summary:
+              skippedQuestion.kynhanSummaries[0]?.summary ||
+              "Bạn đã sử dụng xu để vượt qua và thu thập được kỳ ấn của kỳ nhân này.",
+            points: skippedQuestion.point || 0,
+          });
+          setSelectedQuestion(skippedQuestion);
+
+          // Show KyNhanResult popup
+          setIsKyNhanResultModalOpen(true);
+        }
+
+        // Close the wrong answer modal
         setIsWrongAnswerModalOpen(false);
-        setSelectedQuestion(null);
+        // Don't clear selectedQuestion here as it's needed for KyNhanResult modal
       } else {
         // Rollback optimistic update on error
         setAnsweredQuestions(previousAnsweredQuestions);
@@ -179,6 +275,27 @@ export default function FixedScrollsPageResponsive({
       setAnsweredQuestions(previousAnsweredQuestions);
       console.error("Error skipping question with coins:", error);
       toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
+    }
+  };
+
+  // Handler for closing KyNhanResult modal
+  const handleCloseKyNhanResult = () => {
+    setIsKyNhanResultModalOpen(false);
+    setKyNhanSummaries([]);
+    setKyNhanResultData(null);
+    setSelectedQuestion(null);
+  };
+
+  // Handler for going to library with search query
+  const handleGoToLibrary = () => {
+    // Get the first KyNhan ID from kyNhanSummaries to search for
+    if (kyNhanSummaries.length > 0) {
+      const firstKyNhanId = kyNhanSummaries[0].id;
+      // Navigate to library with search parameter and replace current history entry
+      router.replace(`/library?search=${firstKyNhanId}`);
+    } else {
+      // Fallback to library without search if no kyNhan data
+      router.replace("/library");
     }
   };
 
@@ -320,6 +437,20 @@ export default function FixedScrollsPageResponsive({
         questionId={selectedQuestion?.id}
         coinCost={500}
         penaltyPoints={20}
+      />
+
+      {/* KyNhanResult Modal */}
+      <KyNhanResult
+        isOpen={isKyNhanResultModalOpen}
+        onClose={handleCloseKyNhanResult}
+        title="Bạn đã tìm ra danh tính của vị Kỳ Nhân này. Bạn được cộng 100 điểm."
+        content={
+          kyNhanResultData?.summary ||
+          "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này."
+        }
+        points={kyNhanResultData?.points}
+        kyNhan={kyNhanSummaries}
+        onGoToLibrary={handleGoToLibrary}
       />
     </main>
   );

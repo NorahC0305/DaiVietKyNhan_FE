@@ -155,32 +155,64 @@ export default function Card({
                   className="object-contain"
                   priority={isCenter}
                 />
-                <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between">
-                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4">
+                <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
+                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
                     {/* Name - Section 1 */}
                     {backContent?.name && (
-                      <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left">
-                        {renderHighlighted(backContent.name)}
+                      <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left break-words overflow-hidden">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {renderHighlighted(backContent.name)}
+                        </div>
                       </div>
                     )}
 
                     {/* Thoi Ky - Section 2 */}
                     {backContent?.thoiKy && (
-                      <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left">
-                        {renderHighlighted(backContent.thoiKy)}
+                      <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left break-words overflow-hidden">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {renderHighlighted(backContent.thoiKy)}
+                        </div>
                       </div>
                     )}
 
                     {/* Chien Cong - Section 3 */}
                     {backContent?.chienCong && (
-                      <div className="text-xs sm:text-sm md:text-base font-extrabold leading-relaxed text-black text-left flex-1">
-                        {renderHighlighted(backContent.chienCong)}
+                      <div className="text-xs sm:text-sm md:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-hidden">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 4,
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {renderHighlighted(backContent.chienCong)}
+                        </div>
                       </div>
                     )}
                   </div>
 
                   {/* CTA Button */}
-                  {(backContent?.ctaText || backContent?.ctaHref || onCtaClick) && (
+                  {(backContent?.ctaText ||
+                    backContent?.ctaHref ||
+                    onCtaClick) && (
                     <div className="w-full flex justify-center mt-3 sm:mt-4">
                       {backContent?.ctaHref && !onCtaClick ? (
                         <a
@@ -190,7 +222,7 @@ export default function Card({
                           {backContent?.ctaText || "Xem Thêm"}
                         </a>
                       ) : (
-                        <button 
+                        <button
                           onClick={onCtaClick}
                           className="rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
                         >

@@ -1,6 +1,6 @@
 import QuestionStatistic from "@pages/Admin/Question/QuestionStatistic";
 
-export default async function QuestionStatisticsServer() {
+export default function QuestionStatisticsServer() {
   return (
     <>
       <QuestionStatistic />

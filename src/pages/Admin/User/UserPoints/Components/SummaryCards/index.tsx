@@ -1,6 +1,16 @@
-type Props = { average: number; highest: number; highUsers: number };
+type Props = {
+  average: number;
+  highest: number;
+  highUsers: number;
+  isLoading?: boolean;
+};
 
-const SummaryCards = ({ average, highest, highUsers }: Props) => {
+const SummaryCards = ({
+  average,
+  highest,
+  highUsers,
+  isLoading = false,
+}: Props) => {
   const items = [
     { label: "Điểm trung bình", value: average },
     { label: "Điểm cao nhất", value: highest },
@@ -14,7 +24,9 @@ const SummaryCards = ({ average, highest, highUsers }: Props) => {
           className="rounded-lg border border-gray-300 bg-admin-primary p-4 font-bold"
         >
           <p className="text-sm text-gray-600">{i.label}</p>
-          <p className="pt-6 mt-1 text-2xl font-bold text-gray-900">{i.value}</p>
+          <p className="pt-6 mt-1 text-2xl font-bold text-gray-900">
+            {isLoading ? "..." : i.value}
+          </p>
         </div>
       ))}
     </div>
@@ -22,5 +34,3 @@ const SummaryCards = ({ average, highest, highUsers }: Props) => {
 };
 
 export default SummaryCards;
-
-
