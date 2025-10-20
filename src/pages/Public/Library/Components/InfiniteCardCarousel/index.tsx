@@ -33,6 +33,7 @@ type PropType = {
   options?: EmblaOptionsType;
   scrollToIndex?: number;
   highlightQuery?: string;
+  onCtaClick?: (cardId: number) => void;
 };
 
 const PrevButton: React.FC<{
@@ -156,7 +157,7 @@ const useDotButton = (emblaApi: EmblaCarouselType | undefined) => {
 };
 
 const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
-  const { cards, options, scrollToIndex, highlightQuery } = props;
+  const { cards, options, scrollToIndex, highlightQuery, onCtaClick } = props;
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
   const [flippedIndex, setFlippedIndex] = React.useState<number | null>(null);
   const tweenFactor = useRef(0);
@@ -281,6 +282,7 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
                   cardNumber={index}
                   isFlipped={flippedIndex === index}
                   highlightQuery={highlightQuery}
+                  onCtaClick={() => onCtaClick?.(card.id)}
                 />
               </div>
             </div>

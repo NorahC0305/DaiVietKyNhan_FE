@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import questionService from "@services/question";
+import questionService, { IQuestionStats } from "@services/question";
 import { IQuestionResponse } from "@models/question/response";
 import { ICreateQuestionRequest } from "@models/question/request";
 import { IQuestion } from "@models/question/entity";
@@ -16,7 +16,7 @@ export interface UIQuestion {
   answerOptionType?: string;
   createdAt: string;
   status: "active" | "draft";
-  correctRate: number;
+  rate: number;
 }
 
 // Transform question data to UI format
@@ -49,7 +49,7 @@ const transformQuestionToUI = (question: any): UIQuestion => {
       answerOptionType: question.answerOptionType || "ONE",
       createdAt,
       status: question.deletedAt ? "draft" : "active",
-      correctRate: 0, // Default correct rate, you might need to calculate this from answers
+      rate: question.rate || 0, // Use the rate from API response
     };
   } catch (error) {
     console.error("Error transforming question:", error, question);
@@ -62,7 +62,7 @@ const transformQuestionToUI = (question: any): UIQuestion => {
       answerOptionType: question.answerOptionType || "ONE",
       createdAt: new Date().toLocaleDateString("vi-VN"),
       status: "active",
-      correctRate: 0,
+      rate: question.rate || 0,
     };
   }
 };
@@ -255,5 +255,48 @@ export const useGetQuestionById = (id: number | null) => {
     isLoading,
     error,
     refetch: fetchQuestion,
+  };
+};
+
+// Hook to get questions statistics from BE
+export const useQuestionStats = () => {
+  const [data, setData] = useState<IQuestionStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await questionService.getQuestionStats();
+      
+      if (response.statusCode === 200 && response.data) {
+        setData(response.data);
+      } else {
+        setError(new Error(response.message || "Failed to fetch question stats"));
+      }
+    } catch (err) {
+      const error = err as Error;
+      setError(error);
+      console.error("Error fetching question stats:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  const refetch = useCallback(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch,
   };
 };

@@ -31,3 +31,11 @@ export const KyNhanUserListResponseModel = z.object({
 export type IKyNhanUserListResponseModel = z.infer<
   typeof KyNhanUserListResponseModel
 >; //-----------------End-KyNhanUserListResponseModel-----------------//
+
+/**
+ * Individual KyNhan response model
+ */
+export const KyNhanDetailResponseModel = BackendResponseModel(KyNhanUserSchema);
+export type IKyNhanDetailResponseModel = z.infer<
+  typeof KyNhanDetailResponseModel
+>; //-----------------End-KyNhanDetailResponseModel-----------------//

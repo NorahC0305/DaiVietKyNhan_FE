@@ -7,35 +7,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Atoms/ui/card";
+import { Skeleton } from "@/components/Atoms/ui/skeleton";
 
 interface SummaryCardsProps {
   totalQuestions: number;
-  activeQuestions: number;
-  draftQuestions: number;
   averageCorrectRate: number;
+  isLoading?: boolean;
 }
 
 const SummaryCards: React.FC<SummaryCardsProps> = ({
   totalQuestions,
-  activeQuestions,
-  draftQuestions,
   averageCorrectRate,
+  isLoading = false,
 }) => {
   const cards = [
     {
       title: "Tổng câu hỏi",
       value: totalQuestions,
       icon: "📊",
-    },
-    {
-      title: "Đang hoạt động",
-      value: activeQuestions,
-      icon: "✅",
-    },
-    {
-      title: "Bản nháp",
-      value: draftQuestions,
-      icon: "📝",
     },
     {
       title: "Tỷ lệ đúng TB",
@@ -45,7 +34,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {cards.map((card, index) => (
         <Card key={index} className="bg-admin-primary shadow-sm border border-gray-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -57,7 +46,11 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
             )}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{card.value}</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-20" />
+            ) : (
+              <div className="text-2xl font-bold text-gray-900">{card.value}</div>
+            )}
           </CardContent>
         </Card>
       ))}
