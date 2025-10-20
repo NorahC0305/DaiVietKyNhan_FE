@@ -90,7 +90,6 @@ export const authOptions: NextAuthOptions = {
 
             // Kiểm tra nếu token hết hạn
             if (Date.now() >= token.accessTokenExpires) {
-                console.log("Access token expired, clearing token...");
                 // Trả về null để force NextAuth xóa session
                 return null;
             }
@@ -100,7 +99,6 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }: any) {
             // Kiểm tra nếu token là null (đã hết hạn)
             if (!token) {
-                console.log("Session expired, returning null...");
                 return null;
             }
 

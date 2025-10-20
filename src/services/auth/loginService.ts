@@ -29,7 +29,6 @@ export async function loginWithCredentials(credentials: ILoginFormDataRequest) {
         }
 
         const data = await response.json();
-        console.log('Login API Success Data:', data);
         return data;
     } catch (error: any) {
         console.error("Login service error:", error);

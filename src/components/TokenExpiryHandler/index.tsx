@@ -17,7 +17,6 @@ export default function TokenExpiryHandler() {
             const expiryTime = payload.exp * 1000;
 
             if (Date.now() >= expiryTime) {
-                console.log("Token already expired, signing out immediately...");
                 handleSignOut();
                 return;
             }
@@ -25,7 +24,6 @@ export default function TokenExpiryHandler() {
             const timeUntilExpiry = expiryTime - Date.now();
 
             const timeout = setTimeout(() => {
-                console.log("Token expired, signing out...");
                 handleSignOut();
             }, timeUntilExpiry);
 

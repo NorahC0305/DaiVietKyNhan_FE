@@ -84,8 +84,6 @@ export const useQuestions = (filters?: {
 
       const response = await questionService.getAllQuestionsAdmin();
 
-      console.log("Question response:", response);
-
       // Handle different possible response structures
       let questionsData = null;
 
@@ -103,13 +101,8 @@ export const useQuestions = (filters?: {
       }
 
       if (questionsData && Array.isArray(questionsData)) {
-        console.log("Questions data found:", questionsData);
         setData(questionsData.map(transformQuestionToUI));
       } else {
-        console.log(
-          "No valid questions data found in response structure:",
-          response
-        );
         setData([]);
       }
     } catch (error) {

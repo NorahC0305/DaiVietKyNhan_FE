@@ -4,7 +4,7 @@ import PLibDetail from '../P'
 import RadialGradial from '@components/Atoms/RadialGradient'
 import Image from 'next/image'
 
-const KyNhanSummary = () => {
+const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
     return (
         <div className="flex items-center justify-center">
             {/* Main scroll container */}
@@ -19,13 +19,13 @@ const KyNhanSummary = () => {
                             {/* ------------------- Left Column ------------------- */}
                             <div className="space-y-2.5 w-[34%] z-20">
                                 <RadialGradial className="ml-5 text-4xl lg:text-6xl">
-                                    TRƯNG TRẮC
+                                    {moTaKyNhan?.ten}
                                 </RadialGradial>
                                 {/* Danh hiệu */}
                                 <div className="ml-6">
                                     <H3LibDetail className="text-2xl lg:text-4xl">DANH HIỆU</  H3LibDetail>
                                     <PLibDetail>
-                                        -
+                                        {moTaKyNhan?.danhHieu}
                                     </PLibDetail>
                                 </div>
 
@@ -33,7 +33,7 @@ const KyNhanSummary = () => {
                                 <div className="ml-8">
                                     <H3LibDetail className="text-2xl lg:text-4xl">NĂM SINH - MẤT</H3LibDetail>
                                     <PLibDetail>
-                                        Không rõ năm sinh - Năm 43 tại sông Hát Giang
+                                        {moTaKyNhan?.namSinhNamMat}
                                     </PLibDetail>
                                 </div>
 
@@ -41,8 +41,7 @@ const KyNhanSummary = () => {
                                 <div className="ml-12">
                                     <H3LibDetail className="text-2xl lg:text-4xl">QUÊ QUÁN</H3LibDetail>
                                     <PLibDetail>
-                                        Huyện Mê Linh, Giao Châu
-                                        (nay thuộc Hà Nội, Việt Nam)
+                                        {moTaKyNhan?.queQuan}
                                     </PLibDetail>
                                 </div>
 
@@ -50,9 +49,7 @@ const KyNhanSummary = () => {
                                 <div className="ml-20">
                                     <H3LibDetail className="text-2xl lg:text-4xl">XUẤT THÂN</H3LibDetail>
                                     <PLibDetail>
-                                        Con gái Lạc tướng Mê Linh Trưng
-                                        Định và bà Man Thiện.
-                                        Dòng dõi quý tộc Lạc Việt
+                                        {moTaKyNhan?.xuatThan}
                                     </PLibDetail>
                                 </div>
 
@@ -60,18 +57,17 @@ const KyNhanSummary = () => {
                                 <div className="ml-28">
                                     <H3LibDetail className="text-2xl lg:text-4xl">KHỞI NGHĨA</H3LibDetail>
                                     <PLibDetail>
-                                        Năm 40, phát động tại Hát Môn,
-                                        khí thế lan khắp Giao Châu
+                                        {moTaKyNhan?.khoiNghia}
                                     </PLibDetail>
                                 </div>
                             </div>
 
                             {/* ------------------- Character illustration in center ------------------- */}
                             <div className="absolute flex justify-center items-center w-[80%] h-[75%] z-10 pointer-events-none">
-                                <div className="relative w-[333px] h-[666px]">
+                                <div className="relative w-[250px] h-[450px] lg:w-[333px] lg:h-[666px]">
                                     <Image
-                                        src="https://res.cloudinary.com/dznt9yias/image/upload/v1760976164/motakynhan/images/file_hil65k.png"
-                                        alt={'Trưng Trắc'}
+                                        src={moTaKyNhan?.imgUrl}
+                                        alt={moTaKyNhan?.ten}
                                         fill
                                         priority
                                     />
@@ -89,8 +85,7 @@ const KyNhanSummary = () => {
                                 <div className="text-end w-full mr-10">
                                     <H3LibDetail className="text-2xl lg:text-4xl">NGƯỜI ĐỒNG HÀNH</H3LibDetail>
                                     <PLibDetail>
-                                        Trưng Nhị - Em gái
-                                        Chiến hữu cùng vào sinh ra tử
+                                        {moTaKyNhan?.nguoiDongHanh}
                                     </PLibDetail>
                                 </div>
 
@@ -98,8 +93,7 @@ const KyNhanSummary = () => {
                                 <div className="text-end w-full mr-12">
                                     <H3LibDetail className="text-2xl lg:text-4xl">PHU QUÂN</H3LibDetail>
                                     <PLibDetail>
-                                        Thi Sách, Lạc tướng Chu Diên
-                                        Người đồng tâm chí hướng, hi sinh vì đại nghĩa
+                                        {moTaKyNhan?.phuQuan}
                                     </PLibDetail>
                                 </div>
 
@@ -107,8 +101,7 @@ const KyNhanSummary = () => {
                                 <div className="text-end w-full mr-20">
                                     <H3LibDetail className="text-2xl lg:text-4xl">CHIẾN CÔNG</H3LibDetail>
                                     <PLibDetail>
-                                        Chiếm 65 thành, đánh bại Tô Định, lập nên
-                                        chính quyền tự chủ sau hơn 200 năm đô hộ
+                                        {moTaKyNhan?.chienCong}
                                     </PLibDetail>
                                 </div>
 
@@ -116,9 +109,7 @@ const KyNhanSummary = () => {
                                 <div className="text-end w-full mr-32">
                                     <H3LibDetail className="text-2xl lg:text-4xl">ĐỈNH CAO</H3LibDetail>
                                     <PLibDetail>
-                                        Trưng Trắc lên ngôi Trưng Nữ Vương
-                                        đóng đô tại Mê Linh, mở đầu chính
-                                        quyền tự chủ đầu tiên
+                                        {moTaKyNhan?.dinhCao}
                                     </PLibDetail>
                                 </div>
 
@@ -126,8 +117,7 @@ const KyNhanSummary = () => {
                                 <div className="text-end w-full mr-44">
                                     <H3LibDetail className="text-2xl lg:text-4xl">KẾT CỤC</H3LibDetail>
                                     <PLibDetail>
-                                        Tuẫn tiết tại sông Hát Giang (43) khi kháng
-                                        chiến chống Mã Viện thất thủ
+                                        {moTaKyNhan?.ketCuc}
                                     </PLibDetail>
                                 </div >
                             </div >

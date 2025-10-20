@@ -1,24 +1,15 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from 'react'
-import chiTietKyNhanService from '@services/chi-tiet-ky-nhan'
+import React, { useState } from 'react'
 import TipTapEditor from '@components/Organisms/Tiptap'
+import ImageModal from '@components/Atoms/ImageModal'
 import Image from 'next/image'
+import { IChiTietKyNhanResponse } from '@models/chi-tiet-ky-nhan/entity'
 
 interface ChiTietKyNhanProps {
-    kyNhanId: number
+    chiTietKyNhan: IChiTietKyNhanResponse
 }
 
-interface ChiTietKyNhanResponse {
-    id: number
-    kyNhanId: number
-    thamKhao: string | null
-    media: Array<{ id: number; url: string; alt?: string | null }>
-    boiCanhLichSuVaSuuThan?: Array<{ id: number; tieuDe: string; noiDung: string; nguon?: string | null; thuTu?: number | null }>
-    boiCanhLichSuVaXuatThan?: Array<{ id: number; tieuDe: string; noiDung: string; nguon?: string | null; thuTu?: number | null }>
-    suSachVietGi?: Array<{ id: number; tieuDe: string; doanVan: string; tacGia?: string | null; nguonSach?: string | null; thuTu?: number | null }>
-    giaiThoaiDanGian?: Array<{ id: number; tieuDe: string; noiDung: string; nguon?: string | null; thuTu?: number | null }>
-}
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <div className="flex items-center justify-center mt-10 mb-7">
@@ -26,74 +17,113 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     </div>
 )
 
-const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ kyNhanId }) => {
-    const [data, setData] = useState<ChiTietKyNhanResponse | null>(null)
-    const [loading, setLoading] = useState<boolean>(true)
-    const [error, setError] = useState<string | null>(null)
+const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true)
-                setError(null)
-                const res = await chiTietKyNhanService.getChiTietKyNhanByKyNhanId(kyNhanId) as any
-                console.log('API Response:', res?.data[0]?.media);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [currentImageIndex, setCurrentImageIndex] = useState<number>(0)
 
-                const payload = res?.data[0] || res?.data
-                setData(payload || null)
-            } catch (e) {
-                console.error(e)
-                setError('Không tải được chi tiết kỳ nhân')
-            } finally {
-                setLoading(false)
+    const openImageModal = (index: number) => {
+        if (chiTietKyNhan?.media && index >= 0 && index < chiTietKyNhan.media.length) {
+            setCurrentImageIndex(index)
+            setIsModalOpen(true)
+        } else {
+            console.error('Invalid image index:', index, 'Media length:', chiTietKyNhan?.media?.length)
+        }
+    }
+
+    const closeImageModal = () => {
+        setIsModalOpen(false)
+    }
+
+    const goToPreviousImage = () => {
+        if (chiTietKyNhan?.media && chiTietKyNhan.media.length > 0) {
+            setCurrentImageIndex((prev) =>
+                prev === 0 ? chiTietKyNhan.media.length - 1 : prev - 1
+            )
+        }
+    }
+
+    const goToNextImage = () => {
+        if (chiTietKyNhan?.media && chiTietKyNhan.media.length > 0) {
+            setCurrentImageIndex((prev) =>
+                prev === chiTietKyNhan.media.length - 1 ? 0 : prev + 1
+            )
+        }
+    }
+
+    // Tạo grid layout 3-2-3-2 lặp lại
+    const createGridLayout = (images: Array<{ id: number; url: string; alt?: string | null }>) => {
+        const layout = []
+        let currentIndex = 0
+        let rowNumber = 1
+
+        while (currentIndex < images.length) {
+            // Pattern: 3-2-3-2 lặp lại
+            const pattern = [3, 2, 3, 2]
+            const patternIndex = (rowNumber - 1) % 4
+            const imagesInThisRow = pattern[patternIndex]
+            const remainingImages = images.length - currentIndex
+            const actualImagesInRow = Math.min(imagesInThisRow, remainingImages)
+
+            if (actualImagesInRow > 0) {
+                const isTwoColumnRow = imagesInThisRow === 2
+                layout.push(
+                    <div
+                        key={`row-${rowNumber}`}
+                        className={`grid gap-4 ${isTwoColumnRow ? 'grid-cols-2 max-w-2xl mx-auto' : 'grid-cols-3'}`}
+                    >
+                        {images.slice(currentIndex, currentIndex + actualImagesInRow).map((image, index) => {
+                            const actualIndex = currentIndex + index
+                            return (
+                                <div
+                                    key={image.id}
+                                    className="relative w-full aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                                    onClick={() => {
+                                        openImageModal(actualIndex)
+                                    }}
+                                >
+                                    <Image src={image.url} alt={image.alt || 'media'} fill className="object-cover" />
+                                </div>
+                            )
+                        })}
+                    </div>
+                )
+                currentIndex += actualImagesInRow
+                rowNumber++
             }
         }
-        if (kyNhanId) fetchData()
-    }, [kyNhanId])
 
-    const boiCanh = useMemo(() => {
-        return data?.boiCanhLichSuVaXuatThan || data?.boiCanhLichSuVaSuuThan || []
-    }, [data])
-
-    if (loading) {
-        return <div className="w-full flex items-center justify-center py-10 text-white">Đang tải chi tiết...</div>
+        return layout
     }
 
-    if (error) {
-        return <div className="w-full flex items-center justify-center py-10 text-red-500">{error}</div>
-    }
-
-    if (!data) {
-        return null
-    }
 
     return (
         <div className="flex flex-col mx-6 lg:mx-52">
             <SectionTitle>BỐI CẢNH LỊCH SỬ</SectionTitle>
             <div className="space-y-6">
-                {boiCanh.map((item) => (
-                    <div key={item.id}>
-                        {item.tieuDe && (
-                            <div className="text-white font-bd-street-sign text-3xl mb-2">{item.tieuDe.trim()}</div>
+                {chiTietKyNhan?.boiCanhLichSuVaSuuThan?.map((item: IChiTietKyNhanResponse['boiCanhLichSuVaXuatThan'][number]) => (
+                    <div key={item?.id}>
+                        {item?.tieuDe && (
+                            <div className="text-white font-bd-street-sign text-3xl mb-2">{item?.tieuDe.trim()}</div>
                         )}
                         <TipTapEditor value={item.noiDung || ''} onChange={() => { }} disabled className="rounded-md border-0 m-h-fit" />
-                        {item.nguon && (
-                            <div className="text-sm text-gray-300 mt-2">Nguồn: {item.nguon}</div>
+                        {item?.nguon && (
+                            <div className="text-sm text-gray-300 mt-2">Nguồn: {item?.nguon}</div>
                         )}
                     </div>
                 ))}
-                {boiCanh.length === 0 && (
+                {chiTietKyNhan?.boiCanhLichSuVaXuatThan?.length === 0 && (
                     <div className="text-gray-300">Chưa có dữ liệu</div>
                 )}
             </div>
 
             <SectionTitle>SỬ SÁCH VIẾT GÌ</SectionTitle>
             <div className="space-y-6">
-                {(data.suSachVietGi || []).map((item) => (
-                    <div key={item.id}>
+                {(chiTietKyNhan?.suSachVietGi || []).map((item: any) => (
+                    <div key={item?.id}>
                         <div className="flex flex-col gap-2">
-                            {item.tieuDe && (
-                                <div className="text-white font-bd-street-sign text-3xl">{item.tieuDe.trim()}</div>
+                            {item?.tieuDe && (
+                                <div className="text-white font-bd-street-sign text-3xl">{item?.tieuDe.trim()}</div>
                             )}
                             <TipTapEditor value={item.doanVan || ''} onChange={() => { }} disabled className="rounded-md border-0 h-fit" />
                             <div className="text-sm text-gray-300">
@@ -102,17 +132,17 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ kyNhanId }) => {
                         </div>
                     </div>
                 ))}
-                {(!data.suSachVietGi || data.suSachVietGi.length === 0) && (
+                {(!chiTietKyNhan?.suSachVietGi || chiTietKyNhan?.suSachVietGi.length === 0) && (
                     <div className="text-gray-300">Chưa có dữ liệu</div>
                 )}
             </div>
 
             <SectionTitle>GIAI ĐOẠN DÂN GIAN VÀ TRUYỀN THUYẾT</SectionTitle>
             <div className="space-y-6">
-                {(data.giaiThoaiDanGian || []).map((item) => (
+                {(chiTietKyNhan?.giaiThoaiDanGian || []).map((item: any) => (
                     <div key={item.id}>
-                        {item.tieuDe && (
-                            <div className="text-white font-bd-street-sign text-3xl mb-2">{item.tieuDe.trim()}</div>
+                        {item?.tieuDe && (
+                            <div className="text-white font-bd-street-sign text-3xl mb-2">{item?.tieuDe.trim()}</div>
                         )}
                         <TipTapEditor value={item.noiDung || ''} onChange={() => { }} disabled className="rounded-md border-0 m-h-fit" />
                         {item.nguon && (
@@ -120,28 +150,36 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ kyNhanId }) => {
                         )}
                     </div>
                 ))}
-                {(!data.giaiThoaiDanGian || data.giaiThoaiDanGian.length === 0) && (
+                {(!chiTietKyNhan?.giaiThoaiDanGian || chiTietKyNhan?.giaiThoaiDanGian.length === 0) && (
                     <div className="text-gray-300">Chưa có dữ liệu</div>
                 )}
             </div>
 
             <SectionTitle>THAM KHẢO</SectionTitle>
             <div>
-                <TipTapEditor value={data.thamKhao || ''} onChange={() => { }} disabled className="rounded-md border-0 h-fit" />
+                <TipTapEditor value={chiTietKyNhan?.thamKhao || ''} onChange={() => { }} disabled className="rounded-md border-0 h-fit" />
             </div>
 
-            {data?.media && data?.media?.length > 0 ? (
+            {chiTietKyNhan?.media && chiTietKyNhan?.media?.length > 0 ? (
                 <>
                     <SectionTitle>THƯ VIỆN ẢNH</SectionTitle>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {data?.media?.map((m) => (
-                            <div key={m.id} className="relative w-full aspect-square rounded-lg overflow-hidden">
-                                <Image src={m.url} alt={m.alt || 'media'} fill className="object-cover" />
-                            </div>
-                        ))}
+                    <div className="space-y-6">
+                        {createGridLayout(chiTietKyNhan?.media)}
                     </div>
                 </>
             ) : <></>}
+
+            {/* Image Modal */}
+            {chiTietKyNhan?.media && chiTietKyNhan?.media.length > 0 && (
+                <ImageModal
+                    isOpen={isModalOpen}
+                    onClose={closeImageModal}
+                    images={chiTietKyNhan?.media}
+                    currentIndex={currentImageIndex}
+                    onPrevious={goToPreviousImage}
+                    onNext={goToNextImage}
+                />
+            )}
         </div>
     )
 }

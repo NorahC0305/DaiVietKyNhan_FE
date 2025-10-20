@@ -1,76 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import kynhanService from "@/services/kynhan";
-import type { IKyNhanDetailResponseModel } from "@/models/ky-nhan/response";
-import type { IKyNhanUser } from "@/models/ky-nhan/entity";
-import H3LibDetail from "./H3";
-import PLibDetail from "./P";
-import RadialGradial from "@components/Atoms/RadialGradient";
 import KyNhanSummary from "./KyNhanSummary";
 import ChiTietKyNhan from "./ChiTietKyNhan";
+import { IChiTietKyNhanResponse } from "@models/chi-tiet-ky-nhan/entity";
 
 interface LibraryDetailPageProps {
-  id: string;
+  chiTietKyNhan: IChiTietKyNhanResponse;
+  moTaKyNhan: any;
 }
 
-const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
-  const [kynhan, setKynhan] = useState<IKyNhanUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const LibraryDetailPage = ({ chiTietKyNhan, moTaKyNhan }: LibraryDetailPageProps) => {
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchKyNhanDetail = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const kyNhanId = parseInt(id);
-        if (isNaN(kyNhanId)) {
-          setError("ID không hợp lệ");
-          return;
-        }
-
-        const response = await kynhanService.getKyNhanById(kyNhanId) as IKyNhanDetailResponseModel;
-
-        if (response?.data) {
-          setKynhan(response.data);
-        } else {
-          setError("Không tìm thấy thông tin kỳ nhân");
-        }
-      } catch (error) {
-        console.error("Error fetching kynhan detail:", error);
-        setError("Đã có lỗi xảy ra khi tải thông tin kỳ nhân");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchKyNhanDetail();
-    }
-  }, [id]);
 
   const handleGoBack = () => {
     router.back();
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100">
-        <div className="text-white text-lg">Đang tải...</div>
-      </div>
-    );
-  }
-
-  if (error || !kynhan) {
+  if (!chiTietKyNhan) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100">
         <div className="text-center">
-          <div className="text-red-500 text-lg mb-4">{error || "Không tìm thấy kỳ nhân"}</div>
+          <div className="text-red-500 text-lg mb-4">Không tìm thấy kỳ nhân</div>
           <button
             onClick={handleGoBack}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -98,10 +49,10 @@ const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
           </button>
 
           {/* ----- Ky Nhan Summary Section ----- */}
-          <KyNhanSummary />
+          <KyNhanSummary moTaKyNhan={moTaKyNhan} />
 
           {/* ----- Chi Tiet Ky Nhan Section ----- */}
-          <ChiTietKyNhan kyNhanId={kynhan.id} />
+          <ChiTietKyNhan chiTietKyNhan={chiTietKyNhan} />
         </div>
       </div>
     </div>
