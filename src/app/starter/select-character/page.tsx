@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@routes";
 
-
 async function getFigure() {
   const figure = await figureService.getAllFigures();
   return figure;
@@ -18,7 +17,6 @@ export default async function SelectCharacter() {
     redirect(ROUTES.PUBLIC.HOME);
   }
   const figure = (await getFigure()) as IFigureResponseModel;
-  console.log(figure);
-  
+
   return <SelectCharacterPage figures={figure.data?.results || []} />;
 }

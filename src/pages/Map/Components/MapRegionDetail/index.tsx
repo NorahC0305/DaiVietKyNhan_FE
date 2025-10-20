@@ -1,303 +1,367 @@
 "use client";
 
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Check, Circle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+
+// Components
 import QuestionModal from "@components/Molecules/Popup/QuestionModal";
 import WrongAnswer from "@components/Molecules/Popup/WrongAnswer";
-import { toast } from "react-toastify";
-import userAnswerLogService from "@services/user-answer-log";
-import { IUserAnswerLogRequest } from "@models/user-answer-log/request";
-import { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
+import IncompleteRegion from "@components/Molecules/Popup/IncompleteRegion";
 import KyNhanResult, { KyNhan } from "@components/Molecules/Popup/KyNhanResult";
+
+// Services
+import userAnswerLogService from "@services/user-answer-log";
+import landService from "@services/land";
+
+// Types
+import type { IUserAnswerLogRequest } from "@models/user-answer-log/request";
+import type { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
+import type { ILandWithUserQuestionResponseModel } from "@models/land/response";
+import type { IQuestion } from "@models/question/entity";
+import type { IUserAnswerLog } from "@models/user-answer-log/entity";
+
+// Extended question type with user answer logs from API response
+interface IQuestionWithUserLogs extends IQuestion {
+  userAnswerLogs?: Array<{
+    id: number;
+    text: string[];
+    isCorrect: boolean;
+  }>;
+}
+
+// Constants
+const DEBUG_HOTSPOTS = false;
+
+// Types for component state
+interface KyNhanResultData {
+  summary: string;
+  points: number;
+}
+
+interface ModalState {
+  isQuestionModalOpen: boolean;
+  isWrongAnswerModalOpen: boolean;
+  isKyNhanResultModalOpen: boolean;
+  isIncompleteRegionOpen: boolean;
+  isSubmittingAnswer: boolean;
+}
 
 export default function FixedScrollsPageResponsive({
   backgroundImage,
   scrollPositions,
+  landId,
   questions: questionsWithUser,
   answeredQuestionIds,
 }: ICOMPONENTS.MapRegionDetailProps) {
   const router = useRouter();
-  // Đặt thành `false` để ẩn đường viền và nhãn gỡ lỗi
-  const DEBUG_HOTSPOTS = false;
-  const [open, setOpen] = useState(false);
-  // State cho question modal
-  const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
-  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
-  // State cho wrong answer modal
-  const [isWrongAnswerModalOpen, setIsWrongAnswerModalOpen] = useState(false);
-  const [isSubmittingAnswer, setIsSubmittingAnswer] = useState(false);
 
-  // State cho KyNhanResult modal
-  const [isKyNhanResultModalOpen, setIsKyNhanResultModalOpen] = useState(false);
-  const [kyNhanSummaries, setKyNhanSummaries] = useState<KyNhan[]>([]);
-  const [kyNhanResultData, setKyNhanResultData] = useState<{
-    summary: string;
-    points: number;
-  } | null>(null);
+  // Modal states
+  const [modalState, setModalState] = useState<ModalState>({
+    isQuestionModalOpen: false,
+    isWrongAnswerModalOpen: false,
+    isKyNhanResultModalOpen: false,
+    isIncompleteRegionOpen: false,
+    isSubmittingAnswer: false,
+  });
 
-  // State để track các câu hỏi đã được trả lời
+  // Data states
+  const [selectedQuestion, setSelectedQuestion] = useState<IQuestionWithUserLogs | null>(null);
+  const [questions, setQuestions] = useState<IQuestionWithUserLogs[]>(questionsWithUser || []);
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(
-    new Set(answeredQuestionIds)
+    new Set(answeredQuestionIds || [])
   );
+  const [kyNhanSummaries, setKyNhanSummaries] = useState<KyNhan[]>([]);
+  const [kyNhanResultData, setKyNhanResultData] = useState<KyNhanResultData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [landData, setLandData] = useState<ILandWithUserQuestionResponseModel['data'] | null>(null);
 
-  // Không cần hàm kiểm tra unlock nữa - tất cả đều mở
+  // Modal handlers
+  const updateModalState = useCallback((updates: Partial<ModalState>) => {
+    setModalState(prev => ({ ...prev, ...updates }));
+  }, []);
 
-  // Hàm kiểm tra câu hỏi đã trả lời đúng chưa
-  const isQuestionAnswered = (question: any) => {
-    return (
-      question?.userAnswerLogs &&
-      question.userAnswerLogs.length > 0 &&
-      question.userAnswerLogs.some((log: any) => log.isCorrect === true)
-    );
-  };
+  const closeModal = useCallback(() => {
+    setModalState(prev => ({
+      ...prev,
+      isQuestionModalOpen: false,
+      isWrongAnswerModalOpen: false,
+      isKyNhanResultModalOpen: false,
+      isIncompleteRegionOpen: false,
+    }));
+    setSelectedQuestion(null);
+  }, []);
 
-  // Hàm lấy câu trả lời cũ của người dùng
-  const getPreviousAnswer = (question: any) => {
-    if (question?.userAnswerLogs && question.userAnswerLogs.length > 0) {
-      const correctAnswer = question.userAnswerLogs.find(
-        (log: any) => log.isCorrect === true
+  const openIncompleteRegion = useCallback(() => {
+    updateModalState({ isIncompleteRegionOpen: true });
+  }, [updateModalState]);
+
+  // Helper functions
+  const checkStartDate = useCallback((startDate: Date | string | null | undefined) => {
+    if (!startDate) return true;
+    
+    const date = startDate instanceof Date ? startDate : new Date(startDate);
+    const currentDate = new Date();
+    
+    if (currentDate < date) {
+      toast.warning(
+        `Khu vực này sẽ được mở vào ngày ${date.toLocaleDateString('vi-VN')}`
       );
-      return correctAnswer?.text || "";
+      return false;
     }
-    return "";
-  };
+    return true;
+  }, []);
 
-  // Hàm xử lý khi click vào cuộn giấy - đơn giản hóa
-  const handleScrollClick = (scrollIndex: number) => {
-    const question = questionsWithUser[scrollIndex];
+  const extractAnsweredQuestionIds = useCallback((questions: IQuestionWithUserLogs[]): number[] => {
+    return questions
+      .filter(question => 
+        question.userAnswerLogs?.some(log => log.isCorrect === true)
+      )
+      .map(question => question.id);
+  }, []);
 
-    if (question) {
-      // Kiểm tra xem câu hỏi đã được trả lời đúng chưa
-      const isAnswered =
-        isQuestionAnswered(question) || answeredQuestions.has(question.id);
-
-      if (
-        isAnswered &&
-        question?.kynhanSummaries &&
-        question.kynhanSummaries.length > 0
-      ) {
-        // Nếu đã trả lời đúng và có kynhanSummaries, hiển thị KyNhanResult popup
-        const transformedKyNhan: KyNhan[] = question.kynhanSummaries.map(
-          (summary: any) => ({
-            id: summary.id,
-            src: summary.imgUrl,
-            alt: `Kỳ nhân ${summary.kyNhanId}`,
-            name: `Kỳ nhân ${summary.kyNhanId}`,
-          })
-        );
-
-        setKyNhanSummaries(transformedKyNhan);
-        setKyNhanResultData({
-          summary:
-            question.kynhanSummaries[0]?.summary ||
-            "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
-          points: question.point || 0,
-        });
-        setSelectedQuestion(question);
-        setIsKyNhanResultModalOpen(true);
-      } else {
-        // Nếu chưa trả lời hoặc không có kynhanSummaries, hiển thị question modal bình thường
-        setSelectedQuestion(question);
-        setIsQuestionModalOpen(true);
+  // API fetch effect
+  useEffect(() => {
+    if (!landId) return;
+    
+    let isMounted = true;
+    
+    const fetchQuestions = async () => {
+      setIsLoading(true);
+      try {
+        const response = await landService.getQuestionsWithUser(landId) as ILandWithUserQuestionResponseModel;
+        
+        if (!isMounted) return;
+        
+        if (response?.statusCode === 409) {
+          openIncompleteRegion();
+          return;
+        }
+        
+        if (response?.statusCode === 200 && response?.data) {
+          setLandData(response.data);
+          
+          // Check start date
+          if (!checkStartDate(response.data.startDate)) {
+            return;
+          }
+          
+          setQuestions(response.data.questions as IQuestionWithUserLogs[] || []);
+          
+          const answeredIds = extractAnsweredQuestionIds(response.data.questions as IQuestionWithUserLogs[] || []);
+          setAnsweredQuestions(new Set(answeredIds));
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error fetching questions:', error);
+          toast.error('Có lỗi xảy ra khi tải dữ liệu khu vực.');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-    } else {
-      toast.warning(`Không tìm thấy câu hỏi với index: ${scrollIndex}`);
-    }
-  };
+    };
 
-  // Hàm xử lý khi submit câu trả lời
-  const handleQuestionSubmit = async (text: string[], questionId: number) => {
-    if (!selectedQuestion || text.length === 0) {
+    fetchQuestions();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [landId, checkStartDate, extractAnsweredQuestionIds, openIncompleteRegion]);
+
+  // Optimized helper functions
+  const isQuestionAnswered = useCallback((question: IQuestionWithUserLogs) => {
+    return question?.userAnswerLogs?.some(log => log.isCorrect === true) ?? false;
+  }, []);
+
+  const getPreviousAnswer = useCallback((question: IQuestionWithUserLogs) => {
+    const correctAnswer = question?.userAnswerLogs?.find(log => log.isCorrect === true);
+    return correctAnswer?.text?.[0] || "";
+  }, []);
+
+  const transformKyNhanSummaries = useCallback((summaries: IQuestion['kynhanSummaries']): KyNhan[] => {
+    return summaries?.map(summary => ({
+      id: summary.id,
+      src: summary.imgUrl,
+      alt: `Kỳ nhân ${summary.kyNhanId}`,
+      name: `Kỳ nhân ${summary.kyNhanId}`,
+    })) ?? [];
+  }, []);
+
+  // Optimized scroll click handler
+  const handleScrollClick = useCallback((scrollIndex: number) => {
+    const question = questions[scrollIndex];
+
+    if (!question) {
+      toast.warning(`Không tìm thấy câu hỏi với index: ${scrollIndex}`);
       return;
     }
 
-    setIsSubmittingAnswer(true);
+    const isAnswered = isQuestionAnswered(question) || answeredQuestions.has(question.id);
+    const hasKyNhanSummaries = question.kynhanSummaries?.length > 0;
+
+    setSelectedQuestion(question);
+
+    if (isAnswered && hasKyNhanSummaries) {
+      const transformedKyNhan = transformKyNhanSummaries(question.kynhanSummaries);
+      setKyNhanSummaries(transformedKyNhan);
+      setKyNhanResultData({
+        summary: question.kynhanSummaries[0]?.summary || 
+                  "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+        points: question.point || 0,
+      });
+      updateModalState({ isKyNhanResultModalOpen: true });
+    } else {
+      updateModalState({ isQuestionModalOpen: true });
+    }
+  }, [questions, isQuestionAnswered, answeredQuestions, transformKyNhanSummaries, updateModalState]);
+
+  // Optimized question submit handler
+  const handleQuestionSubmit = useCallback(async (text: string[], questionId: number) => {
+    if (!selectedQuestion || text.length === 0) return;
+
+    updateModalState({ isSubmittingAnswer: true });
 
     try {
-      // Gửi một request duy nhất với text là mảng
       const requestData: IUserAnswerLogRequest = {
-        questionId: questionId,
-        text: text,
+        questionId,
+        text,
       };
 
       const response = await userAnswerLogService.answerQuestion(requestData);
-      // console.log(response);
-      if (
-        response &&
-        (response.statusCode === 200 || response.statusCode === 201) &&
-        response.data
-      ) {
+      
+      if (response?.statusCode && [200, 201].includes(response.statusCode) && response.data) {
         if (response.data.isCorrect) {
-          // Trả lời đúng - hiện toast và cập nhật state
           toast.success("Chính xác! Bạn đã trả lời đúng.");
-          setAnsweredQuestions((prev) => {
-            const newSet = new Set([...prev, selectedQuestion.id]);
-            return newSet;
-          });
+          
+          setAnsweredQuestions(prev => new Set([...prev, selectedQuestion.id]));
 
-          // Transform kynhanSummaries to KyNhan format for the popup
-          if (
-            selectedQuestion?.kynhanSummaries &&
-            selectedQuestion.kynhanSummaries.length > 0
-          ) {
-            const transformedKyNhan: KyNhan[] =
-              selectedQuestion.kynhanSummaries.map((summary: any) => ({
-                id: summary.id,
-                src: summary.imgUrl,
-                alt: `Kỳ nhân ${summary.kyNhanId}`,
-                name: `Kỳ nhân ${summary.kyNhanId}`, // You might want to get the actual name from somewhere else
-              }));
+          // Show KyNhan result if summaries exist
+          if (selectedQuestion.kynhanSummaries?.length > 0) {
+            const transformedKyNhan = transformKyNhanSummaries(selectedQuestion.kynhanSummaries);
             setKyNhanSummaries(transformedKyNhan);
-
-            // Store the result data before closing the modal
             setKyNhanResultData({
-              summary:
-                selectedQuestion.kynhanSummaries[0]?.summary ||
-                "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+              summary: selectedQuestion.kynhanSummaries[0]?.summary || 
+                        "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
               points: selectedQuestion.point || 0,
             });
-            setIsKyNhanResultModalOpen(true);
+            updateModalState({ 
+              isKyNhanResultModalOpen: true, 
+              isQuestionModalOpen: false 
+            });
+          } else {
+            updateModalState({ isQuestionModalOpen: false });
           }
-
-          // Đóng question modal
-          setIsQuestionModalOpen(false);
           setSelectedQuestion(null);
         } else {
-          // Trả lời sai - hiện wrong answer modal
-          setIsQuestionModalOpen(false);
-          setIsWrongAnswerModalOpen(true);
+          updateModalState({ 
+            isQuestionModalOpen: false, 
+            isWrongAnswerModalOpen: true 
+          });
         }
       } else {
-        // Handle error response
         toast.error(response?.message || "Có lỗi xảy ra khi gửi câu trả lời.");
       }
     } catch (error) {
       console.error("Error submitting answer:", error);
       toast.error("Có lỗi xảy ra khi gửi câu trả lời. Vui lòng thử lại.");
     } finally {
-      setIsSubmittingAnswer(false);
+      updateModalState({ isSubmittingAnswer: false });
     }
-  };
+  }, [selectedQuestion, transformKyNhanSummaries, updateModalState]);
 
-  // Hàm đóng modal
-  const handleCloseModal = () => {
-    setIsQuestionModalOpen(false);
+  // Optimized modal handlers
+  const handleCloseModal = useCallback(() => {
+    updateModalState({ isQuestionModalOpen: false });
     setSelectedQuestion(null);
-  };
+  }, [updateModalState]);
 
-  // Hàm xử lý wrong answer modal
-  const handleCloseWrongAnswerModal = () => {
-    setIsWrongAnswerModalOpen(false);
-  };
+  const handleCloseWrongAnswerModal = useCallback(() => {
+    updateModalState({ isWrongAnswerModalOpen: false });
+  }, [updateModalState]);
 
-  const handleRetryAnswer = () => {
-    setIsWrongAnswerModalOpen(false);
-    // Mở lại question modal với cùng câu hỏi
-    setIsQuestionModalOpen(true);
-  };
+  const handleRetryAnswer = useCallback(() => {
+    updateModalState({ 
+      isWrongAnswerModalOpen: false, 
+      isQuestionModalOpen: true 
+    });
+  }, [updateModalState]);
 
-  const handleUseCoins = async (questionId: number) => {
+  const handleCloseKyNhanResult = useCallback(() => {
+    updateModalState({ isKyNhanResultModalOpen: false });
+    setKyNhanSummaries([]);
+    setKyNhanResultData(null);
+    setSelectedQuestion(null);
+  }, [updateModalState]);
+
+  const handleGoToLibrary = useCallback(() => {
+    const firstKyNhanId = kyNhanSummaries[0]?.id;
+    if (firstKyNhanId) {
+      router.replace(`/library?search=${firstKyNhanId}`);
+    } else {
+      router.replace("/library");
+    }
+  }, [kyNhanSummaries, router]);
+
+  const handleCloseIncompleteRegion = useCallback(() => {
+    updateModalState({ isIncompleteRegionOpen: false });
+  }, [updateModalState]);
+
+  // Optimized handleUseCoins function
+  const handleUseCoins = useCallback(async (questionId: number) => {
     if (!questionId) {
       toast.error("Không tìm thấy ID câu hỏi");
       return;
     }
 
-    // Optimistic update: Update UI immediately for better UX
     const previousAnsweredQuestions = answeredQuestions;
-    setAnsweredQuestions((prev) => {
-      const newSet = new Set([...prev, questionId]);
-      return newSet;
-    });
+    setAnsweredQuestions(prev => new Set([...prev, questionId]));
 
     try {
-      const requestData: IUserSkipQuestionByCoinsRequest = {
-        questionId: questionId,
-      };
+      const requestData: IUserSkipQuestionByCoinsRequest = { questionId };
+      const response = await userAnswerLogService.skipQuestionByCoins(requestData);
 
-      const response = await userAnswerLogService.skipQuestionByCoins(
-        requestData
-      );
-
-      if (
-        response &&
-        (response.statusCode === 200 || response.statusCode === 201)
-      ) {
-        // Successfully skipped the question with coins
+      if (response?.statusCode && [200, 201].includes(response.statusCode)) {
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
 
-        // Find the question that was skipped to get its kynhanSummaries
-        const skippedQuestion = questionsWithUser.find(
-          (q) => q.id === questionId
-        );
-
-        if (
-          skippedQuestion?.kynhanSummaries &&
-          skippedQuestion.kynhanSummaries.length > 0
-        ) {
-          // Transform kynhanSummaries to KyNhan format for the popup
-          const transformedKyNhan: KyNhan[] =
-            skippedQuestion.kynhanSummaries.map((summary: any) => ({
-              id: summary.id,
-              src: summary.imgUrl,
-              alt: `Kỳ nhân ${summary.kyNhanId}`,
-              name: `Kỳ nhân ${summary.kyNhanId}`,
-            }));
-
+        const skippedQuestion = questions.find(q => q.id === questionId);
+        if (skippedQuestion && skippedQuestion.kynhanSummaries && skippedQuestion.kynhanSummaries.length > 0) {
+          const transformedKyNhan = transformKyNhanSummaries(skippedQuestion.kynhanSummaries);
           setKyNhanSummaries(transformedKyNhan);
           setKyNhanResultData({
-            summary:
-              skippedQuestion.kynhanSummaries[0]?.summary ||
-              "Bạn đã sử dụng xu để vượt qua và thu thập được kỳ ấn của kỳ nhân này.",
+            summary: skippedQuestion.kynhanSummaries[0]?.summary ||
+                      "Bạn đã sử dụng xu để vượt qua và thu thập được kỳ ấn của kỳ nhân này.",
             points: skippedQuestion.point || 0,
           });
           setSelectedQuestion(skippedQuestion);
-
-          // Show KyNhanResult popup
-          setIsKyNhanResultModalOpen(true);
+          updateModalState({ isKyNhanResultModalOpen: true });
         }
-
-        // Close the wrong answer modal
-        setIsWrongAnswerModalOpen(false);
-        // Don't clear selectedQuestion here as it's needed for KyNhanResult modal
+        updateModalState({ isWrongAnswerModalOpen: false });
       } else {
-        // Rollback optimistic update on error
         setAnsweredQuestions(previousAnsweredQuestions);
-        toast.error(
-          response?.message ||
-            "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi."
-        );
+        toast.error(response?.message || "Có lỗi xảy ra khi sử dụng xu để vượt qua câu hỏi.");
       }
     } catch (error) {
-      // Rollback optimistic update on error
       setAnsweredQuestions(previousAnsweredQuestions);
       console.error("Error skipping question with coins:", error);
       toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
     }
-  };
+  }, [questions, answeredQuestions, transformKyNhanSummaries, updateModalState]);
 
-  // Handler for closing KyNhanResult modal
-  const handleCloseKyNhanResult = () => {
-    setIsKyNhanResultModalOpen(false);
-    setKyNhanSummaries([]);
-    setKyNhanResultData(null);
-    setSelectedQuestion(null);
-  };
+  // Memoized values for optimization
+  const isQuestionModalAnswered = useMemo(() => 
+    selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false, 
+    [selectedQuestion, answeredQuestions]
+  );
 
-  // Handler for going to library with search query
-  const handleGoToLibrary = () => {
-    // Get the first KyNhan ID from kyNhanSummaries to search for
-    if (kyNhanSummaries.length > 0) {
-      const firstKyNhanId = kyNhanSummaries[0].id;
-      // Navigate to library with search parameter and replace current history entry
-      router.replace(`/library?search=${firstKyNhanId}`);
-    } else {
-      // Fallback to library without search if no kyNhan data
-      router.replace("/library");
-    }
-  };
+  const scrollPositionsToRender = useMemo(() => 
+    scrollPositions?.slice(0, questions.length) ?? [], 
+    [scrollPositions, questions.length]
+  );
 
   return (
     <main className="relative w-screen h-screen overflow-hidden bg-[#f0e8d8]">
@@ -328,23 +392,22 @@ export default function FixedScrollsPageResponsive({
 
         {/* Wrapper 50vh: mọi toạ độ top/left tính trong nửa dưới */}
         <div className="relative w-full h-full z-10">
-          {scrollPositions?.map(
+          {scrollPositionsToRender.map(
             (pos: ICOMPONENTS.ScrollPosition, idx: number) => {
-              const question = questionsWithUser[idx];
+              const question = questions[idx];
               const isAnswered = question
-                ? isQuestionAnswered(question) ||
-                  answeredQuestions.has(question.id)
+                ? isQuestionAnswered(question) || answeredQuestions.has(question.id)
                 : false;
 
               return (
                 <motion.div
                   key={idx}
                   // ⭐ THAY ĐỔI CHÍNH: Kích thước responsive, không còn h-auto
-                  className="absolute drop-shadow-[0_6px_6px_rgba(0,0,0,0.25)] w-[20vw] sm:w-[120px] md:w-[150px] lg:w-[180px]"
+                  className="absolute drop-shadow-[0_6px_6px_rgba(0,0,0,0.25)] w-[28vw] sm:w-[160px] md:w-[200px] lg:w-[240px]"
                   style={{
                     top: pos.top,
                     left: pos.left,
-                    transform: `rotate(${pos.rotate})`,
+                    // transform: `rotate(${pos.rotate})`,
                   }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -368,7 +431,7 @@ export default function FixedScrollsPageResponsive({
                       alt={`Cuộn giấy ${idx + 1}`}
                       fill
                       className="object-contain pointer-events-none select-none"
-                      sizes="(max-width: 640px) 20vw, (max-width: 768px) 120px, (max-width: 1024px) 150px, 180px"
+                      sizes="(max-width: 640px) 28vw, (max-width: 768px) 160px, (max-width: 1024px) 200px, 240px"
                       priority
                     />
 
@@ -392,7 +455,7 @@ export default function FixedScrollsPageResponsive({
                     <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                       <div
                         className={`rounded-full shadow-lg border flex items-center justify-center
-                       w-[20px] h-[20px] sm:w-[22px] sm:h-[22px] md:w-[24px] md:h-[24px] lg:w-[28px] lg:h-[28px] xl:w-[32px] xl:h-[32px]
+                       w-[28px] h-[28px] sm:w-[30px] sm:h-[30px] md:w-[32px] md:h-[32px] lg:w-[36px] lg:h-[36px] xl:w-[40px] xl:h-[40px]
                        ${
                          isAnswered
                            ? "bg-green-500 border-green-600"
@@ -400,9 +463,9 @@ export default function FixedScrollsPageResponsive({
                        }`}
                       >
                         {isAnswered ? (
-                          <Check className="w-[12px] h-[12px] sm:w-[13px] sm:h-[13px] md:w-[14px] md:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[18px] xl:h-[18px] text-white" />
+                          <Check className="w-[16px] h-[16px] sm:w-[17px] sm:h-[17px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] xl:w-[22px] xl:h-[22px] text-white" />
                         ) : (
-                          <Circle className="w-[12px] h-[12px] sm:w-[13px] sm:h-[13px] md:w-[14px] md:h-[14px] lg:w-[16px] lg:h-[16px] xl:w-[18px] xl:h-[18px] text-gray-400" />
+                          <Circle className="w-[16px] h-[16px] sm:w-[17px] sm:h-[17px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] xl:w-[22px] xl:h-[22px] text-gray-400" />
                         )}
                       </div>
                     </div>
@@ -418,19 +481,24 @@ export default function FixedScrollsPageResponsive({
 
       {/* Question Modal */}
       <QuestionModal
-        question={selectedQuestion}
-        isOpen={isQuestionModalOpen}
+        question={selectedQuestion ? {
+          ...selectedQuestion,
+          userAnswerLogs: selectedQuestion.userAnswerLogs?.map(log => ({
+            id: log.id,
+            isCorrect: log.isCorrect,
+            text: Array.isArray(log.text) ? log.text.join(' ') : log.text,
+          }))
+        } : null}
+        isOpen={modalState.isQuestionModalOpen}
         onClose={handleCloseModal}
         onSubmit={handleQuestionSubmit}
-        isSubmitting={isSubmittingAnswer}
-        isAnswered={
-          selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false
-        }
+        isSubmitting={modalState.isSubmittingAnswer}
+        isAnswered={isQuestionModalAnswered}
       />
 
       {/* Wrong Answer Modal */}
       <WrongAnswer
-        isOpen={isWrongAnswerModalOpen}
+        isOpen={modalState.isWrongAnswerModalOpen}
         onClose={handleCloseWrongAnswerModal}
         onRetry={handleRetryAnswer}
         onUseCoins={handleUseCoins}
@@ -441,7 +509,7 @@ export default function FixedScrollsPageResponsive({
 
       {/* KyNhanResult Modal */}
       <KyNhanResult
-        isOpen={isKyNhanResultModalOpen}
+        isOpen={modalState.isKyNhanResultModalOpen}
         onClose={handleCloseKyNhanResult}
         title="Bạn đã tìm ra danh tính của vị Kỳ Nhân này. Bạn được cộng 100 điểm."
         content={
@@ -451,6 +519,12 @@ export default function FixedScrollsPageResponsive({
         points={kyNhanResultData?.points}
         kyNhan={kyNhanSummaries}
         onGoToLibrary={handleGoToLibrary}
+      />
+
+      {/* IncompleteRegion Modal */}
+      <IncompleteRegion
+        isOpen={modalState.isIncompleteRegionOpen}
+        onClose={handleCloseIncompleteRegion}
       />
     </main>
   );

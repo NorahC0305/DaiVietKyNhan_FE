@@ -181,8 +181,9 @@ declare namespace ICOMPONENTS {
   interface MapRegionDetailProps {
     backgroundImage?: string;
     scrollPositions: ScrollPosition[];
-    questions: IQuestion[];
-    answeredQuestionIds: number[];
+    landId: number;
+    questions?: IQuestion[];
+    answeredQuestionIds?: number[];
   }
 
   interface CommonModalProps {
