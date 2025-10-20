@@ -5,7 +5,6 @@ import ContactInfo from "./Components/ContactInfo";
 import CommunitySupport from "./Components/CommunitySupport";
 import VietnameseLoading from "@components/Molecules/Loading";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
-import { GameFrame } from "@components/Molecules/GameFrame";
 
 const ContactPage = () => {
   return (

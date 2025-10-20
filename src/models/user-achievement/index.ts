@@ -20,3 +20,12 @@ export const UserAchievementModel = z.object({
 });
 
 export type IUserAchievement = z.infer<typeof UserAchievementModel>;
+
+// Response model for getMyAchievements API
+export const MyAchievementsResponseModel = z.object({
+  statusCode: z.number(),
+  message: z.string().optional(),
+  data: z.array(UserAchievementModel).optional(),
+});
+
+export type IMyAchievementsResponse = z.infer<typeof MyAchievementsResponseModel>;

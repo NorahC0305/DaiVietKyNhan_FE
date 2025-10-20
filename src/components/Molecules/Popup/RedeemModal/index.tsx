@@ -4,9 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useMemo } from "react";
 import { Loader2 } from "lucide-react";
-import { IReward } from "@models/reward";
+import { IReward, IUserRewardExchange } from "@models/reward";
 import { IMeResponse } from "@models/user/response";
 import { useRewards } from "@hooks/useRewards";
+import { useUserDataContextSafe } from "@contexts/UserDataContext";
 
 type LeftDisplay = { type: "points" | "coins"; amount: number };
 type RightDisplay =
@@ -35,6 +36,7 @@ type RedeemTierWithData = {
   tier: RedeemTier;
   display: RedeemTierDisplay;
   rewardData?: IReward;
+  userRewardExchange?: IUserRewardExchange;
 };
 
 export type RedeemModalProps = {
@@ -50,12 +52,31 @@ export default function RedeemModal({
   onRedeem,
   tiers,
 }: RedeemModalProps) {
-  const { rewards, userData, isLoading, isExchanging, handleExchange } = useRewards(isOpen);
+  const { rewards, userRewardExchanges, userData: rewardsUserData, isLoading, isExchanging, handleExchange } = useRewards(isOpen);
+  console.log('Rewards:', rewards);
+  console.log('User Reward Exchanges:', userRewardExchanges);
+  // Get user data from context for synchronization with GameFrame
+  const context = useUserDataContextSafe();
+  const contextUserData = context?.userData || null;
+  const refreshUserData = context?.refreshUserData || null;
+  
+  // Use context user data if available, otherwise fallback to rewards hook data
+  const userData = contextUserData || rewardsUserData;
+
+  // Custom handleExchange that also refreshes context user data
+  const handleExchangeWithContext = async (rewardId: number, onRedeem?: (tierId: string) => void) => {
+    await handleExchange(rewardId, onRedeem);
+    // Also refresh context user data if available
+    if (refreshUserData) {
+      await refreshUserData();
+    }
+  };
 
   // Convert API reward data to component format
   const convertRewardToTier = (
     reward: IReward,
-    user: IMeResponse["data"] | null
+    user: IMeResponse["data"] | null,
+    userRewardExchange?: IUserRewardExchange
   ): RedeemTier => {
     const left: LeftDisplay = {
       type: reward.type === "COIN" ? "coins" : "points",
@@ -80,9 +101,16 @@ export default function RedeemModal({
     const endDate = reward.endDate ? new Date(reward.endDate) : null;
     const isWithinDateRange = now >= startDate && (!endDate || now <= endDate);
 
+    // Check if user can redeem based on status
+    // If userRewardExchange exists:
+    // - COMPLETED: user already exchanged, cannot redeem again
+    // - PENDING: user can still redeem (exchange)
+    // If no userRewardExchange exists: user can redeem
+    const canRedeemByStatus = !userRewardExchange || userRewardExchange.status === "PENDING";
+
     return {
       id: reward.id.toString(),
-      canRedeem: reward.isActive && canAfford && isWithinDateRange,
+      canRedeem: reward.isActive && canAfford && isWithinDateRange && canRedeemByStatus,
       display: { left, right },
     };
   };
@@ -128,11 +156,17 @@ export default function RedeemModal({
     // Use API data if available, otherwise fallback to provided tiers or default data
     if (rewards.length > 0 && userData) {
       return rewards.map((reward) => {
-        const tier = convertRewardToTier(reward, userData);
+        // Find the corresponding userRewardExchange for this reward
+        const userRewardExchange = userRewardExchanges.find(
+          exchange => exchange.reward.id === reward.id
+        );
+        
+        const tier = convertRewardToTier(reward, userData, userRewardExchange);
         return {
           tier,
           display: tier.display || normalizeDisplay(tier),
           rewardData: reward,
+          userRewardExchange,
         };
       });
     }
@@ -153,7 +187,7 @@ export default function RedeemModal({
       tier: t,
       display: normalizeDisplay(t),
     }));
-  }, [rewards, userData, tiers]);
+  }, [rewards, userRewardExchanges, userData, tiers]);
 
   return (
     <AnimatePresence>
@@ -220,7 +254,7 @@ export default function RedeemModal({
                       </span>
                     </div>
                   ) : (
-                    displayTiers.map(({ tier, display, rewardData }) => (
+                    displayTiers.map(({ tier, display, rewardData, userRewardExchange }) => (
                       <div
                         key={tier.id}
                         className="rounded-xl bg-[#F7E6BB] shadow-sm flex items-center justify-between px-3 py-2 sm:px-4 sm:py- lg:px-6"
@@ -273,7 +307,7 @@ export default function RedeemModal({
                         <button
                           onClick={() => {
                             if (tier.canRedeem && rewardData) {
-                              handleExchange(rewardData.id, onRedeem);
+                              handleExchangeWithContext(rewardData.id, onRedeem);
                             } else if (tier.canRedeem) {
                               onRedeem?.(tier.id);
                             }

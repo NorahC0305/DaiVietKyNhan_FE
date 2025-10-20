@@ -17,6 +17,9 @@ import KyNhanResult, { KyNhan } from "@components/Molecules/Popup/KyNhanResult";
 import userAnswerLogService from "@services/user-answer-log";
 import landService from "@services/land";
 
+// Context
+import { useUserDataContextSafe } from "@contexts/UserDataContext";
+
 // Types
 import type { IUserAnswerLogRequest } from "@models/user-answer-log/request";
 import type { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/request";
@@ -58,6 +61,10 @@ export default function FixedScrollsPageResponsive({
   answeredQuestionIds,
 }: ICOMPONENTS.MapRegionDetailProps) {
   const router = useRouter();
+  
+  // Get user data context for refreshing user data after actions
+  const context = useUserDataContextSafe();
+  const refreshUserData = context?.refreshUserData || null;
 
   // Modal states
   const [modalState, setModalState] = useState<ModalState>({
@@ -239,6 +246,11 @@ export default function FixedScrollsPageResponsive({
           toast.success("Chính xác! Bạn đã trả lời đúng.");
           
           setAnsweredQuestions(prev => new Set([...prev, selectedQuestion.id]));
+          
+          // Refresh user data to update points/hearts after correct answer
+          if (refreshUserData) {
+            await refreshUserData();
+          }
 
           // Show KyNhan result if summaries exist
           if (selectedQuestion.kynhanSummaries?.length > 0) {
@@ -258,6 +270,11 @@ export default function FixedScrollsPageResponsive({
           }
           setSelectedQuestion(null);
         } else {
+          // Refresh user data even for wrong answers to update hearts/points
+          if (refreshUserData) {
+            await refreshUserData();
+          }
+          
           updateModalState({ 
             isQuestionModalOpen: false, 
             isWrongAnswerModalOpen: true 
@@ -272,7 +289,7 @@ export default function FixedScrollsPageResponsive({
     } finally {
       updateModalState({ isSubmittingAnswer: false });
     }
-  }, [selectedQuestion, transformKyNhanSummaries, updateModalState]);
+  }, [selectedQuestion, transformKyNhanSummaries, updateModalState, refreshUserData]);
 
   // Optimized modal handlers
   const handleCloseModal = useCallback(() => {
@@ -327,6 +344,11 @@ export default function FixedScrollsPageResponsive({
 
       if (response?.statusCode && [200, 201].includes(response.statusCode)) {
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
+        
+        // Refresh user data to update coins after using coins to skip
+        if (refreshUserData) {
+          await refreshUserData();
+        }
 
         const skippedQuestion = questions.find(q => q.id === questionId);
         if (skippedQuestion && skippedQuestion.kynhanSummaries && skippedQuestion.kynhanSummaries.length > 0) {
@@ -350,7 +372,7 @@ export default function FixedScrollsPageResponsive({
       console.error("Error skipping question with coins:", error);
       toast.error("Có lỗi xảy ra khi sử dụng xu. Vui lòng thử lại.");
     }
-  }, [questions, answeredQuestions, transformKyNhanSummaries, updateModalState]);
+  }, [questions, answeredQuestions, transformKyNhanSummaries, updateModalState, refreshUserData]);
 
   // Memoized values for optimization
   const isQuestionModalAnswered = useMemo(() => 

@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
   IUserAchievement,
   UserAchievementModel,
+  IMyAchievementsResponse,
 } from "@models/user-achievement";
 import { BackendResponseModel } from "@models/backend";
 
@@ -42,6 +43,21 @@ const userAchievementService = {
         next: { tags: ["userAchievements"] },
       }
     );
+  },
+  claimAchievement: async (userAchievementId: number) => {
+    return await http.post(
+      `user-achievement/claim-reward/${userAchievementId}`,
+      null,
+      {
+        next: { tags: ["userAchievements"] },
+      }
+    );
+  },
+
+  getMyAchievements: async () => {
+    return await http.get<IMyAchievementsResponse>(`/user-achievement/my-achievements`, {
+      next: { tags: ["userAchievements"] },
+    });
   },
 };
 

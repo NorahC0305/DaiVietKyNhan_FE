@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import userAchievementService from "@services/user-achievement";
-import { IUserAchievement } from "@models/user-achievement";
+import { IUserAchievement, IMyAchievementsResponse } from "@models/user-achievement";
 
 export type Achievement = {
   id: string;
@@ -27,11 +27,15 @@ function mapApiResponseToAchievements(apiData: IUserAchievement[]): Achievement[
       status = "PENDING";
     }
 
+    // According to requirement: PENDING status means can claim
+    // Only can claim if not already claimed and status is PENDING
+    const canClaim = userAchievement.status === "PENDING" && !userAchievement.rewardClaimed;
+
     return {
       id: userAchievement.id.toString(),
       title: userAchievement.achievement.name,
       description: userAchievement.achievement.description,
-      canClaim: status === "COMPLETED", // Only COMPLETED status can be claimed
+      canClaim: canClaim,
       status: status,
       rewardLabel: `${userAchievement.achievement.reward} xu`,
       reward: {
@@ -51,14 +55,10 @@ export const useAchievements = (isOpen: boolean) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await userAchievementService.getUserAchievements({
-        qs: "sort:-id",
-        currentPage: 1,
-        pageSize: 1000,
-      });
+      const response = await userAchievementService.getMyAchievements();
 
-      if (response.statusCode === 200 && response.data) {
-        const mappedAchievements = mapApiResponseToAchievements(response.data);
+      if (response.statusCode === 200 && response.data && Array.isArray(response.data)) {
+        const mappedAchievements = mapApiResponseToAchievements(response.data as IUserAchievement[]);
         setAchievements(mappedAchievements);
       } else {
         setError(response.message || "Failed to fetch achievements");

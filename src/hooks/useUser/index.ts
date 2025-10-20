@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import userService from '@services/user';
-import { IMePaginationResponse } from '@models/user/response';
+import { IMePaginationResponse, IMeResponse } from '@models/user/response';
 
 export interface UserListParams {
     page?: number;
@@ -78,5 +78,43 @@ export function useMe() {
         isLoading,
         error,
         refetch,
+    };
+}
+
+// Global user data hook with refresh capabilities
+export function useGlobalUserData(initialUser?: IMeResponse["data"] | null) {
+    const [userData, setUserData] = useState<IMeResponse["data"] | null>(initialUser || null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const refreshUserData = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const response = await userService.getMe() as IMeResponse;
+            if (response?.statusCode === 200 && response?.data) {
+                setUserData(response.data);
+            }
+        } catch (error) {
+            console.error('Error refreshing user data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    const updateUserData = useCallback((newData: IMeResponse["data"] | null) => {
+        setUserData(newData);
+    }, []);
+
+    // Initialize with provided data if available
+    useEffect(() => {
+        if (initialUser && !userData) {
+            setUserData(initialUser);
+        }
+    }, [initialUser, userData]);
+
+    return {
+        userData,
+        isLoading,
+        refreshUserData,
+        updateUserData,
     };
 }
