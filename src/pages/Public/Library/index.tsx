@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { useLandscapeMobile } from "@/hooks/useLandscapeMobile";
 import kynhanService from "@/services/kynhan";
@@ -24,6 +25,7 @@ interface CardData {
 }
 
 const LibraryPage = () => {
+  const router = useRouter();
   const [isDailyCheckinOpen, setIsDailyCheckinOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [scrollToIndex, setScrollToIndex] = useState<number | undefined>(
@@ -33,6 +35,11 @@ const LibraryPage = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isLandscapeMobile = useLandscapeMobile();
+
+  // Handle CTA button click - navigate to library detail page
+  const handleCtaClick = (cardId: number) => {
+    router.push(`/library/${cardId}`);
+  };
 
   // Convert API data to CardData format
   const convertToCardData = (kynhanData: IKyNhanUser): CardData => ({
@@ -45,7 +52,7 @@ const LibraryPage = () => {
       thoiKy: kynhanData.thoiKy,
       chienCong: kynhanData.chienCong,
       ctaText: "Xem Thêm",
-      ctaHref: "#",
+      ctaHref: undefined, // Remove href since we're using onClick handler
     },
   });
 
@@ -196,6 +203,7 @@ const LibraryPage = () => {
             options={{ loop: true, align: "center" }}
             scrollToIndex={scrollToIndex}
             highlightQuery={highlightQuery}
+            onCtaClick={handleCtaClick}
           />
         )}
       </div>

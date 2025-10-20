@@ -3,6 +3,7 @@ import {
   IKyNhanSummaryResponseModel,
   IKyNhanResponseModel,
   IKyNhanUserListResponseModel,
+  IKyNhanDetailResponseModel,
 } from "@models/ky-nhan/response";
 import { IUpdateKyNhanRequest } from "@models/ky-nhan/request";
 
@@ -31,6 +32,11 @@ const kynhanService = {
   },
   updateKyNhan: async (kyNhanId: number, formData: FormData) => {
     return await http.put(`/kynhan/${kyNhanId}`, formData);
+  },
+  getKyNhanById: async (kyNhanId: number) => {
+    return await http.get<IKyNhanDetailResponseModel>(`/kynhan/${kyNhanId}`, {
+      cache: "no-store",
+    });
   },
 };
 
