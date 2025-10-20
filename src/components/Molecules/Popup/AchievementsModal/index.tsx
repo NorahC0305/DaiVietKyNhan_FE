@@ -42,12 +42,13 @@ function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
 // Function to get the correct button image based on status
 function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
   switch (status) {
-    case "PENDING": // According to requirement: PENDING means can claim
-      return "/Property 1=Đủ để nhận.svg"; // Sáng nút để người dùng nhận
+    case "PENDING":
+      return "/Property 1=Chưa đủ để nhận.svg"; // PENDING means chưa đủ để nhận
     case "COMPLETED":
+      return "/Property 1=Đủ để nhận.svg"; // COMPLETED means đủ để nhận
     case "CLAIMED":
     default:
-      return "/Property 1=Chưa đủ để nhận.svg"; // Xám nút cho COMPLETED và CLAIMED
+      return "/Property 1=Chưa đủ để nhận.svg"; // CLAIMED shows chưa đủ để nhận
   }
 }
 
@@ -184,10 +185,10 @@ export default function AchievementsModal({
 
                             <button
                               onClick={() =>
-                                achievement.status === "PENDING" &&
+                                achievement.status === "COMPLETED" &&
                                 handleClaim(achievement.id)
                               }
-                              disabled={achievement.status !== "PENDING" || isClaiming}
+                              disabled={achievement.status !== "COMPLETED" || isClaiming}
                               className="relative cursor-pointer px-4 sm:px-5 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[72px] min-h-[36px] overflow-hidden"
                             >
                               <Image
