@@ -15,15 +15,9 @@ import {
   TableRow,
 } from "@/components/Atoms/ui/table";
 import { Badge } from "@/components/Atoms/ui/badge";
+import { IMonthlyUserStatsData } from "@models/user/response";
 
-export interface MonthlyStat {
-  month: string;
-  newUsers: number;
-  newUsersChange: number; // percent, can be negative
-  activeUsers: number;
-  sessions: number;
-  avgTime: string;
-}
+export interface MonthlyStat extends IMonthlyUserStatsData {}
 
 interface Props {
   data: MonthlyStat[];
@@ -31,7 +25,7 @@ interface Props {
 
 const MonthlyTable = ({ data }: Props) => {
   const getChangeBadgeClass = (value: number) => {
-    if (value > 0) return "text-emerald-600";
+    if (value > 0) return "text-green-600";
     if (value < 0) return "text-red-600";
     return "text-muted-foreground";
   };
@@ -43,25 +37,24 @@ const MonthlyTable = ({ data }: Props) => {
           Thống kê người dùng theo tháng
         </CardTitle>
         <CardDescription>
-          Người dùng mới và hoạt động trong 3 tháng qua
+          Thống kê người dùng mới và lượt chơi theo tháng
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tháng</TableHead>
-              <TableHead>Người dùng mới</TableHead>
-              <TableHead>Hoạt động</TableHead>
-              <TableHead>Phiên</TableHead>
-              <TableHead>Thời gian TB</TableHead>
+              <TableHead className="w-[120px]">Tháng</TableHead>
+              <TableHead className="w-[180px] text-center">Người dùng mới</TableHead>
+              <TableHead className="w-[120px] text-center">Tổng lượt chơi</TableHead>
+              <TableHead className="w-[120px] text-center">Tỷ lệ hoàn thành (%)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data?.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={4}
                   className="text-center text-sm text-muted-foreground"
                 >
                   Không có dữ liệu
@@ -70,23 +63,26 @@ const MonthlyTable = ({ data }: Props) => {
             ) : (
               data?.map((row) => (
                 <TableRow key={row.month}>
-                  <TableCell>{row.month}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {row.newUsers.toLocaleString()}
+                  <TableCell className="w-[120px] font-medium text-center">{row.monthName}</TableCell>
+                  <TableCell className="w-[180px] text-center">
+                    <div className="flex items-center justify-center">
+                      <span>{row.newUsers.toLocaleString()}</span>
                       <Badge
                         variant="outline"
-                        className={getChangeBadgeClass(row.newUsersChange)}
+                        className={`border-0 ${getChangeBadgeClass(row.changePercent)} text-[10px] px-1 py-0 h-4`}
                       >
-                        {row.newUsersChange > 0
-                          ? `+${row.newUsersChange}%`
-                          : `${row.newUsersChange}%`}
+                        {row.changePercent > 0
+                          ? `+${row.changePercent.toFixed(1)}%`
+                          : row.changePercent < 0
+                          ? `${row.changePercent.toFixed(1)}%`
+                          : `${row.changePercent}%`}
                       </Badge>
                     </div>
                   </TableCell>
-                  <TableCell>{row.activeUsers.toLocaleString()}</TableCell>
-                  <TableCell>{row.sessions.toLocaleString()}</TableCell>
-                  <TableCell>{row.avgTime}</TableCell>
+                  <TableCell className="w-[120px] text-center">{row.totalPlays.toLocaleString()}</TableCell>
+                  <TableCell className="w-[120px] text-center">
+                    {row.passRate > 0 ? `${row.passRate.toFixed(1)}%` : `${row.passRate}%`}
+                  </TableCell>
                 </TableRow>
               ))
             )}

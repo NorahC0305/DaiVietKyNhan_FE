@@ -112,3 +112,63 @@ const pointChangeLogPaginationResponse = BackendPaginationResponseModel(pointCha
 export type IPointChangeLogData = z.infer<typeof pointChangeLogData>;
 export type IPointChangeLogPaginationResponse = z.infer<typeof pointChangeLogPaginationResponse>;
 //----------------------End----------------------//
+
+// User play stats response
+const userPlayStatsResponseData = z.object({
+    totalUser: z.number(),
+    totalPlays: z.number(),
+    ratemonthPre: z.number(),
+    ratePlayPre: z.number(),
+})
+
+const userPlayStatsResponse = BackendResponseModel(userPlayStatsResponseData)
+
+export type IUserPlayStatsResponseData = z.infer<typeof userPlayStatsResponseData>
+export type IUserPlayStatsResponse = z.infer<typeof userPlayStatsResponse>
+//----------------------End----------------------//
+
+// Top user stats response
+const topUserStatsData = z.object({
+    userId: z.number(),
+    name: z.string(),
+    totalAnswers: z.number(),
+    correctRate: z.number(),
+    currentPoints: z.number(),
+})
+
+const topUserStatsResponse = BackendResponseModel(z.array(topUserStatsData))
+
+export type ITopUserStatsData = z.infer<typeof topUserStatsData>
+export type ITopUserStatsResponse = z.infer<typeof topUserStatsResponse>
+//----------------------End----------------------//
+
+// Monthly user stats response
+const monthlyUserStatsData = z.object({
+    month: z.number(),
+    monthName: z.string(),
+    newUsers: z.number(),
+    changePercent: z.number(),
+    totalPlays: z.number(),
+    passRate: z.number(),
+})
+
+const monthlyUserStatsResponse = BackendResponseModel(z.array(monthlyUserStatsData))
+
+export type IMonthlyUserStatsData = z.infer<typeof monthlyUserStatsData>
+export type IMonthlyUserStatsResponse = z.infer<typeof monthlyUserStatsResponse>
+//----------------------End----------------------//
+
+// Land stats response
+const landStatsData = z.object({
+    landId: z.number(),
+    landName: z.string(),
+    totalAnswers: z.number(),
+    averagePoints: z.number(),
+    completionRate: z.number(),
+})
+
+const landStatsResponse = BackendResponseModel(z.array(landStatsData))
+
+export type ILandStatsData = z.infer<typeof landStatsData>
+export type ILandStatsResponse = z.infer<typeof landStatsResponse>
+//----------------------End----------------------//

@@ -431,7 +431,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100 p-6">
+    <div className="min-h-screen bg-admin-primary rounded-xl p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Enhanced Header Section */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 shadow-sm">
@@ -575,7 +575,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
         {/* Enhanced Form Section */}
         {isFormVisible && (
           <Card className="border border-gray-200 shadow-lg" data-form-section>
-            <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
+            <CardHeader className="bg-admin-primary border-b">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-3">
                   <div
@@ -917,7 +917,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                 </div>
 
                 {/* Submit Button */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6 border-t bg-gray-50 -mx-6 px-6 py-4 rounded-b-lg">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6 border-t -mx-6 px-6 py-4 rounded-b-lg">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     {Object.keys(formValidationErrors).length > 0 && (
                       <div className="flex items-center gap-2 text-red-600">

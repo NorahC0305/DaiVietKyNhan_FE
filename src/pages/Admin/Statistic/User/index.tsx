@@ -10,34 +10,74 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/Atoms/ui/card";
+import { ILandStatsData } from "@models/user/response";
 
 const UserStatisticPage = () => {
   const monthlyData: MonthlyStat[] = [
     {
-      month: "Tháng 1",
+      month: 1,
+      monthName: "Tháng 1",
       newUsers: 245,
-      newUsersChange: 23,
-      activeUsers: 1850,
-      sessions: 4200,
-      avgTime: "8m 32s",
+      changePercent: 23,
+      totalPlays: 1850,
+      passRate: 85.2,
     },
     {
-      month: "Tháng 2",
+      month: 2,
+      monthName: "Tháng 2",
       newUsers: 312,
-      newUsersChange: -16,
-      activeUsers: 2100,
-      sessions: 5100,
-      avgTime: "9m 15s",
+      changePercent: -16,
+      totalPlays: 2100,
+      passRate: 78.5,
     },
     {
-      month: "Tháng 3",
+      month: 3,
+      monthName: "Tháng 3",
       newUsers: 189,
-      newUsersChange: 5,
-      activeUsers: 2350,
-      sessions: 6200,
-      avgTime: "10m 8s",
+      changePercent: 5,
+      totalPlays: 2350,
+      passRate: 82.1,
     },
   ];
+
+  const landStatsData: ILandStatsData[] = [
+    {
+      landId: 1,
+      landName: "Sơn Tinh",
+      totalAnswers: 17,
+      averagePoints: 667757,
+      completionRate: 33.33,
+    },
+    {
+      landId: 2,
+      landName: "Chử Đồng Tử",
+      totalAnswers: 1,
+      averagePoints: 1060,
+      completionRate: 0,
+    },
+    {
+      landId: 3,
+      landName: "Thánh Gióng",
+      totalAnswers: 0,
+      averagePoints: 0,
+      completionRate: 0,
+    },
+    {
+      landId: 4,
+      landName: "Liễu Hạnh",
+      totalAnswers: 0,
+      averagePoints: 0,
+      completionRate: 0,
+    },
+    {
+      landId: 5,
+      landName: "Kỳ Linh Diệt Hỏa",
+      totalAnswers: 0,
+      averagePoints: 0,
+      completionRate: 0,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <Card className="border-gray-300 bg-admin-primary">
@@ -51,7 +91,7 @@ const UserStatisticPage = () => {
                 Quản lý và theo dõi thống kê người dùng & lượt chơi
               </div>
             </div>
-            <HeaderActions />
+            {/* <HeaderActions /> */}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -60,7 +100,7 @@ const UserStatisticPage = () => {
             <MonthlyTable data={monthlyData} />
             <TopPlayers />
           </div>
-          <CategoryStats />
+          <CategoryStats data={landStatsData} />
         </CardContent>
       </Card>
     </div>

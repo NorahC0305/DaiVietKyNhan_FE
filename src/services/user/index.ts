@@ -1,7 +1,7 @@
 import http from "@configs/fetch"
 import { IQueryRequest } from "@models/common/request";
 import { IUpdateMeBodySchema, IUpdateUserPointsRequest } from "@models/user/request";
-import { IPointStatsResponse, IPointChangeLogPaginationResponse } from "@models/user/response";
+import { IPointStatsResponse, IPointChangeLogPaginationResponse, IUserPlayStatsResponse, ITopUserStatsResponse, IMonthlyUserStatsResponse, ILandStatsResponse } from "@models/user/response";
 import qs from "qs";
 
 const userService = {
@@ -76,6 +76,26 @@ const userService = {
     updateUserPoints: async (data: IUpdateUserPointsRequest) => {
         return await http.post("/change-point-user-log", data, {
             next: { tags: ['changePointUserLog'] }
+        });
+    },
+    getUserPlayStats: async () => {
+        return await http.get<IUserPlayStatsResponse>("/dashboard/user-play/stats", {
+            next: { tags: ['userPlayStats'] }
+        });
+    },
+    getTopUserStats: async () => {
+        return await http.get<ITopUserStatsResponse>("/dashboard/user-play/top-user/stats", {
+            next: { tags: ['topUserStats'] }
+        });
+    },
+    getMonthlyUserStats: async () => {
+        return await http.get<IMonthlyUserStatsResponse>("/dashboard/user-play/months", {
+            next: { tags: ['monthlyUserStats'] }
+        });
+    },
+    getLandStats: async () => {
+        return await http.get<ILandStatsResponse>("/dashboard/user-play/land/stats", {
+            next: { tags: ['landStats'] }
         });
     }
 }

@@ -84,11 +84,11 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
         label: "Thống kê người dùng và lượt chơi",
         icon: "Activity",
       },
-      {
-        id: "statistics-overview",
-        label: "Báo cáo tổng hợp",
-        icon: "ChartLine",
-      },
+      // {
+      //   id: "statistics-overview",
+      //   label: "Báo cáo tổng hợp",
+      //   icon: "ChartLine",
+      // },
     ],
   },
   {

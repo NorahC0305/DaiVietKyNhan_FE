@@ -16,24 +16,40 @@ import {
 } from "@/components/Atoms/ui/table";
 import { Badge } from "@/components/Atoms/ui/badge";
 import { Progress } from "@/components/Atoms/ui/progress";
+import { ILandStatsData } from "@models/user/response";
 
-const rows = [
-  { name: "Địa lý", total: 5420, avg: 78, completion: 85, status: "Tốt" },
-  { name: "Văn học", total: 4890, avg: 82, completion: 79, status: "Xuất sắc" },
-  { name: "Lịch sử", total: 3650, avg: 75, completion: 72, status: "Tốt" },
-  { name: "Khoa học", total: 2980, avg: 71, completion: 68, status: "Tốt" },
-];
+interface Props {
+  data: ILandStatsData[];
+}
 
-const CategoryStats = () => {
-  const getStatusStyle = (status: string) => {
-    if (status === "Xuất sắc") {
-      return { backgroundColor: "#d86d37", color: "#ffffff", borderColor: "transparent" } as React.CSSProperties
+const CategoryStats = ({ data }: Props) => {
+  const getStatusStyle = (completionRate: number) => {
+    if (completionRate >= 80) {
+      return {
+        backgroundColor: "#d86d37",
+        color: "#ffffff",
+        borderColor: "transparent",
+      } as React.CSSProperties;
     }
-    if (status === "Tốt") {
-      return { backgroundColor: "#f26644", color: "#ffffff", borderColor: "transparent" } as React.CSSProperties
+    if (completionRate >= 50) {
+      return {
+        backgroundColor: "#f26644",
+        color: "#ffffff",
+        borderColor: "transparent",
+      } as React.CSSProperties;
     }
-    return {} as React.CSSProperties
-  }
+    return {
+      backgroundColor: "#6b7280",
+      color: "#ffffff",
+      borderColor: "transparent",
+    } as React.CSSProperties;
+  };
+
+  const getStatusText = (completionRate: number) => {
+    if (completionRate >= 80) return "Xuất sắc";
+    if (completionRate >= 50) return "Tốt";
+    return "Cần cải thiện";
+  };
   return (
     <Card className="border-gray-300">
       <CardHeader>
@@ -41,54 +57,61 @@ const CategoryStats = () => {
           Thống kê theo danh mục trò chơi
         </CardTitle>
         <CardDescription>
-          Hiệu suất và mức độ tham gia theo từng danh mục
+          Hiệu suất và mức độ tham gia theo từng khu vực
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Danh mục</TableHead>
-              <TableHead>Tổng lượt chơi</TableHead>
-              <TableHead>Điểm TB</TableHead>
-              <TableHead>Tỷ lệ hoàn thành</TableHead>
-              <TableHead>Hiệu suất</TableHead>
+              <TableHead className="text-center">Khu vực</TableHead>
+              <TableHead className="text-center">Tổng lượt trả lời</TableHead>
+              <TableHead className="text-center">Điểm TB</TableHead>
+              <TableHead className="text-center">Tỷ lệ hoàn thành</TableHead>
+              <TableHead className="text-center">Hiệu suất</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows?.map((r) => (
-              <TableRow key={r.name}>
-                <TableCell className="font-medium">
-                  <Badge
-                    variant="outline"
-                    className="mr-2 bg-orange-100 text-admin-primary"
-                  >
-                    {r.name}
-                  </Badge>
-                </TableCell>
-                <TableCell>{r.total.toLocaleString()}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <span>{r.avg}</span>
-                    <Progress value={r.avg} className="!h-2 bg-orange-100" />
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <span>{r.completion}%</span>
-                    <Progress
-                      value={r.completion}
-                      className="!h-2 bg-orange-100"
-                    />
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" style={getStatusStyle(r.status)}>
-                    {r.status}
-                  </Badge>
+            {data?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-sm text-muted-foreground"
+                >
+                  Không có dữ liệu
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              data?.map((item) => (
+                <TableRow key={item.landId}>
+                  <TableCell className="font-medium text-center">
+                    <Badge
+                      variant="outline"
+                      className="mr-2 bg-orange-100 text-admin-primary"
+                    >
+                      {item.landName}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {item.totalAnswers.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span>{item.averagePoints.toLocaleString()}</span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span>{item.completionRate.toFixed(1)}%</span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge
+                      variant="outline"
+                      style={getStatusStyle(item.completionRate)}
+                    >
+                      {getStatusText(item.completionRate)}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
