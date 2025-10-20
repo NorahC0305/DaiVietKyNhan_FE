@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { AnimatePresence, motion } from "framer-motion"
-import ButtonImage from "@components/Atoms/ButtonImage"
+import { useState } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import ButtonImage from "@components/Atoms/ButtonImage";
 
 export interface KyNhan {
-  id: number
-  src: string
-  alt: string
-  name: string
+  id: number;
+  src: string;
+  alt: string;
+  name: string;
 }
 
 export interface KyNhanResultProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  content: string
-  points?: number
-  kyNhan: KyNhan[]
-  onContinue?: () => void
-  onGoToLibrary?: () => void
-  onFinalContinue?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  content: string;
+  points?: number;
+  kyNhan: KyNhan[];
+  onContinue?: () => void;
+  onGoToLibrary?: () => void;
+  onFinalContinue?: () => void;
 }
 
 export default function KyNhanResult({
@@ -35,27 +35,27 @@ export default function KyNhanResult({
   onGoToLibrary,
   onFinalContinue,
 }: KyNhanResultProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2>(1)
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
   const handleContinue = () => {
     if (currentStep === 1) {
-      setCurrentStep(2)
-      onContinue?.()
+      setCurrentStep(2);
+      onContinue?.();
     } else {
-      onFinalContinue?.()
-      handleClose()
+      onFinalContinue?.();
+      handleClose();
     }
-  }
+  };
 
   const handleGoToLibrary = () => {
-    onGoToLibrary?.()
-    handleClose()
-  }
+    onGoToLibrary?.();
+    handleClose();
+  };
 
   const handleClose = () => {
-    setCurrentStep(1)
-    onClose()
-  }
+    setCurrentStep(1);
+    onClose();
+  };
 
   return (
     <AnimatePresence>
@@ -95,10 +95,12 @@ export default function KyNhanResult({
                       }`}
                     >
                       {currentStep === 1
-                        ? title
+                        ? kyNhan.length === 1
+                          ? "Bạn đã tìm ra danh tính của vị Kỳ Nhân này. Bạn được cộng 100 điểm."
+                          : "Bạn đã tìm ra danh tính của 2 vị Kỳ Nhân này. Bạn được cộng 100 điểm."
                         : kyNhan.length === 1
-                          ? "BẠN ĐÃ THÀNH CÔNG THU THẬP ĐƯỢC KỲ ẤN CỦA KỲ NHÂN NÀY."
-                          : "BẠN ĐÃ THÀNH CÔNG THU THẬP ĐƯỢC KỲ ẤN CỦA 2 KỲ NHÂN NÀY."}
+                        ? "BẠN ĐÃ THÀNH CÔNG THU THẬP ĐƯỢC KỲ ẤN CỦA KỲ NHÂN NÀY."
+                        : "BẠN ĐÃ THÀNH CÔNG THU THẬP ĐƯỢC KỲ ẤN CỦA 2 KỲ NHÂN NÀY."}
                     </h2>
                   </motion.div>
 
@@ -124,7 +126,9 @@ export default function KyNhanResult({
                     className="space-y-2 sm:space-y-3 flex justify-center items-center mt-auto py-3 sm:py-4"
                   >
                     {currentStep === 1 ? (
-                      <ButtonImage onClick={handleContinue}>Tiếp tục</ButtonImage>
+                      <ButtonImage onClick={handleContinue}>
+                        Tiếp tục
+                      </ButtonImage>
                     ) : (
                       <div className="space-y-2 sm:space-y-3 flex justify-center items-center gap-2 sm:gap-3 flex-col">
                         <ButtonImage
@@ -184,5 +188,5 @@ export default function KyNhanResult({
         </div>
       )}
     </AnimatePresence>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLandscapeMobile } from "@/hooks/useLandscapeMobile";
 import kynhanService from "@/services/kynhan";
@@ -26,8 +26,10 @@ interface CardData {
 
 const LibraryPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isDailyCheckinOpen, setIsDailyCheckinOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [hiddenSearchId, setHiddenSearchId] = useState<string | null>(null);
   const [scrollToIndex, setScrollToIndex] = useState<number | undefined>(
     undefined
   );
@@ -55,6 +57,38 @@ const LibraryPage = () => {
       ctaHref: undefined, // Remove href since we're using onClick handler
     },
   });
+
+  // Handle URL search parameter - store ID but don't show in input
+  useEffect(() => {
+    const searchParam = searchParams?.get("search");
+    if (searchParam) {
+      setHiddenSearchId(searchParam);
+      // Clear URL parameter after reading it and prevent back navigation to map
+      router.replace("/library", { scroll: false });
+
+      // Add a new history entry to prevent back to map page
+      window.history.pushState(null, "", "/library");
+    }
+  }, [searchParams, router]);
+
+  // Prevent back navigation to map when coming from map
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // If user tries to go back, push current state again
+      window.history.pushState(null, "", "/library");
+    };
+
+    // Only add listener if we came from map with search parameter
+    if (hiddenSearchId !== null) {
+      // Push current state to history to establish new base
+      window.history.pushState(null, "", "/library");
+      window.addEventListener("popstate", handlePopState);
+    }
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [hiddenSearchId]);
 
   // Fetch kynhan data from API
   useEffect(() => {
@@ -85,36 +119,53 @@ const LibraryPage = () => {
       .replace(/\s+/g, " ")
       .trim();
 
-  const triggerSearchScroll = () => {
-    const q = normalizeText(searchQuery);
-    if (!q) return;
+  const triggerSearchScroll = useCallback(
+    (searchValue?: string) => {
+      const q = normalizeText(searchValue || searchQuery);
+      if (!q) return;
 
-    // Try numeric id match first
-    const asNumber = Number(q);
-    let index = -1;
-    if (!Number.isNaN(asNumber)) {
-      index = cards.findIndex((c) => c.id === asNumber);
-    }
+      // Try numeric id match first
+      const asNumber = Number(q);
+      let index = -1;
+      if (!Number.isNaN(asNumber)) {
+        index = cards.findIndex((c) => c.id === asNumber);
+      }
 
-    if (index === -1) {
-      index = cards.findIndex((c) => {
-        const haystack = [
-          normalizeText(c.backContent?.name),
-          normalizeText(c.backContent?.thoiKy),
-          normalizeText(c.backContent?.chienCong),
-          normalizeText(c.backContent?.ctaText),
-          normalizeText(c.imageSrc),
-        ]
-          .filter(Boolean)
-          .join(" ");
-        return haystack.includes(q);
-      });
-    }
+      if (index === -1) {
+        index = cards.findIndex((c) => {
+          const haystack = [
+            normalizeText(c.backContent?.name),
+            normalizeText(c.backContent?.thoiKy),
+            normalizeText(c.backContent?.chienCong),
+            normalizeText(c.backContent?.ctaText),
+            normalizeText(c.imageSrc),
+          ]
+            .filter(Boolean)
+            .join(" ");
+          return haystack.includes(q);
+        });
+      }
 
-    if (index >= 0) {
-      setScrollToIndex(index);
-      setHighlightQuery(q);
+      if (index >= 0) {
+        setScrollToIndex(index);
+        setHighlightQuery(q);
+      }
+    },
+    [searchQuery, cards]
+  );
+
+  // Auto trigger search when hiddenSearchId is set from URL and cards are loaded
+  useEffect(() => {
+    if (hiddenSearchId && cards.length > 0 && !isLoading) {
+      triggerSearchScroll(hiddenSearchId);
+      // Clear hiddenSearchId after using it
+      setHiddenSearchId(null);
     }
+  }, [hiddenSearchId, cards, isLoading, triggerSearchScroll]);
+
+  // Wrapper function for search button clicks
+  const handleSearchClick = () => {
+    triggerSearchScroll();
   };
 
   return (
@@ -135,7 +186,7 @@ const LibraryPage = () => {
             />
             <button
               aria-label="Tìm kiếm"
-              onClick={triggerSearchScroll}
+              onClick={handleSearchClick}
               className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-4 text-gray-600"
               type="button"
             >
@@ -171,7 +222,7 @@ const LibraryPage = () => {
           />
           <button
             aria-label="Tìm kiếm"
-            onClick={triggerSearchScroll}
+            onClick={handleSearchClick}
             className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-600"
             type="button"
           >
