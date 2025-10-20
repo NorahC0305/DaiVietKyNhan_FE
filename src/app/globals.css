@@ -9,6 +9,8 @@
   --third: #B59100;
   --third-light: #CDA600;
   --third-lightest: #FFF6E3;
+  --right-answer: #268331;
+  --wrong-answer: #D83131;
   --holder: #FCFCFC;
   --faded: rgba(113, 113, 122, 0.2);
   --error: rgb(228, 3, 3);
@@ -24,6 +26,8 @@
   --color-third: var(--third);
   --color-third-light: var(--third-light);
   --color-third-lightest: var(--third-lightest);
+  --color-right-answer: var(--right-answer);
+  --color-wrong-answer: var(--wrong-answer);
   --color-holder: var(--holder);
   --color-faded: var(--faded);
   --color-error: var(--error);

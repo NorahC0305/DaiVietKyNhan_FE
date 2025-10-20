@@ -1,10 +1,7 @@
 import React from "react";
 import ContactHeader from "./Components/ContactHeader";
-import ContactForm from "./Components/ContactForm";
 import ContactInfo from "./Components/ContactInfo";
 import CommunitySupport from "./Components/CommunitySupport";
-import VietnameseLoading from "@components/Molecules/Loading";
-import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 
 const ContactPage = () => {
   return (
@@ -21,18 +18,6 @@ const ContactPage = () => {
           </div>
         </div>
       </div>
-
-      {/* <GameFrame>
-        <div className=""> */}
-      {/* <ContactHeader /> */}
-      {/* <div className="mt-8 flex justify-center">
-            <div className="w-full max-w-2xl space-y-8"> */}
-      {/* <ContactInfo /> */}
-      {/* <CommunitySupport />
-            </div>
-          </div>
-        </div>
-      </GameFrame> */}
     </div>
   );
 };
