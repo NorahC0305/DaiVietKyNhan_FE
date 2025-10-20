@@ -7,9 +7,10 @@ import { IChiTietKyNhanResponse } from "@models/chi-tiet-ky-nhan/entity";
 
 interface LibraryDetailPageProps {
   chiTietKyNhan: IChiTietKyNhanResponse;
+  moTaKyNhan: any;
 }
 
-const LibraryDetailPage = ({ chiTietKyNhan }: LibraryDetailPageProps) => {
+const LibraryDetailPage = ({ chiTietKyNhan, moTaKyNhan }: LibraryDetailPageProps) => {
   const router = useRouter();
 
   const handleGoBack = () => {
@@ -48,7 +49,7 @@ const LibraryDetailPage = ({ chiTietKyNhan }: LibraryDetailPageProps) => {
           </button>
 
           {/* ----- Ky Nhan Summary Section ----- */}
-          <KyNhanSummary />
+          <KyNhanSummary moTaKyNhan={moTaKyNhan} />
 
           {/* ----- Chi Tiet Ky Nhan Section ----- */}
           <ChiTietKyNhan chiTietKyNhan={chiTietKyNhan} />

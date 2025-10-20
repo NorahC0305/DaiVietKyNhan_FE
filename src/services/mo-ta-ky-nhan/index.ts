@@ -17,7 +17,7 @@ const libcardService = {
 
   getMoTaKyNhanList: async (params: GetMoTaKyNhanListParams = {}) => {
     const queryParams = new URLSearchParams();
-    
+
     if (params.currentPage) queryParams.append('currentPage', params.currentPage.toString());
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
     if (params.sort) queryParams.append('qs', params.sort);
@@ -25,12 +25,16 @@ const libcardService = {
 
     const queryString = queryParams.toString();
     const url = queryString ? `/mo-ta-ky-nhan?${queryString}` : '/mo-ta-ky-nhan';
-    
+
     return await http.get<IMoTaKyNhanListResponseModel>(url);
   },
 
   getMoTaKyNhanById: async (id: number) => {
     return await http.get<IMoTaKyNhanDetailResponseModel>(`/mo-ta-ky-nhan/${id}`);
+  },
+
+  getMoTaKyNhanByKyNhanId: async (kyNhanId: number) => {
+    return await http.get(`/mo-ta-ky-nhan/kynhan/${kyNhanId}`);
   },
 
   updateMoTaKyNhan: async (id: number, formData: FormData) => {
