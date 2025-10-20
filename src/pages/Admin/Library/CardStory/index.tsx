@@ -46,12 +46,14 @@ interface SectionInfo {
   id: string;
   title: string;
   content: string;
+  nguon?: string;
 }
 
 interface HistorySentence {
   id: string;
   content: string;
   source: string;
+  tacGia?: string;
 }
 
 interface HistorySection {
@@ -79,6 +81,17 @@ interface ImageLibrary {
   mediaData?: any; // Store original media data for reference
 }
 
+// Helper function to validate URL
+const isValidUrl = (url: string): boolean => {
+  if (!url || url.trim() === "") return false;
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
   const [libraryImage, setLibraryImage] = useState<File | null>(null);
   const [backgroundRemovedImage, setBackgroundRemovedImage] =
@@ -90,16 +103,16 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
     shortDescription: "",
   });
   const [basicInfo, setBasicInfo] = useState<SectionInfo[]>([
-    { id: "1", title: "", content: "" },
+    { id: "1", title: "", content: "", nguon: "" },
   ]);
   const [historicalInfo, setHistoricalInfo] = useState<SectionInfo[]>([
-    { id: "1", title: "", content: "" },
+    { id: "1", title: "", content: "", nguon: "" },
   ]);
   const [historySections, setHistorySections] = useState<HistorySection[]>([
     {
       id: "1",
       title: "",
-      sentences: [{ id: "1", content: "", source: "" }],
+      sentences: [{ id: "1", content: "", source: "", tacGia: "" }],
     },
   ]);
   const [folkloreSections, setFolkloreSections] = useState<FolkloreSection[]>([
@@ -263,6 +276,7 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
       id: Date.now().toString(),
       content: "",
       source: "",
+      tacGia: "",
     };
     setHistorySections((prev) =>
       prev.map((section) =>
@@ -276,7 +290,7 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
   const updateSection = (
     type: "basic" | "historical" | "history" | "folklore" | "reference",
     id: string,
-    field: "title" | "content" | "source",
+    field: "title" | "content" | "source" | "nguon",
     value: string
   ) => {
     setHasInteracted(true);
@@ -320,7 +334,7 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
   const updateHistorySentence = (
     sectionId: string,
     sentenceId: string,
-    field: "content" | "source",
+    field: "content" | "source" | "tacGia",
     value: string
   ) => {
     setHasInteracted(true);
@@ -555,6 +569,7 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
           id: item.id?.toString() || `historical-${index + 1}`,
           title: item.tieuDe || "",
           content: item.noiDung || "",
+          nguon: item.nguon || "",
         }));
         setHistoricalInfo(historicalSections);
       }
@@ -567,7 +582,8 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
           sentences: [{
             id: `sentence-${index + 1}`,
             content: item.doanVan || "",
-            source: item.nguon || "",
+            source: item.nguonSach || "",
+            tacGia: item.tacGia || "",
           }],
         }));
         setHistorySections(historySections);
@@ -734,8 +750,6 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
 
       const fd = new FormData();
 
-      if (currentKyNhanId != null) fd.append("kyNhanId", String(currentKyNhanId));
-
       // thamKhao: join reference sections' content
       const thamKhaoText = referenceSections
         .map((s) => s.content)
@@ -743,48 +757,70 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
         .join("\n\n");
       fd.append("thamKhao", thamKhaoText);
 
-      // boiCanhLichSuVaXuatThan: [{ tieuDe, noiDung }]
+      // boiCanhLichSuVaXuatThan: [{ tieuDe, noiDung, nguon }] - Add nguon field
       const boiCanh = historicalInfo
         .filter((s) => s.title || s.content)
-        .map((s) => ({ tieuDe: s.title || "", noiDung: s.content || "" }));
+        .map((s) => ({
+          tieuDe: s.title || "",
+          noiDung: s.content || "",
+          nguon: s.nguon || "" // Use the nguon field from the form
+        }));
       fd.append("boiCanhLichSuVaXuatThan", JSON.stringify(boiCanh));
 
-      // suSachVietGi: flatten sentences per section => [{ tieuDe, doanVan, nguon }]
+      // suSachVietGi: [{ tieuDe, doanVan, tacGia, nguonSach }] - Match backend schema
       const suSach = historySections.flatMap((section) =>
         section.sentences
           .filter((se) => se.content || se.source)
           .map((se) => ({
             tieuDe: section.title || "",
             doanVan: se.content || "",
-            nguon: se.source || "",
+            tacGia: se.tacGia || "", // Use tacGia from the form
+            nguonSach: se.source || "", // Map source to nguonSach
           }))
       );
       fd.append("suSachVietGi", JSON.stringify(suSach));
 
-      // giaiThoaiDanGian: [{ tieuDe, noiDung, nguon }]
+      // giaiThoaiDanGian: [{ tieuDe, noiDung, nguon }] - Match backend schema
       const giaiThoai = folkloreSections
         .filter((s) => s.title || s.content || s.source)
-        .map((s) => ({ tieuDe: s.title || "", noiDung: s.content || "", nguon: s.source || "" }));
+        .map((s) => ({
+          tieuDe: s.title || "",
+          noiDung: s.content || "",
+          nguon: s.source || ""
+        }));
       fd.append("giaiThoaiDanGian", JSON.stringify(giaiThoai));
 
-      // Collect existing media IDs and new files
-      const existingMediaIds: number[] = [];
+      // Prepare thuVienAnh data for backend sync
+      const thuVienAnhData: any[] = [];
+      const newFiles: File[] = [];
 
       imageLibraries.forEach((img) => {
         if (img.file) {
-          // New uploaded file
-          fd.append("thuVienAnh", img.file);
-        } else if (img.mediaData && img.mediaData.id) {
-          // Existing media from database
-          existingMediaIds.push(img.mediaData.id);
+          // New uploaded file - add to files array only, don't add to data array yet
+          newFiles.push(img.file);
+          // Don't add to thuVienAnhData yet - backend will handle this after upload
+        } else if (img.mediaData && img.mediaData.id && img.mediaData.url && isValidUrl(img.mediaData.url)) {
+          // Existing media from database - only add if has valid URL
+          thuVienAnhData.push({
+            id: img.mediaData.id,
+            url: img.mediaData.url,
+            fileName: img.mediaData.fileName || "",
+            fileSize: img.mediaData.fileSize || 0,
+            mimeType: img.mediaData.mimeType || "image/jpeg"
+          });
         }
       });
 
-      // Send existing media IDs to preserve them
-      if (existingMediaIds.length > 0) {
-        fd.append("existingMediaIds", JSON.stringify(existingMediaIds));
-        console.log("Sending existing media IDs:", existingMediaIds);
-      }
+      // Add thuVienAnh data array to form data
+      fd.append("thuVienAnh", JSON.stringify(thuVienAnhData));
+
+      // Add new files to form data
+      newFiles.forEach((file) => {
+        fd.append("thuVienAnh", file);
+      });
+
+      // Add kyNhanId to the data object (required by backend schema)
+      fd.append("kyNhanId", String(currentKyNhanId));
 
       // Debug: Log form data
       console.log("FormData contents:");
@@ -813,12 +849,12 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
           setTouchedFields(new Set());
 
           // Clear content but keep sections
-          setBasicInfo([{ id: "1", title: "", content: "" }]);
-          setHistoricalInfo([{ id: "1", title: "", content: "" }]);
+          setBasicInfo([{ id: "1", title: "", content: "", nguon: "" }]);
+          setHistoricalInfo([{ id: "1", title: "", content: "", nguon: "" }]);
           setHistorySections([{
             id: "1",
             title: "",
-            sentences: [{ id: "1", content: "", source: "" }],
+            sentences: [{ id: "1", content: "", source: "", tacGia: "" }],
           }]);
           setFolkloreSections([{ id: "1", title: "", content: "", source: "" }]);
           setReferenceSections([{ id: "1", content: "" }]);
@@ -1039,6 +1075,25 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
                         )}
                       </div>
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Nguồn
+                      </label>
+                      <Input
+                        placeholder='VD: — Lê Văn Hưu, "Đại Việt Sử Ký Toàn Thư"'
+                        value={section.nguon || ""}
+                        onChange={(e) =>
+                          updateSection(
+                            "historical",
+                            section.id,
+                            "nguon",
+                            e.target.value
+                          )
+                        }
+                        color="black"
+                        className="rounded-4xl border-gray-300"
+                      />
+                    </div>
                     {historicalInfo.length > 1 && (
                       <Button
                         type="button"
@@ -1175,20 +1230,44 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
                             </p>
                           )}
                         </div>
-                        <Input
-                          placeholder='VD: — Lê Văn Hưu, "Đại Việt Sử Ký Toàn Thư" - Kỳ Trưng Nữ Vương'
-                          value={sentence.source}
-                          onChange={(e) =>
-                            updateHistorySentence(
-                              section.id,
-                              sentence.id,
-                              "source",
-                              e.target.value
-                            )
-                          }
-                          color="black"
-                          className="rounded-4xl border-gray-300"
-                        />
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Tác giả
+                          </label>
+                          <Input
+                            placeholder="VD: Lê Văn Hưu"
+                            value={sentence.tacGia || ""}
+                            onChange={(e) =>
+                              updateHistorySentence(
+                                section.id,
+                                sentence.id,
+                                "tacGia",
+                                e.target.value
+                              )
+                            }
+                            color="black"
+                            className="rounded-4xl border-gray-300"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-gray-700">
+                            Nguồn sách
+                          </label>
+                          <Input
+                            placeholder='VD: "Đại Việt Sử Ký Toàn Thư" - Kỳ Trưng Nữ Vương'
+                            value={sentence.source}
+                            onChange={(e) =>
+                              updateHistorySentence(
+                                section.id,
+                                sentence.id,
+                                "source",
+                                e.target.value
+                              )
+                            }
+                            color="black"
+                            className="rounded-4xl border-gray-300"
+                          />
+                        </div>
                       </div>
                     ))}
 
