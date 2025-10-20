@@ -24,7 +24,6 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
 
     const openImageModal = (index: number) => {
         if (chiTietKyNhan?.media && index >= 0 && index < chiTietKyNhan.media.length) {
-            console.log('Setting image index to:', index, 'Valid range: 0 to', chiTietKyNhan.media.length - 1)
             setCurrentImageIndex(index)
             setIsModalOpen(true)
         } else {
@@ -80,7 +79,6 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
                                     key={image.id}
                                     className="relative w-full aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={() => {
-                                        console.log('Opening image modal with index:', actualIndex, 'Total images:', images.length)
                                         openImageModal(actualIndex)
                                     }}
                                 >

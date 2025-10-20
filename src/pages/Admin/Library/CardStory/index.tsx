@@ -558,8 +558,7 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
 
   // Fill data from chiTietKyNhan when component mounts
   useEffect(() => {
-    if (chiTietKyNhan) {
-      console.log("Filling data for kyNhanId:", chiTietKyNhan.kyNhanId);
+    if (chiTietKyNhan) {;
       // Set selected ky nhan
       setSelectedKyNhanId(chiTietKyNhan.kyNhanId);
 
@@ -611,7 +610,6 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
 
       // Fill media if available (only if no existing images)
       if (chiTietKyNhan.media && chiTietKyNhan.media.length > 0) {
-        console.log("Media available:", chiTietKyNhan.media.length, "items");
 
         // Convert media URLs to imageLibraries format
         const mediaSections = chiTietKyNhan.media.map((mediaItem: any) => ({
@@ -637,7 +635,6 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
   useEffect(() => {
     if (selectedKyNhanId !== null && selectedKyNhanId !== form.getValues("kyNhanId")) {
       form.setValue("kyNhanId", selectedKyNhanId);
-      console.log("Syncing selectedKyNhanId to form:", selectedKyNhanId);
     }
   }, [selectedKyNhanId, form]);
 
@@ -821,12 +818,6 @@ const CardStoryPage = ({ chiTietKyNhan }: { chiTietKyNhan?: any }) => {
 
       // Add kyNhanId to the data object (required by backend schema)
       fd.append("kyNhanId", String(currentKyNhanId));
-
-      // Debug: Log form data
-      console.log("FormData contents:");
-      for (let [key, value] of fd.entries()) {
-        console.log(`${key}:`, value);
-      }
 
       const response = await chiTietKyNhanService.createChiTietKyNhanForm(fd) as any;
       if (response.statusCode === 200 || response.statusCode === 201) {

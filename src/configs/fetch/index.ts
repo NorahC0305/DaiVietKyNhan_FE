@@ -28,7 +28,6 @@ const request = async <Response>(
 
       // Kiểm tra nếu session không tồn tại (token đã bị xóa)
       if (!session || !session.user || !session.accessToken) {
-        console.log("No session found, redirecting to login...");
         if (typeof window !== "undefined") {
           // Chỉ hiển thị toast nếu không phải đang ở trang login/register
           const currentPath = window.location.pathname;

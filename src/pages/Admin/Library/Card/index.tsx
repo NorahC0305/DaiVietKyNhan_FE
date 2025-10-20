@@ -212,7 +212,6 @@ const CardPage = ({ lands: initialLands }: { lands: ILandEntity[] }) => {
       submitFormData.append("chienCong", formData.chienCong);
       submitFormData.append("active", formData.active.toString());
       submitFormData.append("landId", formData.landId.toString());
-      console.log(submitFormData);
       const response = (await kynhanService.createKyNhan(
         submitFormData
       )) as IKyNhanResponseModel;
