@@ -49,12 +49,12 @@ export default function QuestionModal({
       const correctAnswers = question.userAnswerLogs.filter(
         (log: any) => log.isCorrect === true
       );
-      
+
       // Tìm log có text là array với nhiều phần tử (mới)
-      const answerWithArray = correctAnswers.find((log: any) => 
+      const answerWithArray = correctAnswers.find((log: any) =>
         Array.isArray(log.text) && log.text.length > 1
       );
-      
+
       if (answerWithArray && Array.isArray(answerWithArray.text)) {
         // Nếu có log với array, lấy 2 phần tử đầu
         return {
@@ -62,7 +62,7 @@ export default function QuestionModal({
           secondAnswer: answerWithArray.text[1] || "",
         };
       }
-      
+
       // Fallback: giả sử câu trả lời đầu tiên là answer đầu, câu trả lời thứ 2 là answer thứ 2
       const extractText = (text: any) => {
         if (Array.isArray(text)) {
@@ -70,7 +70,7 @@ export default function QuestionModal({
         }
         return text || "";
       };
-      
+
       return {
         firstAnswer: extractText(correctAnswers[0]?.text),
         secondAnswer: extractText(correctAnswers[1]?.text),
@@ -147,7 +147,7 @@ export default function QuestionModal({
       // Ensure we have string values before trimming
       const answerTextStr = ensureString(answerText);
       const secondAnswerTextStr = ensureString(secondAnswerText);
-      
+
       // Kiểm tra validation giống như button disabled logic
       if (
         !answerTextStr.trim() ||
@@ -242,6 +242,23 @@ export default function QuestionModal({
                   style={{ objectFit: "contain" }}
                 />
               </div>
+
+              {/* Close button */}
+              <button
+                className="absolute top-20 right-25 cursor-pointer p-1 sm:p-2 z-10"
+                onClick={handleClose}
+                aria-label="Đóng"
+              >
+                <span className="block relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+                  <Image
+                    src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg"
+                    alt="Đóng"
+                    fill
+                    sizes="(max-width: 640px) 32px, (max-width: 768px) 40px, 48px"
+                    style={{ objectFit: "contain" }}
+                  />
+                </span>
+              </button>
 
               {/* Content overlay INSIDE a safe area (debug border visible) */}
               <div
