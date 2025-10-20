@@ -18,5 +18,7 @@ export default async function SelectCharacter() {
     redirect(ROUTES.PUBLIC.HOME);
   }
   const figure = (await getFigure()) as IFigureResponseModel;
+  console.log(figure);
+  
   return <SelectCharacterPage figures={figure.data?.results || []} />;
 }
