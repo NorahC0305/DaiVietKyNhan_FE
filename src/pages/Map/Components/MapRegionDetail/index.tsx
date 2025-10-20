@@ -327,7 +327,7 @@ export default function FixedScrollsPageResponsive({
         {/* <KyNhanResult isOpen={true} onClose={() => {}} title="Kết quả" content="Bạn đã trả lời đúng." points={100} kyNhan={[]} /> */}
 
         {/* Wrapper 50vh: mọi toạ độ top/left tính trong nửa dưới */}
-        <div className="relative w-full h-full z-10">
+        <div className="relative w-full h-full z-10 border-2">
           {scrollPositions?.map(
             (pos: ICOMPONENTS.ScrollPosition, idx: number) => {
               const question = questionsWithUser[idx];
@@ -344,7 +344,7 @@ export default function FixedScrollsPageResponsive({
                   style={{
                     top: pos.top,
                     left: pos.left,
-                    transform: `rotate(${pos.rotate})`,
+                    // transform: `rotate(${pos.rotate})`,
                   }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
