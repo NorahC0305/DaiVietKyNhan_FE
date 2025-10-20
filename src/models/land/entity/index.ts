@@ -7,6 +7,11 @@ export const LandSchema = z.object({
   id: z.number(),
   name: z.string(),
   order: z.number(),
+  startDate: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((str) => (str ? new Date(str) : null)),
   totalQuestion: z.number(),
   createdById: z.number(),
   updatedById: z.number().nullable(),
