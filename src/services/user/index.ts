@@ -1,6 +1,7 @@
 import http from "@configs/fetch"
 import { IQueryRequest } from "@models/common/request";
-import { IUpdateMeBodySchema } from "@models/user/request";
+import { IUpdateMeBodySchema, IUpdateUserPointsRequest } from "@models/user/request";
+import { IPointStatsResponse, IPointChangeLogPaginationResponse } from "@models/user/response";
 import qs from "qs";
 
 const userService = {
@@ -51,6 +52,31 @@ const userService = {
     },
     updateMe: async (data: IUpdateMeBodySchema) => {
         return await http.put("/auth/me", data);
+    },
+    getPointStats: async () => {
+        return await http.get<IPointStatsResponse>("/dashboard/point/stats", {
+            next: { tags: ['pointStats'] }
+        });
+    },
+    getChangePointUserLogs: async (params?: {
+        qs?: string;
+        currentPage?: number;
+        pageSize?: number;
+    }) => {
+        const queryString = qs.stringify({
+            qs: params?.qs || 'sort:-createdAt',
+            currentPage: params?.currentPage || 1,
+            pageSize: params?.pageSize || 10,
+        }, { skipNulls: true });
+
+        return await http.get<IPointChangeLogPaginationResponse>(`/change-point-user-log?${queryString}`, {
+            next: { tags: ['changePointUserLog'] }
+        });
+    },
+    updateUserPoints: async (data: IUpdateUserPointsRequest) => {
+        return await http.post("/change-point-user-log", data, {
+            next: { tags: ['changePointUserLog'] }
+        });
     }
 }
 

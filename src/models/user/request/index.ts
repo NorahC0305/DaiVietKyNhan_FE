@@ -68,3 +68,16 @@ export const resetPasswordFormDataRequest = z.object({
 });
 export type IResetPasswordFormDataRequest = z.infer<typeof resetPasswordFormDataRequest>;
 //-----------------End-Reset-Password-Request-----------------//
+
+/**
+ * Update user points request
+ */
+export const updateUserPointsRequest = z.object({
+    userId: z.number().min(1, 'User ID không hợp lệ'),
+    reason: z.string().min(1, 'Lý do không được để trống'),
+    newPoint: z.number().min(0, 'Điểm không được âm'),
+    newCoin: z.number().min(0, 'Coin không được âm'),
+    newHeart: z.number().min(0, 'Heart không được âm'),
+});
+export type IUpdateUserPointsRequest = z.infer<typeof updateUserPointsRequest>;
+//-----------------End-Update-User-Points-Request-----------------//
