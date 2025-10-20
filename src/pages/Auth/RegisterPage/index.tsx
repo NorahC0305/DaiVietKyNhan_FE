@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { IBackendResponse } from '@models/backend';
 import { useUserSetEmail } from '@stores/user/selectors';
+import { signIn } from 'next-auth/react';
 
 const RegisterPageClient = () => {
     /**
@@ -108,33 +109,11 @@ const RegisterPageClient = () => {
 
         try {
             setLoading(true);
-
-            // Call Google login API directly without using http service to avoid session check
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-link`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                let errorMessage = "Không thể kết nối với Google";
-                try {
-                    const errorData = JSON.parse(errorText);
-                    errorMessage = errorData.message || errorData.error || errorMessage;
-                } catch {
-                    errorMessage = errorText || errorMessage;
-                }
-                toast.error(errorMessage);
-                return;
-            }
-
-            const data = await response.json();
-            if (data.statusCode === 200) {
-                window.location.href = data.data.url;
+            const res = (await authService.googleLogin()) as IBackendResponse<any>;
+            if (res.statusCode === 200) {
+                window.location.href = res.data.url;
             } else {
-                toast.error(data.message || "Không thể kết nối với Google");
+                toast.error(res.message || "Không thể kết nối với Google");
             }
         } catch (error: any) {
             console.error("Google login error:", error);
