@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ROUTES } from '@routes';
 import { IUser } from '@models/user/entity';
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response';
+import RadialGradial from '@components/Atoms/RadialGradient';
 
 interface HomePageClientProps {
   user: IUser;
@@ -112,13 +113,9 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
           <div className="absolute top-3 left-0 right-0 bottom-0 z-10  mx-auto h-[100%] flex flex-col justify-center">
             {/* Content Container - Giới hạn kích thước */}
             <div className="w-full overflow-hidden">
-              <h3 className="
-                text-center text-4xl
-                mb-0 lg:mb-4 drop-shadow-sm
-                text-primary bg-clip-text
-                ">
-                BXH Kỳ Chủ
-              </h3>
+              <div className='flex items-center justify-center'>
+                <RadialGradial className='text-center lg:text-6xl py-3 text-5xl font-bd-street-sign'>BẢNG XẾP HẠNG</RadialGradial>
+              </div>
               <div className="w-full flex justify-center items-center gap-3 md:gap-4">
                 <div className='w-[80%] flex justify-around items-center'>
                   {/* Left Column - 1-5 */}
