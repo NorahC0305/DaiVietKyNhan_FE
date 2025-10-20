@@ -6,6 +6,18 @@ import {
   IQuestionResponse,
 } from "@models/question/response";
 
+// Question stats interface
+interface IQuestionStats {
+  countQuestion: number;
+  rateCorrect: number;
+}
+
+interface IQuestionStatsResponse {
+  statusCode: number;
+  data: IQuestionStats;
+  message: string;
+}
+
 const questionService = {
   // Create a new question
   createQuestion: async (data: ICreateQuestionRequest) => {
@@ -27,6 +39,14 @@ const questionService = {
   deleteQuestion: async (questionId: number) => {
     return await http.delete<IQuestionResponse>(`/question/${questionId}`, {});
   },
+  
+  // Get questions statistics
+  getQuestionStats: async () => {
+    return await http.get<IQuestionStatsResponse>('/dashboard/questions/stats');
+  },
 };
 
 export default questionService;
+
+// Export interfaces for use in hooks
+export type { IQuestionStats, IQuestionStatsResponse };
