@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import RadialGradial from "@components/Atoms/RadialGradient";
 
 const AboutUsPage = () => {
   return (
@@ -30,14 +31,9 @@ const AboutUsPage = () => {
               {/* Left Side - Text Content - Sử dụng tối đa không gian có sẵn */}
               <div className="text-gray-800 h-[90%] overflow-y-auto pr-1 lg:mt-8">
                 {/* Font size responsive - nhỏ cho mobile, lớn cho desktop */}
-                <h2 className="
-  text-start font-bd-street-sign text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-  mb-1 md:mb-3 lg:mb-4 drop-shadow-sm pt-1
-  bg-radial-[at_25%_66%] from-[#F2BE5D] to-[#CBA247] to-90%
-  text-transparent bg-clip-text
-">
+                <RadialGradial className="text-4xl lg:text-6xl">
                   ĐẠI VIỆT KỲ NHÂN
-                </h2>
+                </RadialGradial>
                 <div className="space-y-1 md:space-y-2 lg:space-y-3">
                   {/* Font size responsive - tận dụng không gian desktop */}
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">
@@ -112,14 +108,9 @@ const AboutUsPage = () => {
 
               {/* Right Side - Text Content - Sử dụng tối đa không gian có sẵn */}
               <div className="text-gray-800 h-full overflow-y-auto pr-1 lg:mt-2">
-                <h2 className="
-  text-start font-bd-street-sign text-3xl sm:text-4xl md:text-5xl lg:text-6xl
-  mb-1 md:mb-3 lg:mb-4 drop-shadow-sm pt-1
-  bg-radial-[at_25%_66%] from-[#F2BE5D] to-[#CBA247] to-90%
-  text-transparent bg-clip-text
-">
+                <RadialGradial className="text-4xl lg:text-6xl">
                   FOUNDER
-                </h2>
+                </RadialGradial>
                 <div className="space-y-1 md:space-y-2 lg:space-y-3">
                   {/* Font size responsive - tận dụng không gian desktop */}
                   <p className="text-[8px] font-dfvn-graphit sm:text-[10px] md:text-sm lg:text-base leading-tight md:leading-relaxed lg:leading-relaxed text-gray-700">

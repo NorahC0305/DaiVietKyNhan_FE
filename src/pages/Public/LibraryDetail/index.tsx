@@ -6,6 +6,11 @@ import Image from "next/image";
 import kynhanService from "@/services/kynhan";
 import type { IKyNhanDetailResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
+import H3LibDetail from "./H3";
+import PLibDetail from "./P";
+import RadialGradial from "@components/Atoms/RadialGradient";
+import KyNhanSummary from "./KyNhanSummary";
+import ChiTietKyNhan from "./ChiTietKyNhan";
 
 interface LibraryDetailPageProps {
   id: string;
@@ -22,7 +27,7 @@ const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         const kyNhanId = parseInt(id);
         if (isNaN(kyNhanId)) {
           setError("ID không hợp lệ");
@@ -30,7 +35,7 @@ const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
         }
 
         const response = await kynhanService.getKyNhanById(kyNhanId) as IKyNhanDetailResponseModel;
-        
+
         if (response?.data) {
           setKynhan(response.data);
         } else {
@@ -78,7 +83,7 @@ const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-indigo-100">
+    <div className="min-h-screen w-full flex items-center justify-center overflow-x-hidden overflow-y-auto">
       <div className="w-full max-w-[1600px] px-2 py-8">
         <div className="relative w-full">
           {/* Back button */}
@@ -92,92 +97,16 @@ const LibraryDetailPage = ({ id }: LibraryDetailPageProps) => {
             Quay lại
           </button>
 
-          <Image
-            src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721989/ScrollPaper_dqmtkl.svg"
-            alt="ScrollPaper"
-            className="w-full h-auto object-contain"
-            width={1600}
-            height={900}
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1600px) 98vw, 1600px"
-          />
-          
-          {/* Content overlay */}
-          <div className="absolute inset-0 z-10 flex items-start justify-start pl-[11%] pr-[12%] pt-[18%] pb-[18%] md:pl-[13%] md:pt-[15%] md:pb-[15%] md:pr-[48%]">
-            <div className="w-full max-w-[500px] max-h-[90%] md:max-h-[92%] overflow-y-auto pr-2 break-words">
-              {/* Ky Nhan Image */}
-              {kynhan.imgUrl && (
-                <div className="mb-6">
-                  <Image
-                    src={kynhan.imgUrl}
-                    alt={kynhan.name}
-                    width={200}
-                    height={300}
-                    className="object-contain rounded-lg shadow-lg"
-                  />
-                </div>
-              )}
+          {/* ----- Ky Nhan Summary Section ----- */}
+          <KyNhanSummary />
 
-              {/* Name */}
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-6 leading-tight">
-                {kynhan.name}
-              </h1>
-
-              {/* Thoi Ky */}
-              {kynhan.thoiKy && (
-                <div className="mb-6">
-                  <h2 className="text-lg md:text-xl font-semibold text-black mb-2">Thời kỳ:</h2>
-                  <p className="text-base md:text-lg text-black/90 leading-relaxed">
-                    {kynhan.thoiKy}
-                  </p>
-                </div>
-              )}
-
-              {/* Chien Cong */}
-              {kynhan.chienCong && (
-                <div className="mb-6">
-                  <h2 className="text-lg md:text-xl font-semibold text-black mb-2">Chiến công:</h2>
-                  <p className="text-base md:text-lg text-black/90 leading-relaxed">
-                    {kynhan.chienCong}
-                  </p>
-                </div>
-              )}
-
-              {/* Additional info */}
-              <div className="text-sm text-black/70">
-                <p>Trạng thái: {kynhan.unlocked ? "Đã mở khóa" : "Chưa mở khóa"}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right-side character illustration */}
-          <div className="pointer-events-none absolute inset-0 z-10 hidden md:flex items-center justify-end pr-[2%]">
-            <div className="relative w-[45%] max-w-[720px] aspect-[3/5]">
-              {kynhan.imgUrl ? (
-                <Image
-                  src={kynhan.imgUrl}
-                  alt={kynhan.name}
-                  fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1600px) 45vw, 720px"
-                  className="object-contain drop-shadow-[0_8px_25px_rgba(0,0,0,0.4)]"
-                  priority
-                />
-              ) : (
-                <Image
-                  src="/DetailGirl.png"
-                  alt="Detail Character"
-                  fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1600px) 45vw, 720px"
-                  className="object-contain drop-shadow-[0_8px_25px_rgba(0,0,0,0.4)]"
-                  priority
-                />
-              )}
-            </div>
-          </div>
+          {/* ----- Chi Tiet Ky Nhan Section ----- */}
+          <ChiTietKyNhan kyNhanId={kynhan.id} />
         </div>
       </div>
     </div>
-  );
+  )
+
 };
 
 export default LibraryDetailPage;
