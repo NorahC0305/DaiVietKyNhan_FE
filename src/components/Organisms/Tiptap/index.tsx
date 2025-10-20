@@ -56,7 +56,7 @@ export default function TipTapEditor({
     },
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[200px] px-3 py-2',
+        class: 'focus:outline-none  px-3 py-2',
         placeholder: placeholder,
       },
     },
@@ -226,6 +226,9 @@ export default function TipTapEditor({
 
       {/* CSS để hiện thị định dạng */}
       <style jsx global>{`
+        .ProseMirror {
+          font-family: var(--font-dfvn-graphit);
+        }
         .ProseMirror h1 {
           font-size: 1.5rem;
           font-weight: bold;
