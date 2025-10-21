@@ -29,8 +29,8 @@ interface HeaderProps {
 
 const navigationItems = [
   { href: ROUTES.PUBLIC.HOME, label: "Trang chủ" },
-  { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân" },
-  { href: ROUTES.PUBLIC.KYGIOI, label: "Kỳ Giới" },
+  // { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân" },
+  // { href: ROUTES.PUBLIC.KYGIOI, label: "Kỳ Giới" },
   // { href: ROUTES.PUBLIC.PRODUCTS, label: "Sản phẩm" },
   { href: ROUTES.PUBLIC.ABOUT, label: "Về chúng tôi" },
   { href: ROUTES.PUBLIC.CONTACT, label: "Liên hệ" },
@@ -38,8 +38,8 @@ const navigationItems = [
 
 const mobileFooterItems = [
   { href: ROUTES.PUBLIC.HOME, label: "Trang chủ", Icon: HomeIcon },
-  { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân", Icon: LibraryIcon },
-  { href: ROUTES.PUBLIC.MAP, label: "Kỳ Giới", Icon: MapIcon },
+  // { href: ROUTES.PUBLIC.LIBRARY, label: "Thư viện Kỳ Nhân", Icon: LibraryIcon },
+  // { href: ROUTES.PUBLIC.MAP, label: "Kỳ Giới", Icon: MapIcon },
   // { href: ROUTES.PUBLIC.PRODUCTS, label: "Sản phẩm", Icon: PackageIcon },
   { href: ROUTES.PUBLIC.ABOUT, label: "Về chúng tôi", Icon: InfoIcon },
   { href: ROUTES.PUBLIC.CONTACT, label: "Liên hệ", Icon: ContactIcon },
