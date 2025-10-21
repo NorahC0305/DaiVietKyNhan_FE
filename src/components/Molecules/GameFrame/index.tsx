@@ -237,7 +237,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
   };
 
   const handleToHome = useCallback(() => {
-    router.push("/");
+    router.back();
   }, []);
 
   return (
