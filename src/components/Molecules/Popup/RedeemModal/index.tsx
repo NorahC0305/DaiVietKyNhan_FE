@@ -52,19 +52,29 @@ export default function RedeemModal({
   onRedeem,
   tiers,
 }: RedeemModalProps) {
-  const { rewards, userRewardExchanges, userData: rewardsUserData, isLoading, isExchanging, handleExchange } = useRewards(isOpen);
-  // console.log('Rewards:', rewards);
+  const {
+    rewards,
+    userRewardExchanges,
+    userData: rewardsUserData,
+    isLoading,
+    isExchanging,
+    handleExchange,
+  } = useRewards(isOpen);
+  console.log("Rewards:", rewards);
   // console.log('User Reward Exchanges:', userRewardExchanges);
   // Get user data from context for synchronization with GameFrame
   const context = useUserDataContextSafe();
   const contextUserData = context?.userData || null;
   const refreshUserData = context?.refreshUserData || null;
-  
+
   // Use context user data if available, otherwise fallback to rewards hook data
   const userData = contextUserData || rewardsUserData;
 
   // Custom handleExchange that also refreshes context user data
-  const handleExchangeWithContext = async (rewardId: number, onRedeem?: (tierId: string) => void) => {
+  const handleExchangeWithContext = async (
+    rewardId: number,
+    onRedeem?: (tierId: string) => void
+  ) => {
     await handleExchange(rewardId, onRedeem);
     // Also refresh context user data if available
     if (refreshUserData) {
@@ -97,20 +107,22 @@ export default function RedeemModal({
 
     // Check if reward is active and within date range
     const now = new Date();
-    const startDate = new Date(reward.startDate);
+    const startDate = reward.startDate ? new Date(reward.startDate) : null;
     const endDate = reward.endDate ? new Date(reward.endDate) : null;
-    const isWithinDateRange = now >= startDate && (!endDate || now <= endDate);
+    const isWithinDateRange = startDate && endDate ? now >= startDate && (!endDate || now <= endDate) : true;
 
     // Check if user can redeem based on status
     // If userRewardExchange exists:
     // - COMPLETED: user already exchanged, cannot redeem again
     // - PENDING: user can still redeem (exchange)
     // If no userRewardExchange exists: user can redeem
-    const canRedeemByStatus = !userRewardExchange || userRewardExchange.status === "PENDING";
+    const canRedeemByStatus =
+      !userRewardExchange || userRewardExchange.status === "PENDING";
 
     return {
       id: reward.id.toString(),
-      canRedeem: reward.isActive && canAfford && isWithinDateRange && canRedeemByStatus,
+      canRedeem:
+        reward.isActive && canAfford && isWithinDateRange && canRedeemByStatus,
       display: { left, right },
     };
   };
@@ -158,9 +170,9 @@ export default function RedeemModal({
       return rewards.map((reward) => {
         // Find the corresponding userRewardExchange for this reward
         const userRewardExchange = userRewardExchanges.find(
-          exchange => exchange.reward.id === reward.id
+          (exchange) => exchange.reward.id === reward.id
         );
-        
+
         const tier = convertRewardToTier(reward, userData, userRewardExchange);
         return {
           tier,
@@ -248,82 +260,89 @@ export default function RedeemModal({
                       </span>
                     </div>
                   ) : displayTiers.length > 0 ? (
-                    displayTiers.map(({ tier, display, rewardData, userRewardExchange }) => (
-                      <div
-                        key={tier.id}
-                        className="rounded-xl bg-[#F7E6BB] shadow-sm flex items-center justify-between px-3 py-2 sm:px-4 sm:py- lg:px-6"
-                      >
-                        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-                          <span className="text-lg sm:text-xl lg:text-2xl text-amber-700">
-                            •
-                          </span>
-                          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 text-black">
-                            {display.left.type === "points" ? (
-                              <span className="text-sm sm:text-base lg:text-xl font-semibold">
-                                {display.left.amount} ĐIỂM
-                              </span>
-                            ) : (
-                              <div className="flex items-center gap-1 sm:gap-2">
-                                <span className="text-sm sm:text-base lg:text-xl font-semibold">
-                                  {display.left.amount}
-                                </span>
-                                <Image
-                                  src="/DVKN coin.svg"
-                                  alt="coin"
-                                  width={28}
-                                  height={20}
-                                  className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
-                                />
-                              </div>
-                            )}
-                            <span className="text-black">=</span>
-                            {display.right.type === "coins" ? (
-                              <div className="flex items-center gap-1 sm:gap-2">
-                                <span className="text-sm sm:text-base lg:text-xl font-semibold">
-                                  {display.right.amount}
-                                </span>
-                                <Image
-                                  src="/DVKN coin.svg"
-                                  alt="coin"
-                                  width={28}
-                                  height={20}
-                                  className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
-                                />
-                              </div>
-                            ) : (
-                              <span className="text-sm sm:text-base lg:text-xl font-semibold">
-                                {display.right.label}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            if (tier.canRedeem && rewardData) {
-                              handleExchangeWithContext(rewardData.id, onRedeem);
-                            } else if (tier.canRedeem) {
-                              onRedeem?.(tier.id);
-                            }
-                          }}
-                          disabled={!tier.canRedeem || isExchanging === tier.id}
-                          className="relative cursor-pointer px-4 sm:px-5 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg font-medium text-sm sm:text-base lg:text-lg transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[60px] min-h-[40px] sm:min-w-[80px] sm:min-h-[50px] lg:min-w-[100px] lg:min-h-[60px] overflow-hidden"
+                    displayTiers.map(
+                      ({ tier, display, rewardData, userRewardExchange }) => (
+                        <div
+                          key={tier.id}
+                          className="rounded-xl bg-[#F7E6BB] shadow-sm flex items-center justify-between px-3 py-2 sm:px-4 sm:py- lg:px-6"
                         >
-                          <Image
-                            src={
-                              tier.canRedeem
-                                ? "/Property 1=Đủ để đổi.svg"
-                                : "/Property 1=Chưa đủ để đổi.svg"
+                          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                            <span className="text-lg sm:text-xl lg:text-2xl text-amber-700">
+                              •
+                            </span>
+                            <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 text-black">
+                              {display.left.type === "points" ? (
+                                <span className="text-sm sm:text-base lg:text-xl font-semibold">
+                                  {display.left.amount} ĐIỂM
+                                </span>
+                              ) : (
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <span className="text-sm sm:text-base lg:text-xl font-semibold">
+                                    {display.left.amount}
+                                  </span>
+                                  <Image
+                                    src="/DVKN coin.svg"
+                                    alt="coin"
+                                    width={28}
+                                    height={20}
+                                    className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
+                                  />
+                                </div>
+                              )}
+                              <span className="text-black">=</span>
+                              {display.right.type === "coins" ? (
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  <span className="text-sm sm:text-base lg:text-xl font-semibold">
+                                    {display.right.amount}
+                                  </span>
+                                  <Image
+                                    src="/DVKN coin.svg"
+                                    alt="coin"
+                                    width={28}
+                                    height={20}
+                                    className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-sm sm:text-base lg:text-xl font-semibold">
+                                  {display.right.label}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              if (tier.canRedeem && rewardData) {
+                                handleExchangeWithContext(
+                                  rewardData.id,
+                                  onRedeem
+                                );
+                              } else if (tier.canRedeem) {
+                                onRedeem?.(tier.id);
+                              }
+                            }}
+                            disabled={
+                              !tier.canRedeem || isExchanging === tier.id
                             }
-                            alt="Button background"
-                            fill
-                            className="absolute inset-0 object-cover transition-all duration-300"
-                            sizes="(max-width: 640px) 60px, (max-width: 1024px) 80px, 100px"
-                          />
-                          {/* <span className="relative z-10 text-black">{tier.canRedeem ? "Đổi" : "Không thể đổi"}</span> */}
-                        </button>
-                      </div>
-                    ))
+                            className="relative cursor-pointer px-4 sm:px-5 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg font-medium text-sm sm:text-base lg:text-lg transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[60px] min-h-[40px] sm:min-w-[80px] sm:min-h-[50px] lg:min-w-[100px] lg:min-h-[60px] overflow-hidden"
+                          >
+                            <Image
+                              src={
+                                tier.canRedeem
+                                  ? "/Property 1=Đủ để đổi.svg"
+                                  : "/Property 1=Chưa đủ để đổi.svg"
+                              }
+                              alt="Button background"
+                              fill
+                              className="absolute inset-0 object-cover transition-all duration-300"
+                              sizes="(max-width: 640px) 60px, (max-width: 1024px) 80px, 100px"
+                            />
+                            {/* <span className="relative z-10 text-black">{tier.canRedeem ? "Đổi" : "Không thể đổi"}</span> */}
+                          </button>
+                        </div>
+                      )
+                    )
                   ) : (
                     <div className="flex flex-col justify-center items-center py-8 gap-3">
                       <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-2">
