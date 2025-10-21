@@ -178,26 +178,24 @@ const HomePageClient = ({
       </section>
 
       {/* Check-in Modal Dialog */}
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="!max-w-6xl !w-[95vw] lg:!w-[1200px] max-h-[90vh] overflow-hidden p-0 border-0 !bg-transparent shadow-none">
-          <ModalLayout
-            onClose={() => setShowModal(false)}
-            onCheckinSuccess={() => {
-              // Đóng modal sau khi điểm danh thành công
-              setShowModal(false);
-            }}
-            attendanceData={{
-              attendanceList,
-              isLoading: isAttendanceLoading,
-              isCheckingIn,
-              checkIn,
-              refetch,
-              isTodayCheckedIn,
-              getCheckedDates,
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      <ModalLayout
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onCheckinSuccess={() => {
+          // Đóng modal sau khi điểm danh thành công
+          setShowModal(false);
+        }}
+        attendanceData={{
+          attendanceList,
+          isLoading: isAttendanceLoading,
+          isCheckingIn,
+          checkIn,
+          refetch,
+          isTodayCheckedIn,
+          getCheckedDates,
+        }}
+      />
+
       {/* Banner 2 - Khí Chất Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 cursor-pointer">
