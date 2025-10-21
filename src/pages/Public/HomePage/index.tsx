@@ -11,6 +11,7 @@ import RadialGradial from "@components/Atoms/RadialGradient";
 import { useUserRank } from "@hooks/useUser";
 import ModalLayout from "@components/Molecules/DailyCheckin/Layouts/ModalLayout";
 import { Dialog, DialogContent } from "@components/Atoms/ui/dialog";
+import { useRouter } from "next/navigation";
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
@@ -56,6 +57,7 @@ const HomePageClient = ({
   activeWithAmountUser,
   accessToken,
 }: HomePageClientProps) => {
+  const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
 
   // Memoize params để tránh re-creation mỗi lần render
@@ -145,6 +147,7 @@ const HomePageClient = ({
             width={1730}
             height={3000}
             // className="object-cover"
+            onClick={() => router.push(ROUTES.PUBLIC.MAP)}
             priority
           />
         </div>
@@ -171,6 +174,7 @@ const HomePageClient = ({
             alt="Khí Chất Của Bạn Là"
             width={1730}
             height={1000}
+            onClick={() => router.push(ROUTES.STARTER.ENTRY_TEST)}
             priority
           />
         </div>
