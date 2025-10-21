@@ -13,6 +13,8 @@ const MobileLayout: React.FC<ICOMPONENTS.LayoutProps> = memo(
     currentReward,
     todayChecked,
     onCheckin,
+    isLoading,
+    isCheckingIn,
   }) => (
     <div className="block md:hidden">
       <div className="min-h-screen bg-gradient-to-br from-amber-900 to-amber-950">
@@ -81,6 +83,7 @@ const MobileLayout: React.FC<ICOMPONENTS.LayoutProps> = memo(
                 checked={todayChecked}
                 onCheckin={onCheckin}
                 className={styles["mobileButton"]}
+                isLoading={isCheckingIn}
               />
               <BonusInfo />
             </div>

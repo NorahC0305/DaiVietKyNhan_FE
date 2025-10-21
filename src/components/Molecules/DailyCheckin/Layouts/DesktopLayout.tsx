@@ -14,7 +14,16 @@ const DesktopLayout: React.FC<ICOMPONENTS.LayoutProps> = memo(
     currentReward = 100,
     todayChecked,
     onCheckin,
-  }) => (
+    isLoading,
+    isCheckingIn,
+  }) => {
+    const getButtonText = () => {
+      if (todayChecked) return "Đã điểm danh";
+      if (isCheckingIn) return "Đang điểm danh...";
+      return "Điểm danh";
+    };
+
+    return (
     <div className="hidden md:flex justify-center items-center min-h-screen bg-gradient-to-br from-amber-900 to-amber-950 p-2 sm:p-4 md:p-6 lg:p-8">
       <div
         className="relative w-full max-w-[320px] sm:max-w-[500px] md:max-w-[700px] lg:max-w-[900px] xl:max-w-[1100px]"
@@ -75,18 +84,19 @@ const DesktopLayout: React.FC<ICOMPONENTS.LayoutProps> = memo(
               width={180}
               height={48}
               onClick={onCheckin}
-              disabled={todayChecked}
+              disabled={todayChecked || isCheckingIn}
               classNameText="text-sm font-extrabold hover text-[#A40000]"
               className="hover:scale-105 transition-all duration-300"
             >
-              {todayChecked ? "Đã điểm danh" : "Điểm danh"}
+              {getButtonText()}
             </ButtonImage>
             <BonusInfo variant="desktop" />
           </div>
         </div>
       </div>
     </div>
-  )
+    );
+  }
 );
 
 DesktopLayout.displayName = "DesktopLayout";

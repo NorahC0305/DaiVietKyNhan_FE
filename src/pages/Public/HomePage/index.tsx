@@ -9,7 +9,7 @@ import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
 import { IUserRankData } from '@models/user/response';
 import RadialGradial from '@components/Atoms/RadialGradient';
 import { useUserRank } from '@hooks/useUser';
-
+import ModalLayout from '@components/Molecules/DailyCheckin/Layouts/ModalLayout';
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
@@ -132,7 +132,8 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
           />
         </div>
       </section>
-
+{/* <DesktopLayout/> */}
+<ModalLayout/>
       {/* Banner 2 - Khí Chất Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">

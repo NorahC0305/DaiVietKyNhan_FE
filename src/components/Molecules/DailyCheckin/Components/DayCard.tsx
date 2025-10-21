@@ -2,34 +2,44 @@ import React, { memo } from "react";
 import { Check } from "lucide-react";
 
 const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
-  // Calculate current week dates based on day index
-  const getCurrentWeekDate = (dayIndex: number) => {
-    const today = new Date();
-    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    const mondayIndex = currentDay === 0 ? 6 : currentDay - 1; // Convert to Monday = 0 format
+  // Extract day number directly from the date string
+  // day.day is now an ISO date string like "2025-01-20"
+  const getDayNumber = () => {
+    try {
+      const date = new Date(day.day);
+      return {
+        dayNumber: date.getDate(),
+        month: `Th${date.getMonth() + 1}`,
+      };
+    } catch (error) {
+      // Fallback: calculate from current week if parsing fails
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      const mondayIndex = currentDay === 0 ? 6 : currentDay - 1; // Convert to Monday = 0 format
 
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - mondayIndex + dayIndex);
+      // Get day index from day string (T2 = 0, T3 = 1, etc.)
+      const dayIndexMap: { [key: string]: number } = {
+        T2: 0,
+        T3: 1,
+        T4: 2,
+        T5: 3,
+        T6: 4,
+        T7: 5,
+        CN: 6,
+      };
 
-    return {
-      dayNumber: monday.getDate(),
-      month: `Th${monday.getMonth() + 1}`,
-    };
+      const dayIndex = dayIndexMap[day.day] ?? 0;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - mondayIndex + dayIndex);
+
+      return {
+        dayNumber: monday.getDate(),
+        month: `Th${monday.getMonth() + 1}`,
+      };
+    }
   };
 
-  // Get day index from day string (T2 = 0, T3 = 1, etc.)
-  const dayIndexMap: { [key: string]: number } = {
-    T2: 0,
-    T3: 1,
-    T4: 2,
-    T5: 3,
-    T6: 4,
-    T7: 5,
-    CN: 6,
-  };
-
-  const dayIndex = dayIndexMap[day.day] ?? 0;
-  const { dayNumber, month } = getCurrentWeekDate(dayIndex);
+  const { dayNumber, month } = getDayNumber();
 
   const baseClasses =
     variant === "mobile"
@@ -71,17 +81,23 @@ const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
         day.checked ? "completed" : "not completed"
       }`}
     >
-      {/* Day name (T2) - top */}
-      <div className="text-xs font-bold mb-1">{day.day}</div>
+      {/* Day name (T4) - top */}
+      <div className="text-sm font-medium text-gray-700 mb-1">{day.label}</div>
 
-      {/* Day number (20) - middle */}
-      <div className="text-lg font-bold mb-1">{dayNumber}</div>
+      {/* Day number (22) - middle - only show day number */}
+      <div
+        className={`${
+          variant === "mobile" ? "text-2xl" : "text-xl"
+        } font-bold text-gray-800 mb-2`}
+      >
+        {dayNumber}
+      </div>
 
-      {/* Month (Th10) - below day number */}
+      {/* Month (Th10) - between day name and day number */}
       <div className="text-xs text-gray-600 mb-1">{month}</div>
 
-      {/* Check button - bottom */}
-      <div className="flex justify-center">
+      {/* Check button - bottom - white circle with gray border like in image */}
+      <div className="flex justify-center mt-auto">
         {day.checked ? (
           <div
             className={`${
@@ -114,12 +130,6 @@ const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
       {variant === "mobile" && day.isSpecial && (
         <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
       )}
-
-      {/* {variant === "desktop" && (
-        <div className="text-xs text-gray-600 leading-tight text-center">
-          {day.dayName}
-        </div>
-      )} */}
     </div>
   );
 });
