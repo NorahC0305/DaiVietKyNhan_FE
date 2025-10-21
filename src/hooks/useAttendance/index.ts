@@ -96,14 +96,6 @@ export const useAttendance = () => {
         ).padStart(2, "0")}-${String(itemDate.getDate()).padStart(2, "0")}`;
       }
 
-      // Debug logging can be enabled here if needed
-      console.log("Checking date:", {
-        todayString,
-        itemDateString,
-        itemDate: item.date,
-        status: item.status,
-      });
-
       return itemDateString === todayString && item.status === "PRESENT";
     });
   }, [attendanceList]);

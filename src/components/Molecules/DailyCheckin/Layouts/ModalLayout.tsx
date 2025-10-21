@@ -1,22 +1,30 @@
 import React, { memo, useMemo } from "react";
-import { X } from "lucide-react";
 import styles from "../index.module.scss";
 import RewardDisplay from "../Components/RewardDisplay";
-import ProgressBar from "../Components/ProgressBar";
 import WeeklyGrid from "../Components/WeeklyGrid";
-import CheckinButton from "../Components/CheckinButton";
 import BonusInfo from "../Components/BonusInfo";
-import { useAttendance } from "@hooks/useAttendance";
 import ButtonImage from "@components/Atoms/ButtonImage";
 import Image from "next/image";
+import { IAttendanceItem } from "@models/attendance/response";
+
+interface AttendanceData {
+  attendanceList: IAttendanceItem[];
+  isLoading: boolean;
+  isCheckingIn: boolean;
+  checkIn: () => Promise<any>;
+  refetch: () => Promise<void>;
+  isTodayCheckedIn: () => boolean;
+  getCheckedDates: () => Set<string>;
+}
 
 interface ModalLayoutProps {
   onClose?: () => void;
   onCheckinSuccess?: () => void;
+  attendanceData: AttendanceData;
 }
 
-const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSuccess }) => {
-  // Use attendance hook for API integration
+const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSuccess, attendanceData }) => {
+  // Use attendance data from props instead of hook
   const {
     attendanceList,
     isLoading,
@@ -25,7 +33,7 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSucces
     refetch,
     isTodayCheckedIn,
     getCheckedDates,
-  } = useAttendance();
+  } = attendanceData;
 
   // Generate weekly progress from attendance data
   const weeklyProgress = useMemo(() => {
@@ -132,72 +140,6 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSucces
 
   return (
     <div className="p-4 sm:p-6">
-      {/* Mobile Layout (default) - Tối ưu gọn gàng */}
-      <div className="block md:hidden">
-        {/* Mobile Background - Compact */}
-        <div className=" rounded-2xl overflow-hidden relative">
-          {/* Mobile Close Button */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="absolute right-0 z-50 w-8 h-8 bg-white bg-opacity-90 rounded-full shadow-lg flex items-center justify-center hover:bg-opacity-100 transition-all duration-200"
-              aria-label="Close modal"
-            >
-              <X className="w-5 h-5 text-gray-700" />
-            </button>
-          )}
-
-          {/* Mobile Content - Compact */}
-          <div className="p-4">
-            {/* Progress and Reward Display - Mobile - Compact */}
-            <div className="bg-gradient-to-br from-yellow-100 to-amber-50 rounded-xl p-3 mb-4 shadow-lg border border-amber-200">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <div className="text-2xl font-bold text-gray-800">
-                    {currentProgress}/7
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Công nhật tuần này
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm text-gray-600 mb-1">
-                    Thưởng hôm nay
-                  </div>
-                  <RewardDisplay reward={currentReward} />
-                </div>
-              </div>
-
-              <ProgressBar current={currentProgress} total={7} />
-              <div className="text-xs text-gray-600 text-center mt-2">
-                {currentProgress < 7
-                  ? `Còn ${7 - currentProgress} ngày để nhận thưởng tuần`
-                  : "Đã hoàn thành tuần này!"}
-              </div>
-            </div>
-
-            {/* Weekly Grid - Mobile - Compact */}
-            <div className="bg-white rounded-xl p-3 mb-4 shadow-lg">
-              <h3 className="text-base font-bold text-gray-800 mb-3 text-center">
-                Tiến độ tuần này
-              </h3>
-              <WeeklyGrid weeklyProgress={weeklyProgress} variant="mobile" />
-            </div>
-
-            {/* Check-in Button - Mobile - Compact */}
-            <div className="bg-white rounded-xl p-3 shadow-lg">
-              <CheckinButton
-                checked={todayChecked}
-                onCheckin={handleCheckIn}
-                className={styles["mobileButton"]}
-                variant="mobile"
-                isLoading={isCheckingIn}
-              />
-              <BonusInfo variant="mobile" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Desktop Layout - Sử dụng DesktopLayout có sẵn với scroll background */}
       <div className="hidden md:flex justify-center items-center h-full max-h-[85vh] p-2 sm:p-4 md:p-6 lg:p-8">
@@ -250,12 +192,6 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSucces
 
             {/* Check-in Button */}
             <div className="text-center relative z-20">
-              {/* <CheckinButton
-              checked={todayChecked}
-              onCheckin={onCheckin}
-              variant="desktop"
-            /> */}
-
               <ButtonImage
                 width={180}
                 height={48}

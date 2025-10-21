@@ -474,7 +474,7 @@ export default function FixedScrollsPageResponsive({
                     style={{ aspectRatio: "180 / 70" }}
                   >
                     <Image
-                      src="/cuộn giấy cuộn lại.svg"
+                      src="https://res.cloudinary.com/dznt9yias/image/upload/v1761067482/cuo%CC%A3%CC%82n_gia%CC%82%CC%81y_cuo%CC%A3%CC%82n_la%CC%A3i_d9ppcc.svg"
                       alt={`Cuộn giấy ${idx + 1}`}
                       fill
                       className="object-contain pointer-events-none select-none"
