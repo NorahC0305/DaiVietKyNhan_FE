@@ -1,13 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import React from 'react'
-import { LAND_CONFIG } from '@constants/common'
 import { Plus } from 'lucide-react'
 
-type LandKey = 'Sơn Tinh' | 'Thánh Gióng' | 'Chử Đồng Tử' | 'Liễu Hạnh'
-
-const Guide = ({ isOpen, onClose, land }: { isOpen: boolean, onClose: () => void, land: LandKey }) => {
-    const kyChu = LAND_CONFIG[land];
+const Guide = ({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void, user: any | null }) => {
 
     const renderHearts = (heartCount: number) => {
         const hearts = [];
@@ -46,7 +42,7 @@ const Guide = ({ isOpen, onClose, land }: { isOpen: boolean, onClose: () => void
                     >
                         <div className='relative lg:top-[150px] lg:-left-[230px] top-[130px] -left-[100px] z-10'>
                             <div className='absolute lg:w-[300px] lg:h-[450px] w-[150px] h-[250px]'>
-                                <Image src={kyChu?.img} alt={land} fill />
+                                <Image src={user?.godProfile?.imgUrl} alt={user?.godProfile?.id} fill />
                             </div>
                         </div>
 
@@ -70,7 +66,7 @@ const Guide = ({ isOpen, onClose, land }: { isOpen: boolean, onClose: () => void
 
                                 <div className="max-h-[80vh] overflow-y-auto ancient-scrollbar">
                                     {/* --- Title --- */}
-                                    <h1 className="lg:text-6xl text-4xl pt-3 text-center font-bd-street-sign" style={{ color: kyChu?.color }}>CHÀO MỪNG ĐẾN VỚI HÀNH TRÌNH “KHAI NHÂN MỞ ẤN”</h1>
+                                    <h1 className="lg:text-6xl text-4xl pt-3 text-center font-bd-street-sign" style={{ color: user?.godProfile?.text_color }}>CHÀO MỪNG ĐẾN VỚI HÀNH TRÌNH “KHAI NHÂN MỞ ẤN”</h1>
                                     <div className="flex items-center justify-center">
                                         <div className='relative w-[300px] lg:w-[400px] h-[80px] lg:h-[117px] flex items-center justify-center my-5'>
                                             <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1760726766/frame_hfc9ot.svg" alt="frame" fill />

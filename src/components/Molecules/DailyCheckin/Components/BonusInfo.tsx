@@ -5,7 +5,7 @@ const BonusInfo: React.FC<ICOMPONENTS.BonusInfoProps> = memo(
     const containerClasses =
       variant === "mobile"
         ? "mt-4 text-center"
-        : "text-[#8B4513] text-xs leading-relaxed px-1 italic font-serif";
+        : "text-[#8B4513] text-xs leading-relaxed px-1 italic";
 
     const textClasses =
       variant === "mobile" ? "text-sm text-[#8B4513] leading-relaxed" : "";

@@ -415,7 +415,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
       <RedeemModal
         isOpen={isRedeemModalOpen}
         onClose={() => setIsRedeemModalOpen(false)}
-        onRedeem={() => {}}
+        onRedeem={() => { }}
       />
       <BuyMoreLife
         isOpen={isBuyMoreLifeModalOpen}
@@ -439,9 +439,9 @@ export const GameFrame: React.FC<GameFrameProps> = ({
         coinsReward={500}
       />
       <Guide
+        user={user}
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
-        land={land}
       />
     </div>
   );

@@ -13,6 +13,7 @@ import { IUserLandWithLandResponseModel } from "@models/user-land/response";
 import { LAND } from "@constants/land";
 import userLandService from "@services/user-land";
 import { ROUTES } from "@routes";
+import { IMeResponse } from "@models/user/response";
 
 // --- Dữ liệu gốc của các regions, bao gồm `position` ---
 const baseRegions: ICOMPONENTS.Region[] = [
@@ -118,8 +119,10 @@ const regionToLandIdMap: Record<string, number | null> = {
 
 export default function MapPageClient({
   userLand: initialUserLand,
+  user,
 }: {
   userLand: IUserLandWithLandResponseModel[];
+  user: IMeResponse["data"] | null;
 }) {
   const router = useRouter();
   const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] =
