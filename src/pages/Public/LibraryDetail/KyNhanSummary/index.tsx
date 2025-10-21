@@ -18,7 +18,7 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                         <div className="gap-8 flex justify-between items-center w-[80%]">
                             {/* ------------------- Left Column ------------------- */}
                             <div className="space-y-2.5 w-[36%] z-20">
-                                <RadialGradial className="ml-5 text-4xl lg:text-6xl py-1.5 mb-1">
+                                <RadialGradial className="ml-5 text-4xl lg:text-6xl py-3 mb-1">
                                     {moTaKyNhan?.ten}
                                 </RadialGradial>
                                 {/* Danh hiệu */}

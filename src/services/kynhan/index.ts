@@ -22,8 +22,9 @@ const kynhanService = {
       cache: "no-store",
     });
   },
-  getUserKyNhanList: async () => {
-    return await http.get<IKyNhanUserListResponseModel>("/kynhan/list/user", {
+  getUserKyNhanList: async (searchQuery?: string) => {
+    const queryString = searchQuery ? `name:like=${encodeURIComponent(searchQuery)}` : "";
+    return await http.get<IKyNhanUserListResponseModel>(`/kynhan/list/user?qs=${queryString}`, {
       cache: "no-store",
     });
   },
