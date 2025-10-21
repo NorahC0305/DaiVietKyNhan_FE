@@ -60,7 +60,7 @@ const LibraryPage = () => {
   // Handle URL search parameter - check if it's an ID to auto scroll
   useEffect(() => {
     const searchParam = searchParams?.get("search");
-    console.log('searchParam', searchParam);   
+    console.log('searchParam', searchParam);
     if (searchParam) {
       setHiddenSearchId(searchParam);
       // Clear URL parameter after reading it and prevent back navigation to map
@@ -154,7 +154,7 @@ const LibraryPage = () => {
         // If it's not a number, treat it as text search
         triggerSearchScroll(hiddenSearchId);
       }
-      
+
       // Clear hiddenSearchId after using it
       setHiddenSearchId(null);
     }
@@ -205,8 +205,8 @@ const LibraryPage = () => {
       )}
 
       {/* Thanh tìm kiếm (desktop giữ nguyên) */}
-      <div className="hidden lg:block absolute top-6 right-auto left-1/2 -translate-x-1/2 z-10 w-[45%] md:w-[32%] lg:w-[24%]">
-        <div className="relative">
+      <div className="hidden lg:flex justify-center items-center mt-10">
+        <div className="relative w-[25%]">
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -240,7 +240,7 @@ const LibraryPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="min-h-screen w-full flex items-center justify-center py-4 sm:py-6 md:py-10 lg:py-12 mt-12 sm:mt-16 lg:mt-0">
+      <div className="min-h-screen w-full flex items-center justify-center py-4 lg:py-10 mt-10 lg:mt-0">
         {isLoading ? (
           <div className="flex items-center justify-center">
             <div className="text-white text-lg">Đang tải...</div>
