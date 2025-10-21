@@ -78,6 +78,8 @@ const STARTER = {
   ENTRY_TEST: `${BASE_PATHS.STARTER}/entry-test`,
   PERSONALITY_RESULT: `${BASE_PATHS.STARTER}/personality-result`,
   SELECT_CHARACTER: `${BASE_PATHS.STARTER}/select-character`,
+  TEST_PLAYGROUND: `${BASE_PATHS.STARTER}/test-playground`,
+  TEST_PLAYGROUND_RESULT: `${BASE_PATHS.STARTER}/test-playground-result`,
 };
 
 export const ROUTES = {

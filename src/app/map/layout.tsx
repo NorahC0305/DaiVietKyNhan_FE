@@ -5,10 +5,15 @@ import userService from "@services/user";
 import { getServerSession } from "next-auth";
 
 export default async function MapLayoutServer({
+  params,
   children,
 }: Readonly<{
+  params: Promise<{
+    slug: string;
+  }>;
   children: React.ReactNode;
 }>) {
+  const { slug } = await params;
 
   const session = (await getServerSession(authOptions)) as UTILS.ISession;
   let user: IMeResponse["data"] | null = null;
@@ -21,9 +26,7 @@ export default async function MapLayoutServer({
 
   return (
     <>
-      <MapLayoutClient user={user}>
-        {children}
-      </MapLayoutClient>
+      <MapLayoutClient user={user} slug={slug}>{children}</MapLayoutClient>
     </>
   );
 }

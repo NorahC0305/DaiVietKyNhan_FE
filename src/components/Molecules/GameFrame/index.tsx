@@ -23,13 +23,14 @@ import { useUserDataContextSafe } from "@contexts/UserDataContext";
 import userService from "@services/user";
 import userAchievementService from "@services/user-achievement";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface GameFrameProps {
   children: React.ReactNode;
   className?: string;
   padding?: string;
   user: IMeResponse["data"] | null;
+  slug?: string;
 }
 
 export const GameFrame: React.FC<GameFrameProps> = ({
@@ -37,10 +38,11 @@ export const GameFrame: React.FC<GameFrameProps> = ({
   className,
   padding = "p-12 md:p-16",
   user: propUser,
+  slug,
 }) => {
   console.log(propUser);
   const router = useRouter();
-  
+
   // Use context user data if available, fallback to prop
   const context = useUserDataContextSafe();
   const contextUser = context?.userData || null;
@@ -51,33 +53,39 @@ export const GameFrame: React.FC<GameFrameProps> = ({
    */
   const [isAchievementModalOpen, setIsAchievementModalOpen] =
     useState<boolean>(false);
-  const [isClaimingAchievement, setIsClaimingAchievement] = useState<boolean>(false);
-  
+  const [isClaimingAchievement, setIsClaimingAchievement] =
+    useState<boolean>(false);
+
   const onAchievementClick = useCallback(() => {
     setIsAchievementModalOpen(!isAchievementModalOpen);
   }, [isAchievementModalOpen]);
 
-  const handleClaimAchievement = useCallback(async (achievementId: string) => {
-    if (!refreshUserData) return;
-    
-    setIsClaimingAchievement(true);
-    try {
-      const response = await userAchievementService.claimAchievement(parseInt(achievementId)) as any;
-      
-      if (response?.statusCode === 200) {
-        toast.success("Nhận thưởng thành công!");
-        // Refresh user data to show updated coins/points
-        await refreshUserData();
-      } else {
-        toast.error(response?.message || "Có lỗi xảy ra khi nhận thưởng.");
+  const handleClaimAchievement = useCallback(
+    async (achievementId: string) => {
+      if (!refreshUserData) return;
+
+      setIsClaimingAchievement(true);
+      try {
+        const response = (await userAchievementService.claimAchievement(
+          parseInt(achievementId)
+        )) as any;
+
+        if (response?.statusCode === 200) {
+          toast.success("Nhận thưởng thành công!");
+          // Refresh user data to show updated coins/points
+          await refreshUserData();
+        } else {
+          toast.error(response?.message || "Có lỗi xảy ra khi nhận thưởng.");
+        }
+      } catch (error) {
+        console.error("Error claiming achievement:", error);
+        toast.error("Có lỗi xảy ra khi nhận thưởng. Vui lòng thử lại.");
+      } finally {
+        setIsClaimingAchievement(false);
       }
-    } catch (error) {
-      console.error("Error claiming achievement:", error);
-      toast.error("Có lỗi xảy ra khi nhận thưởng. Vui lòng thử lại.");
-    } finally {
-      setIsClaimingAchievement(false);
-    }
-  }, [refreshUserData]);
+    },
+    [refreshUserData]
+  );
   //--------------------------End--------------------------//
 
   /**
@@ -185,11 +193,26 @@ export const GameFrame: React.FC<GameFrameProps> = ({
    * Guide Modal
    */
   const [isGuideModalOpen, setIsGuideModalOpen] = useState<boolean>(false);
-  const land = "Sơn Tinh" as
-    | "Sơn Tinh"
-    | "Thánh Gióng"
-    | "Chử Đồng Tử"
-    | "Liễu Hạnh";
+  const path = usePathname();
+
+  // Mapping slug to land
+  const getLandFromSlug = (
+    slug?: string
+  ): "Sơn Tinh" | "Thánh Gióng" | "Chử Đồng Tử" | "Liễu Hạnh" => {
+    const slugToLandMap: Record<
+      string,
+      "Sơn Tinh" | "Thánh Gióng" | "Chử Đồng Tử" | "Liễu Hạnh"
+    > = {
+      "nui-tan-vien": "Sơn Tinh",
+      "dam-da-trach": "Chử Đồng Tử",
+      "lang-phu-dong": "Thánh Gióng",
+      "phu-tay-ho": "Liễu Hạnh",
+    };
+
+    return slug && slugToLandMap[slug] ? slugToLandMap[slug] : "Sơn Tinh";
+  };
+
+  const land = getLandFromSlug(slug);
   const onGuideClick = useCallback(() => {
     setIsGuideModalOpen(!isGuideModalOpen);
   }, [isGuideModalOpen]);
@@ -302,7 +325,10 @@ export const GameFrame: React.FC<GameFrameProps> = ({
             </div>
           </div>
 
-          <button onClick={handleToHome} className="relative w-[35px] h-[35px] lg:w-[65px] lg:h-[65px] top-0 left-0 flex items-center justify-center ml-2 cursor-pointer hover:opacity-80 transition-all duration-300">
+          <button
+            onClick={handleToHome}
+            className="relative w-[35px] h-[35px] lg:w-[65px] lg:h-[65px] top-0 left-0 flex items-center justify-center ml-2 cursor-pointer hover:opacity-80 transition-all duration-300"
+          >
             <Image
               src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg"
               alt="buy more life"
