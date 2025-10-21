@@ -228,6 +228,7 @@ export default function TipTapEditor({
       <style jsx global>{`
         .ProseMirror {
           font-family: var(--font-dfvn-graphit);
+          color: white;
         }
         .ProseMirror h1 {
           font-size: 1.5rem;
@@ -255,15 +256,16 @@ export default function TipTapEditor({
           border-left: 3px solid #ccc;
           margin-left: 0.5rem;
           padding-left: 1rem;
-          color: #666;
+          color: #ccc;
           font-style: italic;
         }
         .ProseMirror pre {
-          background-color: #f5f5f5;
+          background-color: #374151;
           padding: 0.75rem;
           border-radius: 0.25rem;
           font-family: monospace;
           overflow-x: auto;
+          color: white;
         }
         .ProseMirror p {
           margin: 0.5rem 0;
