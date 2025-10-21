@@ -2,13 +2,28 @@
 
 import Image from "next/image";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
+import ButtonImage from "../../../Atoms/ButtonImage";
+import { getCurrentVietnamTime } from "@/utils/ReleaseDateUtils";
 
 type LetterGuideProps = {
   isOpen: boolean;
   onClose: () => void;
+  onNext?: () => void;
 };
 
-export default function LetterGuide({ isOpen, onClose }: LetterGuideProps) {
+export default function LetterGuide({ isOpen, onClose, onNext }: LetterGuideProps) {
+  // Check if current date is after October 27th, 2024
+  const isParticipationEnabled = () => {
+    const currentDate = getCurrentVietnamTime();
+    const targetDate = new Date(2024, 9, 27); // October 27, 2024 (month is 0-indexed)
+    return currentDate >= targetDate;
+  };
+
+  const handleNext = () => {
+    if (onNext) {
+      onNext();
+    }
+  };
   return (
     <ModalBackdrop
       isOpen={isOpen}
@@ -32,7 +47,7 @@ export default function LetterGuide({ isOpen, onClose }: LetterGuideProps) {
             <div className="flex-shrink-0 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] lg:max-w-xl mx-auto mt-3 sm:mt-4 md:mt-6">
               <div className="relative aspect-[26/9] w-full">
                 <Image
-                  src="https://res.cloudinary.com/dznt9yias/image/upload/v1760862240/Group_101_fm3r2q.svg"
+                  src="https://res.cloudinary.com/dznt9yias/image/upload/v1761020824/Group_101_cv70mj.svg"
                   alt="Khung chứa thông điệp"
                   fill
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 400px, 400px"
@@ -81,6 +96,18 @@ export default function LetterGuide({ isOpen, onClose }: LetterGuideProps) {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Next Button */}
+          <div className="flex justify-center mt-6 sm:mt-8">
+            <button 
+              onClick={handleNext}
+              className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center"
+            >
+              <ButtonImage width={180} height={48}>
+                Tiếp theo
+              </ButtonImage>
+            </button>
           </div>
         </div>
       </div>

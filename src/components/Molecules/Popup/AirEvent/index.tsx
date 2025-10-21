@@ -2,6 +2,7 @@
 
 import ButtonImage from "../../../Atoms/ButtonImage";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
+import { getCurrentVietnamTime } from "@/utils/ReleaseDateUtils";
 
 type AirEventProps = {
   isOpen: boolean;
@@ -14,6 +15,20 @@ export default function AirEvent({
   onClose,
   coinsReward = 200,
 }: AirEventProps) {
+  // Check if current date is after October 27th, 2024
+  const isParticipationEnabled = () => {
+    const currentDate = getCurrentVietnamTime();
+    const targetDate = new Date(2025, 9, 27); // October 27, 2024 (month is 0-indexed)
+    return currentDate >= targetDate;
+  };
+
+  const handleParticipate = () => {
+    if (!isParticipationEnabled()) {
+      return; // Don't do anything if participation is not enabled yet
+    }
+    // Add your participation logic here
+    console.log("Participating in the event...");
+  };
   return (
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
       {/* Content */}
@@ -30,14 +45,25 @@ export default function AirEvent({
       {/* Actions */}
       <div className="mt-6 flex items-center justify-center gap-4 sm:gap-6">
         {/* Use coins */}
-        <button className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center">
+        <button 
+          onClick={handleParticipate}
+          disabled={!isParticipationEnabled()}
+          className={`relative overflow-hidden transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center ${
+            isParticipationEnabled() 
+              ? 'hover:scale-105 cursor-pointer' 
+              : 'opacity-50 cursor-not-allowed'
+          }`}
+        >
           <ButtonImage width={180} height={48}>
             Tham gia ngay
           </ButtonImage>
         </button>
 
-        {/* Retry */}
-        <button className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center">
+        {/* Cancel */}
+        <button 
+          onClick={onClose}
+          className="relative overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer px-6 sm:px-8 py-3 sm:py-4 min-w-[180px] rounded-xl font-semibold text-lg flex items-center justify-center"
+        >
           <ButtonImage width={180} height={48}>
             Huỷ
           </ButtonImage>

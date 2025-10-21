@@ -153,7 +153,7 @@ export default function RedeemModal({
   };
 
   const displayTiers = useMemo((): RedeemTierWithData[] => {
-    // Use API data if available, otherwise fallback to provided tiers or default data
+    // Use API data if available
     if (rewards.length > 0 && userData) {
       return rewards.map((reward) => {
         // Find the corresponding userRewardExchange for this reward
@@ -171,22 +171,16 @@ export default function RedeemModal({
       });
     }
 
-    // Fallback to provided tiers or default data
-    const fallbackTiers = tiers ?? [
-      { id: "t1", points: 300, rewardLabel: "150 xu", canRedeem: false },
-      { id: "t2", points: 500, rewardLabel: "250 xu", canRedeem: false },
-      {
-        id: "t3",
-        points: 6000,
-        rewardLabel: "Combo quà tặng đặc biệt",
-        canRedeem: false,
-      },
-    ];
+    // Use provided tiers if available
+    if (tiers && tiers.length > 0) {
+      return tiers.map((t) => ({
+        tier: t,
+        display: normalizeDisplay(t),
+      }));
+    }
 
-    return fallbackTiers.map((t) => ({
-      tier: t,
-      display: normalizeDisplay(t),
-    }));
+    // No data available
+    return [];
   }, [rewards, userRewardExchanges, userData, tiers]);
 
   return (
@@ -253,7 +247,7 @@ export default function RedeemModal({
                         Đang tải danh sách quà tặng...
                       </span>
                     </div>
-                  ) : (
+                  ) : displayTiers.length > 0 ? (
                     displayTiers.map(({ tier, display, rewardData, userRewardExchange }) => (
                       <div
                         key={tier.id}
@@ -330,6 +324,21 @@ export default function RedeemModal({
                         </button>
                       </div>
                     ))
+                  ) : (
+                    <div className="flex flex-col justify-center items-center py-8 gap-3">
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-2">
+                        <Image
+                          src="https://res.cloudinary.com/dznt9yias/image/upload/v1761021351/box_g9zasq.png"
+                          alt="Không có quà tặng"
+                          fill
+                          sizes="(max-width: 640px) 64px, 80px"
+                          style={{ objectFit: "contain", opacity: 0.6 }}
+                        />
+                      </div>
+                      <span className="text-lg text-amber-700">
+                        Không có quà tặng nào
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
