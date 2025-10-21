@@ -17,8 +17,8 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                         {/* Two column layout */}
                         <div className="gap-8 flex justify-between items-center w-[80%]">
                             {/* ------------------- Left Column ------------------- */}
-                            <div className="space-y-2.5 w-[34%] z-20">
-                                <RadialGradial className="ml-5 text-4xl lg:text-6xl">
+                            <div className="space-y-2.5 w-[36%] z-20">
+                                <RadialGradial className="ml-5 text-4xl lg:text-6xl py-1.5 mb-1">
                                     {moTaKyNhan?.ten}
                                 </RadialGradial>
                                 {/* Danh hiệu */}
@@ -54,7 +54,7 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                                 </div>
 
                                 {/* Khởi nghĩa */}
-                                <div className="ml-28">
+                                <div className="ml-24">
                                     <H3LibDetail className="text-2xl lg:text-4xl">KHỞI NGHĨA</H3LibDetail>
                                     <PLibDetail>
                                         {moTaKyNhan?.khoiNghia}
