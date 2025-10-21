@@ -64,6 +64,8 @@ export default function FixedScrollsPageResponsive({
 }: ICOMPONENTS.MapRegionDetailProps) {
   const router = useRouter();
 
+  console.log('slug', slug);
+  
   // Get user data context for refreshing user data after actions
   const context = useUserDataContextSafe();
   const refreshUserData = context?.refreshUserData || null;
