@@ -10,6 +10,7 @@ import heart2 from "../../../../public/Heart (1).svg";
 import frameCoin from "../../../../public/FrameCoin.svg";
 import { Plus } from "lucide-react";
 import AchievementsModal from "../Popup/AchievementsModal";
+import LetterGuide from "../Popup/LetterGuide";
 import AirEvent from "../Popup/AirEvent";
 import RedeemModal from "../Popup/RedeemModal";
 import BuyMoreLife from "../Popup/BuyMoreLife";
@@ -80,13 +81,24 @@ export const GameFrame: React.FC<GameFrameProps> = ({
   //--------------------------End--------------------------//
 
   /**
-   * Air Event Modal
+   * Letter Guide Modal (shows first)
+   */
+  const [isLetterGuideModalOpen, setIsLetterGuideModalOpen] =
+    useState<boolean>(false);
+  const onLetterGuideClick = useCallback(() => {
+    setIsLetterGuideModalOpen(!isLetterGuideModalOpen);
+  }, [isLetterGuideModalOpen]);
+
+  const handleLetterGuideNext = useCallback(() => {
+    setIsLetterGuideModalOpen(false);
+    setIsAirEventModalOpen(true);
+  }, []);
+
+  /**
+   * Air Event Modal (shows after LetterGuide)
    */
   const [isAirEventModalOpen, setIsAirEventModalOpen] =
     useState<boolean>(false);
-  const onAirEventClick = useCallback(() => {
-    setIsAirEventModalOpen(!isAirEventModalOpen);
-  }, [isAirEventModalOpen]);
   //--------------------------End--------------------------//
 
   /**
@@ -336,7 +348,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
         <div className="flex flex-col items-end justify-center">
           <div
             className="relative w-[100px] h-[60px] lg:w-[180px] lg:h-[100px] hover:opacity-80 transition-all duration-300 cursor-pointer"
-            onClick={onAirEventClick}
+            onClick={onLetterGuideClick}
           >
             <Image
               src="https://res.cloudinary.com/dznt9yias/image/upload/v1760815558/Vi%E1%BA%BFt_Th%C6%B0_hmaabr.svg"
@@ -364,6 +376,11 @@ export const GameFrame: React.FC<GameFrameProps> = ({
         onClose={() => setIsAchievementModalOpen(false)}
         onClaim={handleClaimAchievement}
         isClaiming={isClaimingAchievement}
+      />
+      <LetterGuide
+        isOpen={isLetterGuideModalOpen}
+        onClose={() => setIsLetterGuideModalOpen(false)}
+        onNext={handleLetterGuideNext}
       />
       <AirEvent
         isOpen={isAirEventModalOpen}

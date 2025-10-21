@@ -47,11 +47,11 @@ function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
     case "COMPLETED":
       return "/Property 1=Đủ để nhận.svg"; // COMPLETED means đủ để nhận
     case "CLAIMED":
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1761018191/%C4%90a%CC%83_nha%CC%A3%CC%82n_1_ocfc7m.svg";
     default:
       return "/Property 1=Chưa đủ để nhận.svg"; // CLAIMED shows chưa đủ để nhận
   }
 }
-
 
 export default function AchievementsModal({
   isOpen,
@@ -59,7 +59,8 @@ export default function AchievementsModal({
   onClaim,
   isClaiming = false,
 }: AchievementsModalProps) {
-  const { achievements, loading, error, fetchAchievements } = useAchievements(isOpen);
+  const { achievements, loading, error, fetchAchievements } =
+    useAchievements(isOpen);
 
   const handleClaim = async (achievementId: string) => {
     await onClaim(achievementId);
@@ -143,8 +144,17 @@ export default function AchievementsModal({
                     </div>
                   ) : achievements.length === 0 ? (
                     <div className="col-span-full flex flex-col items-center justify-center py-8 gap-3">
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-2">
+                        <Image
+                          src="https://res.cloudinary.com/dznt9yias/image/upload/v1761021351/box_g9zasq.png"
+                          alt="Không có thành tựu"
+                          fill
+                          sizes="(max-width: 640px) 64px, 80px"
+                          style={{ objectFit: "contain", opacity: 0.6 }}
+                        />
+                      </div>
                       <div className="text-[#835D26] font-medium text-lg">
-                        Không có dữ liệu
+                        Không có thành tựu nào
                       </div>
                     </div>
                   ) : (
@@ -188,7 +198,9 @@ export default function AchievementsModal({
                                 achievement.status === "COMPLETED" &&
                                 handleClaim(achievement.id)
                               }
-                              disabled={achievement.status !== "COMPLETED" || isClaiming}
+                              disabled={
+                                achievement.status !== "COMPLETED" || isClaiming
+                              }
                               className="relative cursor-pointer px-4 sm:px-5 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors disabled:cursor-not-allowed text-white hover:opacity-90 min-w-[72px] min-h-[36px] overflow-hidden"
                             >
                               <Image

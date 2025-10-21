@@ -47,6 +47,11 @@ const rewardService = {
     });
   },
 
+  redeemGiftCode: async (code: string) => {
+    return await http.post("/user-reward/redeem-code", { code }, {
+      next: { tags: ["userRewards"] },
+    });
+  },
 };
 
 export default rewardService;

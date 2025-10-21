@@ -7,6 +7,7 @@ import SocialMediaIcons from "@components/Atoms/SocialMediaIcons";
 import { Suspense } from "react";
 import VietnameseHistoryLoading from "@components/Molecules/HistoryLoading";
 import localFont from "next/font/local";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const StreetSignSans = localFont({
   src: "./fonts/StreetSignSans.otf",
@@ -39,6 +40,7 @@ export default function RootLayout({
         <ToastContainer  />
         <SessionProviderWrapper>
           <AntdProvider>
+            <SpeedInsights />
             <Suspense fallback={<VietnameseHistoryLoading />}>
               {children}
             </Suspense>
