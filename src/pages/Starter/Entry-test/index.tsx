@@ -250,7 +250,7 @@ export default function EntryTestPage({ testHome }: { testHome: ITestHome[] }) {
       if (currentQuestion && apiAnswer) {
         (async () => {
           try {
-            await userTestHomeService.saveAnswer({
+            const res = await userTestHomeService.saveAnswer({
               questionId: currentQuestion.id,
               answer: apiAnswer,
             });

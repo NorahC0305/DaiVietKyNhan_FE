@@ -18,5 +18,6 @@ export default async function SelectCharacter() {
   }
   const figure = (await getFigure()) as IFigureResponseModel;
 
+
   return <SelectCharacterPage figures={figure.data?.results || []} />;
 }

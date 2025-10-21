@@ -2,6 +2,7 @@ const LAND_STATUS = {
   PENDING: "PENDING",
   LOCKED: "LOCKED",
   UNLOCKED: "UNLOCKED",
+  COMPLETED: "COMPLETED",
 } as const;
 
 export const LAND = {

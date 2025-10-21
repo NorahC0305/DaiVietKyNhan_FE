@@ -9,7 +9,11 @@ const userLandService = {
     return await http.post<IUserLandArrayResponseModel>(`/user-land/user`, {});
   },
   getUserLand: async () => {
-    return await http.get<IUserLandWithLandArrayResponseModel>(`/user-land/user`);
+    return await http.get<IUserLandWithLandArrayResponseModel>(`/user-land/user`,
+      {
+        cache: "no-store",
+      }
+    );
   },
 };
 

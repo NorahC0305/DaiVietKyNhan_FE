@@ -13,7 +13,7 @@ const IntroduceLinks = [
 
 const DiscoverLinks = [
     { id: 'about-us', href: ROUTES.PUBLIC.LIBRARY, label: 'Về chúng tôi' },
-    { id: 'character-library', href: ROUTES.PUBLIC.KYGIOI, label: 'Thư viện nhân vật' },
+    { id: 'character-library', href: ROUTES.PUBLIC.MAP, label: 'Thư viện nhân vật' },
     { id: 'featured-content', href: ROUTES.PUBLIC.MAP, label: 'Nội dung nổi bật' },
 ];
 
