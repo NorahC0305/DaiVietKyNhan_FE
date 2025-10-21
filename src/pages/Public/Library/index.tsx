@@ -57,9 +57,10 @@ const LibraryPage = () => {
     },
   });
 
-  // Handle URL search parameter - store ID but don't show in input
+  // Handle URL search parameter - check if it's an ID to auto scroll
   useEffect(() => {
     const searchParam = searchParams?.get("search");
+    console.log('searchParam', searchParam);   
     if (searchParam) {
       setHiddenSearchId(searchParam);
       // Clear URL parameter after reading it and prevent back navigation to map
@@ -123,27 +124,11 @@ const LibraryPage = () => {
       const q = normalizeText(searchValue || searchQuery);
       if (!q) return;
 
-      // Try numeric id match first
-      const asNumber = Number(q);
-      let index = -1;
-      if (!Number.isNaN(asNumber)) {
-        index = cards.findIndex((c) => c.id === asNumber);
-      }
-
-      if (index === -1) {
-        index = cards.findIndex((c) => {
-          const haystack = [
-            normalizeText(c.backContent?.name),
-            normalizeText(c.backContent?.thoiKy),
-            normalizeText(c.backContent?.chienCong),
-            normalizeText(c.backContent?.ctaText),
-            normalizeText(c.imageSrc),
-          ]
-            .filter(Boolean)
-            .join(" ");
-          return haystack.includes(q);
-        });
-      }
+      // Only search by name
+      const index = cards.findIndex((c) => {
+        const name = normalizeText(c.backContent?.name);
+        return name.includes(q);
+      });
 
       if (index >= 0) {
         setScrollToIndex(index);
@@ -153,10 +138,23 @@ const LibraryPage = () => {
     [searchQuery, cards]
   );
 
-  // Auto trigger search when hiddenSearchId is set from URL and cards are loaded
+  // Auto scroll to kỳ nhân by ID when hiddenSearchId is set from URL and cards are loaded
   useEffect(() => {
     if (hiddenSearchId && cards.length > 0 && !isLoading) {
-      triggerSearchScroll(hiddenSearchId);
+      // Check if hiddenSearchId is a numeric ID
+      const asNumber = Number(hiddenSearchId);
+      if (!Number.isNaN(asNumber)) {
+        // Find card by ID and scroll to it
+        const index = cards.findIndex((c) => c.id === asNumber);
+        if (index >= 0) {
+          setScrollToIndex(index);
+          setHighlightQuery(""); // Clear highlight since we're not searching by text
+        }
+      } else {
+        // If it's not a number, treat it as text search
+        triggerSearchScroll(hiddenSearchId);
+      }
+      
       // Clear hiddenSearchId after using it
       setHiddenSearchId(null);
     }

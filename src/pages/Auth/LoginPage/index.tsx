@@ -28,7 +28,6 @@ import {
 } from "@components/Atoms/ui/alert";
 import { useEmailSelector, useUserSetEmail } from "@stores/user/selectors";
 import { IBackendResponse } from "@models/backend";
-import KyNhanResult from "@components/Molecules/Popup/KyNhanResult";
 
 const LoginPageClient = () => {
   /**
