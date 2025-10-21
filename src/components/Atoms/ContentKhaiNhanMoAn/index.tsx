@@ -149,6 +149,13 @@ const ContentChuong1 = () => {
                     </ul>
                 </div>
             </div>
+
+            <div className="mt-10 ml-10 text-secondary lg:text-xl text-base text-justify leading-relaxed">
+                <span>Tại mỗi vùng đất tồn tại linh hồn của các Kỳ Nhân. Họ ở đó để duy trì sự cân bằng của Kỳ Giới và gìn giữ những mảnh ký ức dân tộc, dẫn truyền năng lượng từ ngọn lửa thiêng vào đời sống con người. Mỗi Kỳ Nhân đại diện cho một phẩm chất, một giá trị của dân tộc, là mắt xích kết nối giữa lịch sử và con người.</span>
+                <br />
+                <br />
+                <span>Còn Kỳ Linh Việt Hỏa được cất giữ trong vùng đất Thứ năm, cũng là vùng đất quan trọng nhất, nơi hội tụ toàn bộ ký ức và là nơi cung cấp năng lượng cốt lõi cho Kỳ Giới. Vùng đất này mang tên là  Tứ Nguyên Linh Giới: Khai Hoa Huyền Ấn.</span>
+            </div>
         </>
 
     )
