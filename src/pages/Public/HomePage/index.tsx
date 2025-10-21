@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ROUTES } from '@routes';
 import { IUser } from '@models/user/entity';
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response';
+import { IUserRankData } from '@models/user/response';
 import RadialGradial from '@components/Atoms/RadialGradient';
+import { useUserRank } from '@hooks/useUser';
 
 interface HomePageClientProps {
   user: IUser;
@@ -45,6 +47,11 @@ const testimonialsData = [
 
 const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
   const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
+  
+  // Memoize params để tránh re-creation mỗi lần render
+  const rankParams = useMemo(() => ({ currentPage: 1, pageSize: 15 }), []);
+  
+  const { data: userRankData, isLoading: isLoadingRank } = useUserRank(rankParams);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,6 +73,49 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
     }
     return "w-2.5 h-2.5 bg-gray-500 rounded-full cursor-pointer hover:bg-gray-400";
   };
+
+  // Process user rank data for display - memoized để tránh re-computation
+  const leaderboardData = useMemo(() => {
+    if (!userRankData?.data?.results) {
+      return { leftColumn: [], rightColumn: [], thirdColumn: [] };
+    }
+
+    const users = userRankData.data.results;
+    const leftColumn = users.slice(0, 5);
+    const rightColumn = users.slice(5, 10);
+    const thirdColumn = users.slice(10, 15);
+
+    return { leftColumn, rightColumn, thirdColumn };
+  }, [userRankData?.data?.results]);
+
+  const renderRankItem = useCallback((item: IUserRankData | undefined, rank: number) => (
+    <div key={item?.id || rank} className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded">
+      <div className="text-lg md:text-xl font-bold text-primary opacity-70">
+        {rank}.
+      </div>
+      <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
+        {item?.avatar ? (
+          <Image
+            src={item.avatar}
+            alt={item.name || 'User'}
+            width={24}
+            height={24}
+            className="rounded-full w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center">
+            <span className="text-xs text-gray-600">?</span>
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-bold text-primary text-xs md:text-sm truncate">
+          {item?.name || 'Chưa có dữ liệu'}
+        </div>
+        <div className="text-primary text-xs">{item?.point || 0}</div>
+      </div>
+    </div>
+  ), []);
 
   return (
     <div className='min-h-screen bg-black'>
@@ -118,94 +168,40 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
               </div>
               <div className="w-full flex justify-center items-center gap-3 md:gap-4">
                 <div className='w-[80%] flex justify-around items-center'>
-                  {/* Left Column - 1-5 */}
-                  <div className="space-y-1 md:space-y-2">
-                    {[
-                      { id: 1, name: "VŨ TIẾN HÙNG", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 2, name: "HẠNH NHÂN", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 3, name: "HUYỀN ANH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 4, name: "MAI ANH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 5, name: "MƯA HUỲNH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" }
-                    ].map((item) => (
-                      <div key={item.id} className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded">
-                        <div className="text-lg md:text-xl font-bold text-primary opacity-70">
-                          {item.id}.
-                        </div>
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
-                          <Image
-                            src={item.avatar}
-                            alt={item.name}
-                            width={24}
-                            height={24}
-                            className="rounded-full w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-primary text-xs md:text-sm truncate">{item.name}</div>
-                          <div className="text-primary text-xs">{item.score}</div>
-                        </div>
+                  {isLoadingRank ? (
+                    <div className="flex justify-center items-center w-full py-8">
+                      <div className="text-primary">Đang tải dữ liệu...</div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Left Column - 1-5 */}
+                      <div className="space-y-1 md:space-y-2">
+                        {Array.from({ length: 5 }, (_, index) => {
+                          const rank = index + 1;
+                          const item = leaderboardData.leftColumn[index];
+                          return renderRankItem(item, rank);
+                        })}
                       </div>
-                    ))}
-                  </div>
 
-                  {/* Right Column - 6-10 */}
-                  <div className="space-y-1 md:space-y-2">
-                    {[
-                      { id: 6, name: "NGUYỄN VĂN A", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 7, name: "TRẦN THỊ B", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 8, name: "LÊ VĂN C", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 9, name: "PHẠM THỊ D", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 10, name: "HOÀNG VĂN E", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" }
-                    ].map((item) => (
-                      <div key={item.id} className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded">
-                        <div className="text-lg md:text-xl font-bold text-primary opacity-70">
-                          {item.id}.
-                        </div>
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
-                          <Image
-                            src={item.avatar}
-                            alt={item.name}
-                            width={24}
-                            height={24}
-                            className="rounded-full w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-primary text-xs md:text-sm truncate">{item.name}</div>
-                          <div className="text-primary text-xs">{item.score}</div>
-                        </div>
+                      {/* Right Column - 6-10 */}
+                      <div className="space-y-1 md:space-y-2">
+                        {Array.from({ length: 5 }, (_, index) => {
+                          const rank = index + 6;
+                          const item = leaderboardData.rightColumn[index];
+                          return renderRankItem(item, rank);
+                        })}
                       </div>
-                    ))}
-                  </div>
 
-                  <div className="space-y-1 md:space-y-2">
-                    {[
-                      { id: 1, name: "VŨ TIẾN HÙNG", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 2, name: "HẠNH NHÂN", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 3, name: "HUYỀN ANH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 4, name: "MAI ANH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" },
-                      { id: 5, name: "MƯA HUỲNH", score: "3200", avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760708105/kynhan/images/file_vx0mqn.png" }
-                    ].map((item) => (
-                      <div key={item.id} className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded">
-                        <div className="text-lg md:text-xl font-bold text-primary opacity-70">
-                          {item.id}.
-                        </div>
-                        <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
-                          <Image
-                            src={item.avatar}
-                            alt={item.name}
-                            width={24}
-                            height={24}
-                            className="rounded-full w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-bold text-primary text-xs md:text-sm truncate">{item.name}</div>
-                          <div className="text-primary text-xs">{item.score}</div>
-                        </div>
+                      {/* Third Column - 11-15 */}
+                      <div className="space-y-1 md:space-y-2">
+                        {Array.from({ length: 5 }, (_, index) => {
+                          const rank = index + 11;
+                          const item = leaderboardData.thirdColumn[index];
+                          return renderRankItem(item, rank);
+                        })}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
               {/* <div className="w-full flex items-center justify-center mt-0 lg:mt-4">
@@ -334,3 +330,32 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
 }
 
 export default HomePageClient;
+
+
+// "use client";
+
+// import React from 'react'
+// import DetailInfo from './DetailInfo'
+// import CountDown from './CountDown'
+// import { IUser } from '@models/user/entity'
+// import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
+// import DailyCheckin from '@components/Molecules/DailyCheckin';
+
+// interface HomePageClientProps {
+//   user: IUser
+//   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
+//   accessToken: string
+// }
+
+// const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
+//   return (
+//     <div className='mt-7 min-h-screen'>
+//       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
+//         <CountDown activeWithAmountUser={activeWithAmountUser} accessToken={accessToken} />
+//       }
+// <DailyCheckin />
+//     </div>
+//   )
+// }
+
+// export default HomePageClient

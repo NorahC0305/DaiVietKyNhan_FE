@@ -11,6 +11,7 @@ import {
   ITopUserStatsResponse,
   IMonthlyUserStatsResponse,
   ILandStatsResponse,
+  IUserRankResponse,
 } from "@models/user/response";
 import qs from "qs";
 
@@ -131,6 +132,19 @@ const userService = {
   addHeart: async () => {
     return await http.put("/user/add-heart", null, {
       next: { tags: ["addHeart"] },
+    });
+  },
+  getUserRank: async (params?: {
+    currentPage?: number;
+    pageSize?: number;
+  }) => {
+    const queryParams = qs.stringify({
+      currentPage: params?.currentPage || 1,
+      pageSize: params?.pageSize || 15,
+    });
+
+    return await http.get<IUserRankResponse>(`/user/user-rank?${queryParams}`, {
+      next: { tags: ["userRank"] },
     });
   },
 };

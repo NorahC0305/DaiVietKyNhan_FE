@@ -172,3 +172,32 @@ const landStatsResponse = BackendResponseModel(z.array(landStatsData))
 export type ILandStatsData = z.infer<typeof landStatsData>
 export type ILandStatsResponse = z.infer<typeof landStatsResponse>
 //----------------------End----------------------//
+
+// User rank response
+const userRankData = z.object({
+    id: z.number(),
+    name: z.string(),
+    email: z.string(),
+    avatar: z.string().nullable(),
+    point: z.number(),
+});
+
+const userRankPagination = z.object({
+    current: z.number(),
+    pageSize: z.number(),
+    totalPage: z.number(),
+    totalItem: z.number(),
+});
+
+const userRankResponseData = z.object({
+    results: z.array(userRankData),
+    pagination: userRankPagination,
+});
+
+const userRankResponse = BackendResponseModel(userRankResponseData);
+
+export type IUserRankData = z.infer<typeof userRankData>;
+export type IUserRankPagination = z.infer<typeof userRankPagination>;
+export type IUserRankResponseData = z.infer<typeof userRankResponseData>;
+export type IUserRankResponse = z.infer<typeof userRankResponse>;
+//----------------------End----------------------//

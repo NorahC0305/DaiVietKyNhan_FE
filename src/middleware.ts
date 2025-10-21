@@ -14,10 +14,10 @@ export async function middleware(req: NextRequest) {
 
   // Protect all admin routes - only admins can access
   if (pathname.startsWith("/admin")) {
-    if (!token) {
-      // Unauthenticated users trying to access admin routes
-      return NextResponse.redirect(new URL("/auth/login", req.url));
-    }
+    // if (!token) {
+    //   // Unauthenticated users trying to access admin routes
+    //   return NextResponse.redirect(new URL("/auth/login", req.url));
+    // }
     if (!isAdmin) {
       // Non-admin users trying to access admin routes get redirected to not-found
       // and change URL to hide admin path

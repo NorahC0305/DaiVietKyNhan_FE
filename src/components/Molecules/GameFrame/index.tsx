@@ -331,7 +331,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
           >
             <Image
               src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721841/X_lqpgdp.svg"
-              alt="buy more life"
+              alt="X"
               className="mt-3"
               fill
             />
