@@ -187,10 +187,12 @@ declare namespace ICOMPONENTS {
     landId: number;
     questions?: IQuestion[];
     answeredQuestionIds?: number[];
+    slug?: string;
   }
 
   interface CommonModalProps {
     isOpen: boolean;
     onClose: () => void;
+    message?: string | null;
   }
 }

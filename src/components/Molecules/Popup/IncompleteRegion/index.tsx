@@ -5,6 +5,7 @@ import ModalBackdrop from "../../../Atoms/ModalBackdrop";
 export default function IncompleteRegion({
   isOpen,
   onClose,
+  message,
 }: ICOMPONENTS.CommonModalProps) {
   return (
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
@@ -15,7 +16,7 @@ export default function IncompleteRegion({
         </h3>
 
         <p className="mt-3 sm:mt-4 text-secondary text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed font-extrabold">
-          Kỳ Chủ phải hoàn thành vùng đất hiện tại mới có thể tiếp tục được hành trình sang vùng đất kế tiếp.
+          {message || "Kỳ Chủ phải hoàn thành vùng đất hiện tại mới có thể tiếp tục được hành trình sang vùng đất kế tiếp."}
         </p>
       </div>
     </ModalBackdrop>

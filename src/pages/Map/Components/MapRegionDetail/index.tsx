@@ -26,6 +26,7 @@ import type { IUserSkipQuestionByCoinsRequest } from "@models/user-answer-log/re
 import type { ILandWithUserQuestionResponseModel } from "@models/land/response";
 import type { IQuestion } from "@models/question/entity";
 import type { IUserAnswerLog } from "@models/user-answer-log/entity";
+import CompleteLand from "@components/Molecules/Popup/CompleteLand";
 
 // Extended question type with user answer logs from API response
 interface IQuestionWithUserLogs extends IQuestion {
@@ -54,6 +55,7 @@ interface ModalState {
 }
 
 export default function FixedScrollsPageResponsive({
+  slug,
   backgroundImage,
   scrollPositions,
   landId,
@@ -61,7 +63,7 @@ export default function FixedScrollsPageResponsive({
   answeredQuestionIds,
 }: ICOMPONENTS.MapRegionDetailProps) {
   const router = useRouter();
-  
+
   // Get user data context for refreshing user data after actions
   const context = useUserDataContextSafe();
   const refreshUserData = context?.refreshUserData || null;
@@ -109,10 +111,10 @@ export default function FixedScrollsPageResponsive({
   // Helper functions
   const checkStartDate = useCallback((startDate: Date | string | null | undefined) => {
     if (!startDate) return true;
-    
+
     const date = startDate instanceof Date ? startDate : new Date(startDate);
     const currentDate = new Date();
-    
+
     if (currentDate < date) {
       toast.warning(
         `Khu vực này sẽ được mở vào ngày ${date.toLocaleDateString('vi-VN')}`
@@ -124,40 +126,42 @@ export default function FixedScrollsPageResponsive({
 
   const extractAnsweredQuestionIds = useCallback((questions: IQuestionWithUserLogs[]): number[] => {
     return questions
-      .filter(question => 
+      .filter(question =>
         question.userAnswerLogs?.some(log => log.isCorrect === true)
       )
       .map(question => question.id);
   }, []);
 
   // API fetch effect
+  const [responseMessage, setResponseMessage] = useState<string | null>(null);
   useEffect(() => {
     if (!landId) return;
-    
+
     let isMounted = true;
-    
+
     const fetchQuestions = async () => {
       setIsLoading(true);
       try {
         const response = await landService.getQuestionsWithUser(landId) as ILandWithUserQuestionResponseModel;
-        
+
         if (!isMounted) return;
-        
+
         if (response?.statusCode === 409) {
+          setResponseMessage(response.message || null);
           openIncompleteRegion();
           return;
         }
-        
+
         if (response?.statusCode === 200 && response?.data) {
           setLandData(response.data);
-          
+
           // Check start date
           if (!checkStartDate(response.data.startDate)) {
             return;
           }
-          
+
           setQuestions(response.data.questions as IQuestionWithUserLogs[] || []);
-          
+
           const answeredIds = extractAnsweredQuestionIds(response.data.questions as IQuestionWithUserLogs[] || []);
           setAnsweredQuestions(new Set(answeredIds));
         }
@@ -174,7 +178,7 @@ export default function FixedScrollsPageResponsive({
     };
 
     fetchQuestions();
-    
+
     return () => {
       isMounted = false;
     };
@@ -217,8 +221,8 @@ export default function FixedScrollsPageResponsive({
       const transformedKyNhan = transformKyNhanSummaries(question.kynhanSummaries);
       setKyNhanSummaries(transformedKyNhan);
       setKyNhanResultData({
-        summary: question.kynhanSummaries[0]?.summary || 
-                  "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+        summary: question.kynhanSummaries[0]?.summary ||
+          "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
         points: question.point || 0,
       });
       updateModalState({ isKyNhanResultModalOpen: true });
@@ -240,13 +244,13 @@ export default function FixedScrollsPageResponsive({
       };
 
       const response = await userAnswerLogService.answerQuestion(requestData);
-      
+
       if (response?.statusCode && [200, 201].includes(response.statusCode) && response.data) {
         if (response.data.isCorrect) {
           toast.success("Chính xác! Bạn đã trả lời đúng.");
-          
+
           setAnsweredQuestions(prev => new Set([...prev, selectedQuestion.id]));
-          
+
           // Refresh user data to update points/hearts after correct answer
           if (refreshUserData) {
             await refreshUserData();
@@ -257,13 +261,13 @@ export default function FixedScrollsPageResponsive({
             const transformedKyNhan = transformKyNhanSummaries(selectedQuestion.kynhanSummaries);
             setKyNhanSummaries(transformedKyNhan);
             setKyNhanResultData({
-              summary: selectedQuestion.kynhanSummaries[0]?.summary || 
-                        "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
+              summary: selectedQuestion.kynhanSummaries[0]?.summary ||
+                "Bạn đã trả lời đúng và thu thập được kỳ ấn của kỳ nhân này.",
               points: selectedQuestion.point || 0,
             });
-            updateModalState({ 
-              isKyNhanResultModalOpen: true, 
-              isQuestionModalOpen: false 
+            updateModalState({
+              isKyNhanResultModalOpen: true,
+              isQuestionModalOpen: false
             });
           } else {
             updateModalState({ isQuestionModalOpen: false });
@@ -274,10 +278,10 @@ export default function FixedScrollsPageResponsive({
           if (refreshUserData) {
             await refreshUserData();
           }
-          
-          updateModalState({ 
-            isQuestionModalOpen: false, 
-            isWrongAnswerModalOpen: true 
+
+          updateModalState({
+            isQuestionModalOpen: false,
+            isWrongAnswerModalOpen: true
           });
         }
       } else {
@@ -297,14 +301,19 @@ export default function FixedScrollsPageResponsive({
     setSelectedQuestion(null);
   }, [updateModalState]);
 
+  const [isCompleteLand, setIsCompleteLand] = useState(false);
+  const handleCloseCompleteLand = useCallback(() => {
+    setIsCompleteLand(false);
+  }, [setIsCompleteLand]);
+
   const handleCloseWrongAnswerModal = useCallback(() => {
     updateModalState({ isWrongAnswerModalOpen: false });
   }, [updateModalState]);
 
   const handleRetryAnswer = useCallback(() => {
-    updateModalState({ 
-      isWrongAnswerModalOpen: false, 
-      isQuestionModalOpen: true 
+    updateModalState({
+      isWrongAnswerModalOpen: false,
+      isQuestionModalOpen: true
     });
   }, [updateModalState]);
 
@@ -338,13 +347,14 @@ export default function FixedScrollsPageResponsive({
     const previousAnsweredQuestions = answeredQuestions;
     setAnsweredQuestions(prev => new Set([...prev, questionId]));
 
+    const [isCompleteLand, setIsCompleteLand] = useState(false);
     try {
       const requestData: IUserSkipQuestionByCoinsRequest = { questionId };
       const response = await userAnswerLogService.skipQuestionByCoins(requestData);
 
       if (response?.statusCode && [200, 201].includes(response.statusCode)) {
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
-        
+
         // Refresh user data to update coins after using coins to skip
         if (refreshUserData) {
           await refreshUserData();
@@ -356,7 +366,7 @@ export default function FixedScrollsPageResponsive({
           setKyNhanSummaries(transformedKyNhan);
           setKyNhanResultData({
             summary: skippedQuestion.kynhanSummaries[0]?.summary ||
-                      "Bạn đã sử dụng xu để vượt qua và thu thập được kỳ ấn của kỳ nhân này.",
+              "Bạn đã sử dụng xu để vượt qua và thu thập được kỳ ấn của kỳ nhân này.",
             points: skippedQuestion.point || 0,
           });
           setSelectedQuestion(skippedQuestion);
@@ -375,13 +385,13 @@ export default function FixedScrollsPageResponsive({
   }, [questions, answeredQuestions, transformKyNhanSummaries, updateModalState, refreshUserData]);
 
   // Memoized values for optimization
-  const isQuestionModalAnswered = useMemo(() => 
-    selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false, 
+  const isQuestionModalAnswered = useMemo(() =>
+    selectedQuestion ? answeredQuestions.has(selectedQuestion.id) : false,
     [selectedQuestion, answeredQuestions]
   );
 
-  const scrollPositionsToRender = useMemo(() => 
-    scrollPositions?.slice(0, questions.length) ?? [], 
+  const scrollPositionsToRender = useMemo(() =>
+    scrollPositions?.slice(0, questions.length) ?? [],
     [scrollPositions, questions.length]
   );
 
@@ -459,11 +469,10 @@ export default function FixedScrollsPageResponsive({
 
                     <button
                       aria-label={`Vị trí cuộn giấy ${idx + 1}`}
-                      className={`absolute inset-0 cursor-pointer ${
-                        DEBUG_HOTSPOTS
-                          ? "border-2 border-red-500/70 bg-red-500/10 hover:bg-red-500/20"
-                          : "bg-transparent"
-                      }`}
+                      className={`absolute inset-0 cursor-pointer ${DEBUG_HOTSPOTS
+                        ? "border-2 border-red-500/70 bg-red-500/10 hover:bg-red-500/20"
+                        : "bg-transparent"
+                        }`}
                       onClick={() => handleScrollClick(idx)}
                     />
 
@@ -478,11 +487,10 @@ export default function FixedScrollsPageResponsive({
                       <div
                         className={`rounded-full shadow-lg border flex items-center justify-center
                        w-[28px] h-[28px] sm:w-[30px] sm:h-[30px] md:w-[32px] md:h-[32px] lg:w-[36px] lg:h-[36px] xl:w-[40px] xl:h-[40px]
-                       ${
-                         isAnswered
-                           ? "bg-green-500 border-green-600"
-                           : "bg-white/95 border-gray-300"
-                       }`}
+                       ${isAnswered
+                            ? "bg-green-500 border-green-600"
+                            : "bg-white/95 border-gray-300"
+                          }`}
                       >
                         {isAnswered ? (
                           <Check className="w-[16px] h-[16px] sm:w-[17px] sm:h-[17px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] xl:w-[22px] xl:h-[22px] text-white" />
@@ -547,7 +555,14 @@ export default function FixedScrollsPageResponsive({
       <IncompleteRegion
         isOpen={modalState.isIncompleteRegionOpen}
         onClose={handleCloseIncompleteRegion}
+        message={responseMessage || null}
       />
-    </main>
+
+      <CompleteLand
+        isOpen={isCompleteLand}
+        onClose={handleCloseCompleteLand}
+        land={slug || ''}
+      />
+    </main >
   );
 }

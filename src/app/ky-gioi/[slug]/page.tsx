@@ -166,6 +166,7 @@ export default async function MapRegionPage({ params }: PageProps) {
       backgroundImage={region.backgroundImage}
       scrollPositions={scrollPositions}
       landId={region.id}
+      slug={slug}
     />
   );
 }
