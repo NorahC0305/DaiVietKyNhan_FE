@@ -41,9 +41,6 @@ export async function middleware(req: NextRequest) {
       "/auth",
       "/contact",
       "/about",
-      "/",
-      "/ky-gioi",
-      "/library",
     ];
 
     const isPublicPath = publicPaths.some(
