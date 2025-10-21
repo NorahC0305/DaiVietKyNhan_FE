@@ -47,6 +47,7 @@ function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
     case "COMPLETED":
       return "/Property 1=Đủ để nhận.svg"; // COMPLETED means đủ để nhận
     case "CLAIMED":
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1761018191/%C4%90a%CC%83_nha%CC%A3%CC%82n_1_ocfc7m.svg"
     default:
       return "/Property 1=Chưa đủ để nhận.svg"; // CLAIMED shows chưa đủ để nhận
   }
