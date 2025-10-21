@@ -12,6 +12,7 @@ import { IUserLandWithLandEntity } from "@models/user-land/entity";
 import { IUserLandWithLandResponseModel } from "@models/user-land/response";
 import { LAND } from "@constants/land";
 import userLandService from "@services/user-land";
+import { ROUTES } from "@routes";
 
 // --- Dữ liệu gốc của các regions, bao gồm `position` ---
 const baseRegions: ICOMPONENTS.Region[] = [
@@ -265,7 +266,7 @@ export default function MapPageClient({
       sessionStorage.setItem("shouldRefreshMapData", "true");
       // Set navigation timestamp to track when user navigated away
       sessionStorage.setItem("navigationTimestamp", Date.now().toString());
-      router.push(`/map/${regionId}`);
+      router.push(`${ROUTES.PUBLIC.MAP}/${regionId}`);
     } else {
       // Special case for "ky-linh-viet-hoa" - show WaitingOthers popup
       if (regionId === "ky-linh-viet-hoa") {

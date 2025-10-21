@@ -32,6 +32,7 @@ export default async function LibraryDetailServer({ params }: PageProps) {
   const { id } = await params;
   const res = await getChiTietKyNhan(parseInt(id))
   const moTaKyNhan = await getMoTaKyNhanByKyNhanId(parseInt(id))
+  console.log('res', res[0]);
 
   return (
     <>

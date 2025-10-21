@@ -14,11 +14,10 @@ const BASE_PATHS = {
 // Public routes
 const PUBLIC = {
   HOME: BASE_PATHS.ROOT,
-  LIBRARY: "/library", //TODO: Change to '/library'
-  MAP: "/map",
-  KYGIOI: "/ky-gioi", //TODO: Change to '/ky-gioi'
+  LIBRARY: "/library",
+  MAP: "/ky-gioi",
   ABOUT: "/about-us",
-  PRODUCTS: "/products", //TODO: Change to '/products'
+  PRODUCTS: "/products",
   CONTACT: "/contact",
   PLAY_GROUND: "/starter/test-playground",
   TEST_PLAYGROUND_RESULT: "/starter/test-playground-result",

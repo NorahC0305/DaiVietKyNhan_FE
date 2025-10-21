@@ -1,8 +1,10 @@
 import MapLayoutClient from "@components/Templates/MapLayout";
 import { authOptions } from "@lib/authOptions";
 import { IMeResponse } from "@models/user/response";
+import { ROUTES } from "@routes";
 import userService from "@services/user";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export default async function MapLayoutServer({
   params,
@@ -21,6 +23,9 @@ export default async function MapLayoutServer({
     const response = (await userService.getMe()) as IMeResponse;
     if (response.data) {
       user = response.data;
+      if (!user.godProfileId) {
+        redirect(ROUTES.STARTER.SELECT_CHARACTER);
+      }
     }
   }
 

@@ -31,6 +31,7 @@ const meResponseData = z.object({
     point: z.number(),
     status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
     roleId: z.number(),
+    godProfileId: z.number().nullable(),
     createdById: z.number().nullable(),
     updatedById: z.number().nullable(),
     deletedById: z.number().nullable(),

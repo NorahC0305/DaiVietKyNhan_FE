@@ -11,6 +11,7 @@ async function getUserLand() {
 
 export default async function MapServer() {
   const userLand = (await getUserLand()) as IUserLandWithLandArrayResponseModel;
+
   return (
     <>
       <MapPageClient userLand={userLand.data} />

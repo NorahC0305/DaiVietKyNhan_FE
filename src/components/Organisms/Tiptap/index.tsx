@@ -65,7 +65,7 @@ export default function TipTapEditor({
   // Cập nhật nội dung khi prop value thay đổi từ bên ngoài
   useEffect(() => {
     if (value !== content) {
-      setContent(value || '<p></p>')
+      setContent(value || '<p class="text-white"></p>')
       if (editor) {
         editor.commands.setContent(value || '<p></p>')
       }
