@@ -194,12 +194,11 @@ export default function Card({
 
                     {/* Chien Cong - Section 3 */}
                     {backContent?.chienCong && (
-                      <div className="text-xs sm:text-sm md:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-hidden">
+                      <div className="text-xs lg:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-y-auto custom-scrollbar-thin">
                         <div
                           className="overflow-hidden"
                           style={{
                             display: "-webkit-box",
-                            WebkitLineClamp: 4,
                             WebkitBoxOrient: "vertical",
                             wordBreak: "break-word",
                           }}

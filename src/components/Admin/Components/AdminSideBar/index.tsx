@@ -41,7 +41,7 @@ const MENU_ITEMS: IPAGES.MenuItem[] = [
     subItems: [
       { id: "audience-info", label: "Thông tin khán giả", icon: "User" },
       { id: "scores-edit", label: "Điểm số & chỉnh sửa điểm", icon: "Star" },
-     
+
       {
         id: "received-letters",
         label: "Các bức thư được gửi về",
@@ -450,14 +450,12 @@ const AdminSideBar = () => {
         {/* Header */}
         <header className={`${isCollapsed ? "mb-4" : "mb-4"}`}>
           <div
-            className={`border-b border-gray-300 ${
-              isCollapsed ? "pt-2 -mx-2 pb-5" : "-mx-6 pb-3"
-            }`}
+            className={`border-b border-gray-300 ${isCollapsed ? "pt-2 -mx-2 pb-5" : "-mx-6 pb-3"
+              }`}
           >
             <div
-              className={`flex items-center ${
-                isCollapsed ? "justify-center px-2" : "justify-between px-6"
-              }`}
+              className={`flex items-center ${isCollapsed ? "justify-center px-2" : "justify-between px-6"
+                }`}
             >
               {(!isCollapsed || isMobileMenuOpen) && !isTransitioning && (
                 <h1 className="text-xl md:text-2xl font-bold text-gray-800">
@@ -480,7 +478,7 @@ const AdminSideBar = () => {
         </header>
 
         {/* Menu Items */}
-        <nav className="flex flex-col space-y-3 flex-1 pt-2 overflow-y-auto hide-scrollbar">
+        <nav className="flex flex-col space-y-3 flex-1 pt-2 overflow-y-auto custom-scrollbar-thin">
           {MENU_ITEMS.map((item) => (
             <div key={item.id} className="flex flex-col">
               <MainMenuItem item={item} />

@@ -277,7 +277,7 @@ export default function QuestionModal({
                 {/* Debug border for the safe content region */}
                 {/* <div className="absolute inset-0 border-2 border-rose-500/70 pointer-events-none rounded-sm" /> */}
 
-                <div className="w-full max-w-3xl mx-auto text-center space-y-2 sm:space-y-4 overflow-y-auto px-2 sm:px-4">
+                <div className="w-full max-w-3xl mx-auto text-center space-y-2 sm:space-y-4 overflow-y-auto custom-scrollbar-thin px-2 sm:px-4">
                   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#835D26] font-bd-street-sign leading-tight">
                     CÂU HỎI
                   </h2>

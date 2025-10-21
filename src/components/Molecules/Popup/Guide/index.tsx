@@ -64,7 +64,7 @@ const Guide = ({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void
                                     </span>
                                 </button>
 
-                                <div className="max-h-[80vh] overflow-y-auto ancient-scrollbar">
+                                <div className="max-h-[80vh] overflow-y-auto custom-scrollbar-elegant">
                                     {/* --- Title --- */}
                                     <h1 className="lg:text-6xl text-4xl pt-3 text-center font-bd-street-sign" style={{ color: user?.godProfile?.text_color }}>CHÀO MỪNG ĐẾN VỚI HÀNH TRÌNH “KHAI NHÂN MỞ ẤN”</h1>
                                     <div className="flex items-center justify-center">

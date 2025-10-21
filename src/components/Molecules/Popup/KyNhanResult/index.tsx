@@ -64,7 +64,7 @@ export default function KyNhanResult({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overflow-y-auto custom-scrollbar">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -80,7 +80,7 @@ export default function KyNhanResult({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="relative w-full max-w-4xl my-auto"
           >
-            <div className="relative  overflow-y-auto md:max-h-lg bg-primary-light border-2 border-[#835D26] rounded-xl p-6 overflow-hidden">
+            <div className="relative  overflow-y-auto custom-scrollbar-thin md:max-h-lg bg-primary-light border-2 border-[#835D26] rounded-xl p-6 overflow-hidden">
               <div className="flex justify-around items-center">
                 {/* Left side - Content */}
                 <div className="flex flex-col justify-between w-[50%]">
@@ -134,7 +134,7 @@ export default function KyNhanResult({
                       <div className="flex flex-col gap-3 w-full justify-center items-center">
                         <ButtonImage
                           onClick={handleGoToLibrary}
-                          classNameText="text-base"
+                          classNameText="text-base w-full"
                           className="hover:scale-105 transition-all duration-300 w-auto"
                           width={160}
                           height={45}

@@ -89,7 +89,7 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Danh sách câu hỏi
         </h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scrollbar-thin">
           <Table>
             <TableHeader>
               <TableRow>
