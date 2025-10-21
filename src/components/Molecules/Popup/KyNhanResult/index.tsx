@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { createPortal } from "react-dom"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
 import ButtonImage from "@components/Atoms/ButtonImage"
@@ -57,10 +58,13 @@ export default function KyNhanResult({
     onClose()
   }
 
-  return (
+  // Use React Portal to render modal at root level
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 overflow-y-auto">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -88,11 +92,10 @@ export default function KyNhanResult({
                     className="flex-1 flex items-center justify-center py-8"
                   >
                     <h2
-                      className={`font-bold text-secondary leading-relaxed text-center px-4 ${
-                        currentStep === 1
-                          ? "text-lg"
-                          : "text-xl"
-                      }`}
+                      className={`font-bold text-secondary leading-relaxed text-center px-4 ${currentStep === 1
+                        ? "text-lg"
+                        : "text-xl"
+                        }`}
                     >
                       {currentStep === 1
                         ? kyNhan.length === 1
@@ -186,6 +189,7 @@ export default function KyNhanResult({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

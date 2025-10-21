@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import ContentKhaiNhanMoAn from "@components/Atoms/ContentKhaiNhanMoAn";
 import ModalBackdrop from "@components/Atoms/ModalBackdrop";
 import { IUserLandWithLandResponseModel } from "@models/user-land/response";
@@ -59,7 +60,10 @@ export default function KhaiNhanMoAn({
         }
     }, [an, isCharacterClickable]);
 
-    return (
+    // Use React Portal to render modal at root level
+    if (typeof window === "undefined") return null;
+
+    return createPortal(
         <ModalBackdrop isOpen={isOpen} onClose={onClose} className="w-full lg:max-w-5xl max-w-3xl mx-auto overflow-y-hidden">
             <div className="max-h-[80vh] overflow-y-auto ancient-scrollbar">
                 <div className="p-4">
@@ -166,6 +170,7 @@ export default function KhaiNhanMoAn({
                     <ContentKhaiNhanMoAn isHidden={isHidden || !isCharacterClickable(an)} an={an} />
                 </div>
             </div>
-        </ModalBackdrop >
+        </ModalBackdrop >,
+        document.body
     );
 }

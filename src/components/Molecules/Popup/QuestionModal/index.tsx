@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import InputAnswer from "@components/Molecules/Popup/InputAnswer";
 import { Loader2 } from "lucide-react";
@@ -208,10 +209,13 @@ export default function QuestionModal({
     }
   };
 
-  return (
+  // Use React Portal to render modal at root level
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -341,6 +345,7 @@ export default function QuestionModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

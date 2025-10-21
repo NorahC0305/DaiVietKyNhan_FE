@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
 
 export default function IncompleteRegion({
@@ -7,7 +8,10 @@ export default function IncompleteRegion({
   onClose,
   message,
 }: ICOMPONENTS.CommonModalProps) {
-  return (
+  // Use React Portal to render modal at root level
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
       {/* Content */}
       <div className="text-center px-2 sm:px-0">
@@ -19,6 +23,7 @@ export default function IncompleteRegion({
           {message || "Kỳ Chủ phải hoàn thành vùng đất hiện tại mới có thể tiếp tục được hành trình sang vùng đất kế tiếp."}
         </p>
       </div>
-    </ModalBackdrop>
+    </ModalBackdrop>,
+    document.body
   );
 }

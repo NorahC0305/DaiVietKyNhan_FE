@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import ButtonImage from "../../../Atoms/ButtonImage";
 import ModalBackdrop from "../../../Atoms/ModalBackdrop";
 import { toast } from "react-toastify";
@@ -48,7 +49,10 @@ export default function WrongAnswer({
     }
   };
 
-  return (
+  // Use React Portal to render modal at root level
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
     <ModalBackdrop isOpen={isOpen} onClose={onClose}>
       {/* Content */}
       <div className="text-center">
@@ -92,6 +96,7 @@ export default function WrongAnswer({
           Trả lời lại
         </ButtonImage>
       </div>
-    </ModalBackdrop>
+    </ModalBackdrop>,
+    document.body
   );
 }
