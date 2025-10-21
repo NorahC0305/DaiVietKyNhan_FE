@@ -472,7 +472,7 @@ const TestPlaygroundResultPage = React.memo(() => {
               className={`${isMobileLandscape ? "text-xs" : "text-xs"}`}
               style={{ color: selectedOption?.color || "#6B7280" }}
             >
-              *Kết quả mang tính chất tham khảo - Test chơi
+              * Kết quả mang tính chất tham khảo
             </span>
           </div>
         </div>
