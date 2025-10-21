@@ -68,7 +68,15 @@ const HomePageClient = ({
     useUserRank(rankParams);
 
   // Hook để kiểm tra trạng thái điểm danh
-  const { isTodayCheckedIn, isLoading: isAttendanceLoading } = useAttendance();
+  const {
+    attendanceList,
+    isLoading: isAttendanceLoading,
+    isCheckingIn,
+    checkIn,
+    refetch,
+    isTodayCheckedIn,
+    getCheckedDates,
+  } = useAttendance();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -139,15 +147,19 @@ const HomePageClient = ({
     ),
     []
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Tự động mở modal nếu chưa điểm danh hôm nay
   useEffect(() => {
-    if (!isAttendanceLoading && !isTodayCheckedIn()) {
-      setIsModalOpen(true);
+    if (!isAttendanceLoading) {
+      if (!isTodayCheckedIn()) {
+        setShowModal(true);
+      } else {
+        // Nếu đã điểm danh rồi mà modal đang mở thì đóng nó đi
+        setShowModal(false);
+      }
     }
   }, [isAttendanceLoading, isTodayCheckedIn]);
-
   return (
     <div className="min-h-screen bg-black">
       {/* Banner 1 - Main Hero Section */}
@@ -166,13 +178,22 @@ const HomePageClient = ({
       </section>
 
       {/* Check-in Modal Dialog */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="!max-w-6xl !w-[95vw] lg:!w-[1200px] max-h-[90vh] overflow-hidden p-0 border-0 !bg-transparent shadow-none">
-          <ModalLayout 
-            onClose={() => setIsModalOpen(false)} 
+          <ModalLayout
+            onClose={() => setShowModal(false)}
             onCheckinSuccess={() => {
               // Đóng modal sau khi điểm danh thành công
-              setIsModalOpen(false);
+              setShowModal(false);
+            }}
+            attendanceData={{
+              attendanceList,
+              isLoading: isAttendanceLoading,
+              isCheckingIn,
+              checkIn,
+              refetch,
+              isTodayCheckedIn,
+              getCheckedDates,
             }}
           />
         </DialogContent>
@@ -185,7 +206,7 @@ const HomePageClient = ({
             alt="Khí Chất Của Bạn Là"
             width={1730}
             height={1000}
-            onClick={() => router.push(ROUTES.STARTER.ENTRY_TEST)}
+            onClick={() => router.push(ROUTES.STARTER.TEST_PLAYGROUND)}
             priority
           />
         </div>

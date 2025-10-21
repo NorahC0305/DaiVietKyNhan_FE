@@ -136,7 +136,7 @@ export default function MapRegion({
             // Cloud overlay for Kỳ Linh Việt Hỏa - smaller size
             <div className="absolute inset-16 flex items-center justify-center">
               <Image
-                src="/cloud.svg"
+                src="https://res.cloudinary.com/dznt9yias/image/upload/v1761067244/cloud_ybkv9q.svg"
                 alt="Cloud overlay"
                 width={610}
                 height={200}

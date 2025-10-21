@@ -39,7 +39,7 @@ const regionSlugs: Record<string, RegionData> = {
   "lang-phu-dong": {
     slug: "lang-phu-dong",
     id: 3,
-    backgroundImage: "/Map Thánh Gióng 1.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
+    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1761067376/Tha%CC%81nh_Gio%CC%81ng_1_fnbunu.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
   },
 
   "ky-linh-viet-hoa": {
