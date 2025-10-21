@@ -69,7 +69,7 @@ export default function KyNhanResult({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -80,10 +80,10 @@ export default function KyNhanResult({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="relative w-full max-w-4xl my-auto"
           >
-            <div className="relative max-h-[1200px] overflow-y-auto md:max-h-lg bg-primary-light border-2 border-[#835D26] rounded-xl p-6 overflow-hidden">
-              <div className="grid grid-cols-2">
+            <div className="relative  overflow-y-auto md:max-h-lg bg-primary-light border-2 border-[#835D26] rounded-xl p-6 overflow-hidden">
+              <div className="flex justify-around items-center">
                 {/* Left side - Content */}
-                <div className="flex flex-col justify-between">
+                <div className="flex flex-col justify-between w-[50%]">
                   <motion.div
                     key={`title-${currentStep}`}
                     initial={{ opacity: 0, y: 10 }}
@@ -171,12 +171,11 @@ export default function KyNhanResult({
                         transition={{ delay: 0.1 * (index + 1) }}
                         className="relative"
                       >
-                        <div className="relative w-96 h-96 bg-[#F7E6BB] rounded-lg border border-[#835D26] overflow-hidden">
+                        <div className="relative w-[250px] h-96 bg-[#F7E6BB] rounded-lg border border-[#835D26] overflow-hidden">
                           <Image
                             src={item.src || "/placeholder.svg"}
                             alt={item.alt}
                             fill
-                            className="object-cover"
                             sizes="160px"
                           />
                         </div>
