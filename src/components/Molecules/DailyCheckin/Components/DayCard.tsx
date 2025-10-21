@@ -1,44 +1,110 @@
 import React, { memo } from "react";
 import { Check } from "lucide-react";
-import styles from "../index.module.scss";
 
 const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
+  // Extract day number directly from the date string
+  // day.day is now an ISO date string like "2025-01-20"
+  const getDayNumber = () => {
+    try {
+      const date = new Date(day.day);
+      return {
+        dayNumber: date.getDate(),
+        month: `Th${date.getMonth() + 1}`,
+      };
+    } catch (error) {
+      // Fallback: calculate from current week if parsing fails
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+      const mondayIndex = currentDay === 0 ? 6 : currentDay - 1; // Convert to Monday = 0 format
+
+      // Get day index from day string (T2 = 0, T3 = 1, etc.)
+      const dayIndexMap: { [key: string]: number } = {
+        T2: 0,
+        T3: 1,
+        T4: 2,
+        T5: 3,
+        T6: 4,
+        T7: 5,
+        CN: 6,
+      };
+
+      const dayIndex = dayIndexMap[day.day] ?? 0;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() - mondayIndex + dayIndex);
+
+      return {
+        dayNumber: monday.getDate(),
+        month: `Th${monday.getMonth() + 1}`,
+      };
+    }
+  };
+
+  const { dayNumber, month } = getDayNumber();
+
   const baseClasses =
     variant === "mobile"
-      ? `relative bg-gradient-to-br rounded-full p-0 text-center shadow-sm transition-all duration-300 ${styles["mobileGridItem"]}`
-      : `w-[42px] sm:w-[50px] md:w-[58px] lg:w-[66px] bg-gradient-to-b from-amber-50 to-amber-100 border border-amber-800 rounded-lg p-1.5 sm:p-2 md:p-2.5 text-center min-h-[50px] sm:min-h-[58px] md:min-h-[66px] lg:min-h-[74px] flex flex-col justify-between shadow-sm`;
+      ? `relative bg-gradient-to-br rounded-full p-0 text-center transition-all duration-300 touch-action-manipulation`
+      : `w-[42px] sm:w-[50px] md:w-[58px] lg:w-[66px] bg-gradient-to-b from-amber-50 to-amber-100 rounded-lg p-1.5 sm:p-2 md:p-2.5 text-center flex flex-col justify-between`;
 
   const statusClasses = day.checked
     ? variant === "mobile"
-      ? "from-green-100 to-green-200 border-2 border-green-400"
+      ? "from-green-100 to-green-200"
       : "bg-gradient-to-b from-amber-200 to-amber-300"
     : variant === "mobile"
-    ? "from-gray-50 to-gray-100 border border-gray-300"
+    ? "from-gray-50 to-gray-100"
     : "";
 
   const specialClasses = day.isSpecial
     ? variant === "mobile"
-      ? "from-yellow-100 to-yellow-200 border-2 border-yellow-400"
+      ? "from-yellow-100 to-yellow-200"
       : "bg-gradient-to-b from-yellow-100 to-amber-50"
     : "";
+
+  const backdropStyle = {
+    backgroundImage: "url('/backdrop-7-ngay.png')",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+  };
+
+  const heightStyle =
+    variant === "mobile"
+      ? { height: "200px", minHeight: "200px" }
+      : { height: "130px", minHeight: "130px" };
 
   return (
     <div
       className={`${baseClasses} ${statusClasses} ${specialClasses}`}
+      style={{ ...backdropStyle, ...heightStyle }}
       role="gridcell"
       aria-label={`${day.label}, ${
         day.checked ? "completed" : "not completed"
       }`}
     >
-      <div className="text-xs font-bold mb-1">{day.day}</div>
-      <div className="flex justify-center mb-1">
+      {/* Day name (T4) - top */}
+      <div className="text-sm font-medium text-gray-700 mb-1">{day.label}</div>
+
+      {/* Day number (22) - middle - only show day number */}
+      <div
+        className={`${
+          variant === "mobile" ? "text-2xl" : "text-xl"
+        } font-bold text-gray-800 mb-2`}
+      >
+        {dayNumber}
+      </div>
+
+      {/* Month (Th10) - between day name and day number */}
+      <div className="text-xs text-gray-600 mb-1">{month}</div>
+
+      {/* Check button - bottom - white circle with gray border like in image */}
+      <div className="flex justify-center mt-auto">
         {day.checked ? (
           <div
             className={`${
               variant === "mobile"
                 ? "w-6 h-6"
                 : "w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-            } bg-red-800 rounded-full flex items-center justify-center shadow-md`}
+            } bg-red-800 rounded-full flex items-center justify-center`}
           >
             <Check
               className={`${
@@ -54,19 +120,15 @@ const DayCard: React.FC<ICOMPONENTS.DayCardProps> = memo(({ day, variant }) => {
               variant === "mobile"
                 ? "w-6 h-6"
                 : "w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4"
-            } border border-gray-400 rounded-full bg-white flex items-center justify-center`}
+            } rounded-full bg-white flex items-center justify-center`}
           >
-            <div className="w-2 h-2 border border-gray-400 rounded-full bg-gray-200"></div>
+            <div className="w-2 h-2 rounded-full bg-gray-200"></div>
           </div>
         )}
       </div>
+
       {variant === "mobile" && day.isSpecial && (
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white"></div>
-      )}
-      {variant === "desktop" && (
-        <div className="text-xs text-gray-600 leading-tight text-center">
-          {day.dayName}
-        </div>
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"></div>
       )}
     </div>
   );

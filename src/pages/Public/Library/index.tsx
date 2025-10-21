@@ -8,7 +8,6 @@ import kynhanService from "@/services/kynhan";
 import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
-import DailyCheckin from "@components/Molecules/DailyCheckin";
 
 interface CardData {
   id: number;
@@ -258,13 +257,6 @@ const LibraryPage = () => {
           />
         )}
       </div>
-
-      {/* Daily Checkin Modal */}
-      <DailyCheckin
-        isModal={true}
-        isOpen={isDailyCheckinOpen}
-        onClose={() => setIsDailyCheckinOpen(false)}
-      />
     </div>
   );
 };

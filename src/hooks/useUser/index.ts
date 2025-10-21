@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import userService from '@services/user';
-import { IMePaginationResponse, IMeResponse } from '@models/user/response';
+import { IMePaginationResponse, IMeResponse, IUserRankResponse } from '@models/user/response';
 
 export interface UserListParams {
     page?: number;
@@ -116,5 +116,51 @@ export function useGlobalUserData(initialUser?: IMeResponse["data"] | null) {
         isLoading,
         refreshUserData,
         updateUserData,
+    };
+}
+
+export interface UserRankParams {
+    currentPage?: number;
+    pageSize?: number;
+}
+
+export function useUserRank(params?: UserRankParams, initialData?: IUserRankResponse) {
+    const [data, setData] = useState<IUserRankResponse | undefined>(initialData || undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(initialData ? false : true);
+    const [error, setError] = useState<Error | null>(null);
+
+    // Extract values để tránh dependency loop - với fallback values
+    const currentPage = params?.currentPage ?? 1;
+    const pageSize = params?.pageSize ?? 15;
+
+    const fetchUserRank = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await userService.getUserRank({ currentPage, pageSize }) as IUserRankResponse;
+            setData(response);
+        } catch (err) {
+            console.error('Error fetching user rank:', err);
+            setError(err as Error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [currentPage, pageSize]);
+
+    useEffect(() => {
+        if (!initialData) {
+            fetchUserRank();
+        }
+    }, [fetchUserRank, initialData]);
+
+    const refetch = useCallback(() => {
+        fetchUserRank();
+    }, [fetchUserRank]);
+
+    return {
+        data,
+        isLoading,
+        error,
+        refetch,
     };
 }

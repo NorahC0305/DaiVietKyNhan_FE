@@ -54,6 +54,8 @@ declare namespace ICOMPONENTS {
     currentReward: number;
     todayChecked: boolean;
     onCheckin: () => void;
+    isLoading?: boolean;
+    isCheckingIn?: boolean;
   }
 
   interface RewardDisplayProps {
@@ -82,6 +84,7 @@ declare namespace ICOMPONENTS {
     onCheckin: () => void;
     className?: string;
     variant?: "mobile" | "desktop";
+    isLoading?: boolean;
   }
   interface BonusInfoProps {
     variant?: "mobile" | "desktop";
