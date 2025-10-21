@@ -40,32 +40,6 @@ export const useRewards = (isOpen: boolean) => {
     }
   }, []);
 
-  const fetchRewards = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      
-      // Fetch available rewards
-      const rewardsResponse: any = await rewardService.getRewards({
-        currentPage: 1,
-        pageSize: 1000,
-        sort: "sort:-id",
-      });
-
-      if (rewardsResponse && rewardsResponse.statusCode === 200 && rewardsResponse.data) {
-        setRewards(rewardsResponse.data);
-      } else {
-        toast.error("Không thể tải danh sách quà tặng");
-      }
-
-      // Fetch user's reward exchange history
-      await fetchUserRewardExchanges();
-    } catch (error) {
-      console.error("Error fetching rewards:", error);
-      toast.error("Có lỗi xảy ra khi tải danh sách quà tặng");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchUserRewardExchanges]);
 
   const handleExchange = useCallback(async (rewardId: number, onRedeem?: (tierId: string) => void) => {
     try {
@@ -96,10 +70,10 @@ export const useRewards = (isOpen: boolean) => {
   // Fetch data when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetchRewards();
+      fetchUserRewardExchanges();
       fetchUserData();
     }
-  }, [isOpen, fetchRewards, fetchUserData]);
+  }, [isOpen, fetchUserRewardExchanges, fetchUserData]);
 
   return {
     rewards,
@@ -108,7 +82,6 @@ export const useRewards = (isOpen: boolean) => {
     isLoading,
     isExchanging,
     handleExchange,
-    fetchRewards,
     fetchUserData,
     fetchUserRewardExchanges,
   };
