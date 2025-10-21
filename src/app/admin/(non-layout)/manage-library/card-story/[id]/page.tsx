@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+
+
 import CardStoryPage from "@pages/Admin/Library/CardStory";
 import chiTietKyNhanService from "@services/chi-tiet-ky-nhan";
 

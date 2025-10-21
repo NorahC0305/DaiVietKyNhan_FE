@@ -1,3 +1,6 @@
+export const dynamic = 'force-dynamic';
+
+
 import CardPage from "@pages/Admin/Library/Card";
 import landService from "@services/land";
 

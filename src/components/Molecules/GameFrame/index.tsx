@@ -40,7 +40,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
   user: propUser,
   slug,
 }) => {
-  console.log(propUser);
+  // console.log(propUser);
   const router = useRouter();
 
   // Use context user data if available, fallback to prop

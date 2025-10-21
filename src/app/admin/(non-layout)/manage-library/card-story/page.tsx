@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import CardStoryPage from "@pages/Admin/Library/CardStory";
 
 export default async function CardStoryServer() {
