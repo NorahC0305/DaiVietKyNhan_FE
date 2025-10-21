@@ -140,7 +140,7 @@ const HomePageClient = ({
     <div className="min-h-screen bg-black">
       {/* Banner 1 - Main Hero Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 cursor-pointer">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803766/HomePageBanner_iyp4lc.svg"
             alt="HomePage Banner"
@@ -168,7 +168,7 @@ const HomePageClient = ({
       </Dialog>
       {/* Banner 2 - Khí Chất Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 cursor-pointer">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803844/KhiChatCuaBanLa_wmxfip.svg"
             alt="Khí Chất Của Bạn Là"
