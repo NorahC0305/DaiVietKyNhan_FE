@@ -12,9 +12,10 @@ import Image from "next/image";
 
 interface ModalLayoutProps {
   onClose?: () => void;
+  onCheckinSuccess?: () => void;
 }
 
-const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose }) => {
+const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose, onCheckinSuccess }) => {
   // Use attendance hook for API integration
   const {
     attendanceList,
@@ -32,19 +33,23 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose }) => {
     const checkedDates = getCheckedDates();
     const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
 
-    // Get the start of the week (Monday)
+    // Get the start of the week (Sunday) - Tuần bắt đầu từ Chủ Nhật
     const startOfWeek = new Date(today);
-    const dayOfWeek = today.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday = 0, Monday = 1
+    const dayOfWeek = today.getDay(); // 0 = CN, 1 = T2, ..., 6 = T7
+    const daysToSubtract = dayOfWeek; // CN = 0 -> lùi 0 ngày, T2 = 1 -> lùi 1 ngày
     startOfWeek.setDate(today.getDate() - daysToSubtract);
 
     return days.map((dayName, index) => {
       const date = new Date(startOfWeek);
       date.setDate(startOfWeek.getDate() + index);
-      const dateString = date.toISOString().split("T")[0];
+      
+      // Sử dụng local date string để tránh lỗi múi giờ
+      const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const isChecked = checkedDates.has(dateString);
-      const isToday =
-        date.toISOString().split("T")[0] === today.toISOString().split("T")[0];
+      
+      // So sánh với ngày hôm nay (local time)
+      const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      const isToday = dateString === todayString;
 
       return {
         day: dateString,
@@ -63,27 +68,43 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose }) => {
 
   // Get current reward (default reward or from today's attendance)
   const currentReward = useMemo(() => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayAttendance = attendanceList.find(
-      (item) => new Date(item.date).toISOString().split("T")[0] === today
-    );
+    const today = new Date();
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    const todayAttendance = attendanceList.find((item) => {
+      let itemDateString: string;
+      
+      if (item.date.includes("T")) {
+        const itemDate = new Date(item.date);
+        itemDateString = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`;
+      } else {
+        const itemDate = new Date(item.date);
+        itemDateString = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`;
+      }
+      
+      return itemDateString === todayString;
+    });
+    
     return todayAttendance ? todayAttendance.coin : 100; // Default 100 coins
   }, [attendanceList]);
 
   // Check if today is checked in
   const todayChecked = useMemo(() => {
     const today = new Date();
-    const todayString = today.toISOString().split("T")[0];
+    // Sử dụng local date để tránh lỗi múi giờ
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     return attendanceList.some((item) => {
       let itemDateString: string;
 
       if (item.date.includes("T")) {
         // ISO string format: "2025-10-21T00:00:00.000Z"
-        itemDateString = new Date(item.date).toISOString().split("T")[0];
+        const itemDate = new Date(item.date);
+        itemDateString = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`;
       } else {
         // Direct date string format
-        itemDateString = new Date(item.date).toISOString().split("T")[0];
+        const itemDate = new Date(item.date);
+        itemDateString = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}-${String(itemDate.getDate()).padStart(2, '0')}`;
       }
 
       return itemDateString === todayString && item.status === "PRESENT";
@@ -94,6 +115,10 @@ const ModalLayout: React.FC<ModalLayoutProps> = memo(({ onClose }) => {
   const handleCheckIn = async () => {
     try {
       await checkIn();
+      // Gọi callback khi điểm danh thành công
+      if (onCheckinSuccess) {
+        onCheckinSuccess();
+      }
     } catch (error) {
       console.error("Check-in failed:", error);
     }
