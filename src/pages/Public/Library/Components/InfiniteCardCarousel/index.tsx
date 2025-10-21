@@ -7,6 +7,7 @@ import type {
   EmblaOptionsType,
 } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
+import Image from "next/image";
 import Card from "../Card";
 
 const TWEEN_FACTOR_BASE = 0.52;
@@ -41,14 +42,18 @@ const PrevButton: React.FC<{
   disabled: boolean;
 }> = ({ onClick, disabled }) => (
   <button
-    className="flex items-center justify-center w-14 h-14 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm cursor-pointer disabled:text-white/40 disabled:cursor-not-allowed hover:border-white/50 hover:bg-white/20 transition-all duration-200 text-white"
+    className="flex items-center justify-center w-16 h-16 rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
     onClick={onClick}
     disabled={disabled}
     type="button"
   >
-    <svg className="w-1/3 h-1/3" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-    </svg>
+    <Image
+      src="https://res.cloudinary.com/dznt9yias/image/upload/v1760721544/Back_cwp7tx.svg"
+      alt="Previous"
+      width={64}
+      height={64}
+      className="w-full h-full object-contain"
+    />
   </button>
 );
 
@@ -57,14 +62,18 @@ const NextButton: React.FC<{
   disabled: boolean;
 }> = ({ onClick, disabled }) => (
   <button
-    className="flex items-center justify-center w-14 h-14 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm cursor-pointer disabled:text-white/40 disabled:cursor-not-allowed hover:border-white/50 hover:bg-white/20 transition-all duration-200 text-white"
+    className="flex items-center justify-center w-16 h-16 rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 transition-all duration-200"
     onClick={onClick}
     disabled={disabled}
     type="button"
   >
-    <svg className="w-1/3 h-1/3" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
-    </svg>
+    <Image
+      src="https://res.cloudinary.com/dznt9yias/image/upload/v1760725883/next_xshxeb.svg"
+      alt="Next"
+      width={64}
+      height={64}
+      className="w-full h-full object-contain"
+    />
   </button>
 );
 
@@ -78,11 +87,10 @@ const DotButton: React.FC<{
     onClick={onClick}
   >
     <div
-      className={`w-3 h-3 rounded-full transition-all duration-200 ${
-        className?.includes("embla__dot--selected")
-          ? "bg-white scale-125"
-          : "bg-white/40 hover:bg-white/60"
-      }`}
+      className={`w-3 h-3 rounded-full transition-all duration-200 ${className?.includes("embla__dot--selected")
+        ? "bg-white scale-125"
+        : "bg-white/40 hover:bg-white/60"
+        }`}
     />
   </button>
 );
@@ -259,34 +267,53 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
 
   return (
     <div className="w-full max-w-none px-2 sm:px-4 md:px-6 lg:px-10">
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex touch-pan-y touch-pinch-zoom -ml-1 sm:-ml-2 md:-ml-3 lg:-ml-4">
-          {cards?.map((card, index) => (
-            <div
-              className="transform-gpu flex-none w-[200px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px] min-w-0 pl-2 sm:pl-4 md:pl-6 lg:pl-8 cursor-pointer"
-              key={card.id}
-              onClick={() => {
-                if (!emblaApi) return;
-                const isCenter = index === selectedIndex;
-                if (isCenter && card.unlocked) {
-                  setFlippedIndex((prev) => (prev === index ? null : index));
-                } else {
-                  emblaApi.scrollTo(index);
-                }
-              }}
-            >
-              <div className="card-container transition-transform duration-200 ease-out">
-                <Card
-                  {...card}
-                  isCenter={index === selectedIndex}
-                  cardNumber={index}
-                  isFlipped={flippedIndex === index}
-                  highlightQuery={highlightQuery}
-                  onCtaClick={() => onCtaClick?.(card.id)}
-                />
+      <div className="relative flex items-center justify-center">
+        {/* Previous Button */}
+        <div className="absolute left-0 z-10 flex items-center">
+          <PrevButton
+            onClick={onPrevButtonClick}
+            disabled={prevBtnDisabled}
+          />
+        </div>
+
+        {/* Carousel Container */}
+        <div className="flex-1 overflow-hidden" ref={emblaRef}>
+          <div className="flex touch-pan-y touch-pinch-zoom -ml-1 sm:-ml-2 md:-ml-3 lg:-ml-4">
+            {cards?.map((card, index) => (
+              <div
+                className="transform-gpu flex-none w-[200px] sm:w-[240px] md:w-[300px] lg:w-[380px] xl:w-[460px] min-w-0 pl-2 sm:pl-4 md:pl-6 lg:pl-8 cursor-pointer"
+                key={card.id}
+                onClick={() => {
+                  if (!emblaApi) return;
+                  const isCenter = index === selectedIndex;
+                  if (isCenter && card.unlocked) {
+                    setFlippedIndex((prev) => (prev === index ? null : index));
+                  } else {
+                    emblaApi.scrollTo(index);
+                  }
+                }}
+              >
+                <div className="card-container transition-transform duration-200 ease-out">
+                  <Card
+                    {...card}
+                    isCenter={index === selectedIndex}
+                    cardNumber={index}
+                    isFlipped={flippedIndex === index}
+                    highlightQuery={highlightQuery}
+                    onCtaClick={() => onCtaClick?.(card.id)}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Next Button */}
+        <div className="absolute right-0 z-10 flex items-center">
+          <NextButton
+            onClick={onNextButtonClick}
+            disabled={nextBtnDisabled}
+          />
         </div>
       </div>
     </div>

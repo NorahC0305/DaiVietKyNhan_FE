@@ -1,6 +1,7 @@
 import { cn } from "@utils/CN";
 import Image from "next/image";
 import FramedImage from "../ImageInFrame";
+import Link from "next/link";
 
 export default function Card({
   unlocked,
@@ -213,24 +214,24 @@ export default function Card({
                   {(backContent?.ctaText ||
                     backContent?.ctaHref ||
                     onCtaClick) && (
-                    <div className="w-full flex justify-center mt-3 sm:mt-4">
-                      {backContent?.ctaHref && !onCtaClick ? (
-                        <a
-                          href={backContent.ctaHref}
-                          className="rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
-                        >
-                          {backContent?.ctaText || "Xem Thêm"}
-                        </a>
-                      ) : (
-                        <button
-                          onClick={onCtaClick}
-                          className="rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
-                        >
-                          {backContent?.ctaText || "Xem Thêm"}
-                        </button>
-                      )}
-                    </div>
-                  )}
+                      <div className="w-full flex justify-center mt-3 sm:mt-4">
+                        {backContent?.ctaHref && !onCtaClick ? (
+                          <Link
+                            href={backContent.ctaHref}
+                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                          >
+                            {backContent?.ctaText || "Xem Thêm"}
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={onCtaClick}
+                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                          >
+                            {backContent?.ctaText || "Xem Thêm"}
+                          </button>
+                        )}
+                      </div>
+                    )}
                 </div>
               </div>
             )}
