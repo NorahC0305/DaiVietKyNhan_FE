@@ -354,6 +354,7 @@ export default function MapPageClient({
 
       {/* Popup for ky-linh-viet-hoa region */}
       <WaitingOthers
+        userLand={userLand}
         isOpen={isWaitingOthersModalOpen}
         onClose={() => setIsWaitingOthersModalOpen(false)}
       />

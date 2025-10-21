@@ -256,6 +256,14 @@ export default function FixedScrollsPageResponsive({
             await refreshUserData();
           }
 
+          // Check if this completes the land
+          if (response.data.isCompletedLand) {
+            updateModalState({ isQuestionModalOpen: false });
+            setIsCompleteLand(true);
+            setSelectedQuestion(null);
+            return;
+          }
+
           // Show KyNhan result if summaries exist
           if (selectedQuestion.kynhanSummaries?.length > 0) {
             const transformedKyNhan = transformKyNhanSummaries(selectedQuestion.kynhanSummaries);
@@ -347,17 +355,24 @@ export default function FixedScrollsPageResponsive({
     const previousAnsweredQuestions = answeredQuestions;
     setAnsweredQuestions(prev => new Set([...prev, questionId]));
 
-    const [isCompleteLand, setIsCompleteLand] = useState(false);
     try {
       const requestData: IUserSkipQuestionByCoinsRequest = { questionId };
       const response = await userAnswerLogService.skipQuestionByCoins(requestData);
 
-      if (response?.statusCode && [200, 201].includes(response.statusCode)) {
+      if (response?.statusCode && [200, 201].includes(response.statusCode) && response.data) {
         toast.success("Đã sử dụng 500 xu để vượt qua câu hỏi");
 
         // Refresh user data to update coins after using coins to skip
         if (refreshUserData) {
           await refreshUserData();
+        }
+
+        // Check if this completes the land
+        if (response.data.isCompletedLand) {
+          updateModalState({ isWrongAnswerModalOpen: false });
+          setIsCompleteLand(true);
+          setSelectedQuestion(null);
+          return;
         }
 
         const skippedQuestion = questions.find(q => q.id === questionId);

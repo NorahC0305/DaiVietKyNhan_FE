@@ -18,9 +18,9 @@ export default function ModalBackdrop({
   onClose,
   children,
   // Chiều rộng linh hoạt hơn, giới hạn max-width cho màn hình lớn
-  className = "relative mx-auto w-[95vw] sm:w-[90vw] max-w-3xl", 
+  className = "relative mx-auto w-[95vw] sm:w-[90vw] max-w-3xl",
   // Thêm padding lớn hơn và giới hạn chiều cao, tự động cuộn khi nội dung dài
-  cardClassName = "relative bg-primary-light border-4 border-secondary rounded-2xl my-8 p-6 sm:p-8 md:p-10 max-h-[90vh] overflow-y-auto",
+  cardClassName = "relative bg-primary-light border-4 border-secondary rounded-2xl my-8 p-6 sm:p-8 md:p-10 max-h-[90vh]",
   showCloseButton = true,
 }: ModalBackdropProps) {
   return (
@@ -44,7 +44,7 @@ export default function ModalBackdrop({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={className}
           >
-            <div className={cardClassName}>
+            <div className={`${cardClassName}`}>
               {showCloseButton && (
                 <button
                   // Vị trí nút X được điều chỉnh để phù hợp với padding mới, đảm bảo tách biệt

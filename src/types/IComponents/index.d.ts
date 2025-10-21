@@ -194,5 +194,6 @@ declare namespace ICOMPONENTS {
     isOpen: boolean;
     onClose: () => void;
     message?: string | null;
+    userLand?: IUserLandWithLandResponseModel[];
   }
 }

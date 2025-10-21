@@ -13,6 +13,7 @@ export const UserLandSchema = z.object({
     LAND.LAND_STATUS.PENDING,
     LAND.LAND_STATUS.LOCKED,
     LAND.LAND_STATUS.UNLOCKED,
+    LAND.LAND_STATUS.COMPLETED,
   ]),
   createdById: z.number(),
   updatedById: z.number().nullable(),

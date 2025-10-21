@@ -2,6 +2,8 @@
 
 import ContentKhaiNhanMoAn from "@components/Atoms/ContentKhaiNhanMoAn";
 import ModalBackdrop from "@components/Atoms/ModalBackdrop";
+import { IUserLandWithLandResponseModel } from "@models/user-land/response";
+import { LAND } from "@constants/land";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 
@@ -9,26 +11,56 @@ export type KhaiNhanMoAnProps = {
     isOpen: boolean;
     onClose: () => void;
     onClaim: (achievementId: string) => void;
+    userLand?: IUserLandWithLandResponseModel[];
 };
 
 export default function KhaiNhanMoAn({
     isOpen,
     onClose,
     onClaim,
+    userLand,
 }: KhaiNhanMoAnProps) {
 
     const [an, setAn] = useState<string>('');
     const isHidden = useMemo(() => !an || an === '', [an]);
+
+    // Mapping từ landId đến tên character
+    const landIdToCharacterMap: Record<number, string> = {
+        1: 'Sơn Tinh',
+        2: 'Chử Đồng Tử',
+        3: 'Thánh Gióng',
+        4: 'Liễu Hạnh'
+    };
+
+    // Kiểm tra xem character nào đã completed
+    const completedCharacters = useMemo(() => {
+        if (!userLand) return [];
+        return userLand
+            .filter(land => land.status === LAND.LAND_STATUS.COMPLETED)
+            .map(land => landIdToCharacterMap[land.landId])
+            .filter(Boolean);
+    }, [userLand]);
+
+    // Kiểm tra xem character có thể click được không
+    const isCharacterClickable = useCallback((characterName: string) => {
+        return completedCharacters.includes(characterName);
+    }, [completedCharacters]);
+
     const handleSetAn = useCallback((selectedAn: string) => {
+        // Chỉ cho phép click nếu character đã completed
+        if (!isCharacterClickable(selectedAn)) {
+            return;
+        }
+
         if (an === selectedAn) {
             setAn('');
         } else {
             setAn(selectedAn);
         }
-    }, [an]);
+    }, [an, isCharacterClickable]);
 
     return (
-        <ModalBackdrop isOpen={isOpen} onClose={onClose} className="w-full lg:max-w-5xl max-w-3xl mx-auto">
+        <ModalBackdrop isOpen={isOpen} onClose={onClose} className="w-full lg:max-w-5xl max-w-3xl mx-auto overflow-y-hidden">
             <div className="max-h-[80vh] overflow-y-auto ancient-scrollbar">
                 <div className="p-4">
                     {/* --- Title --- */}
@@ -64,50 +96,74 @@ export default function KhaiNhanMoAn({
                     {/* --- Khai Nhan Mo An Card --- */}
                     <div className="w-full mt-5 flex items-center justify-center gap-4">
                         <div
-                            className={`relative inset-0 flex items-center justify-center lg:w-[200px] lg:h-[250px] w-[150px] h-[200px] cursor-pointer transition-all duration-300 ${an === 'Sơn Tinh' ? 'scale-105' : ''
+                            className={`relative inset-0 flex items-center justify-center lg:w-[200px] lg:h-[250px] w-[150px] h-[200px] transition-all duration-300 ${isCharacterClickable('Sơn Tinh')
+                                ? `cursor-pointer ${an === 'Sơn Tinh' ? 'scale-105' : ''}`
+                                : 'cursor-not-allowed opacity-50'
                                 }`}
                             onClick={() => handleSetAn('Sơn Tinh')}
                         >
-                            {an === 'Sơn Tinh' && (
+                            {an === 'Sơn Tinh' && isCharacterClickable('Sơn Tinh') && (
                                 <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-green-400 via-lime-500 to-green-400 animate-led-border -z-10" />
                             )}
-                            <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760861674/Sơn_Tinh_-_Chương_1_tmi2kx.png' alt="Sơn Tinh - Chương 1" fill className="relative z-10" />
+                            {isCharacterClickable('Sơn Tinh') ? (
+                                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760861674/Sơn_Tinh_-_Chương_1_tmi2kx.png' alt="Sơn Tinh - Chương 1" fill className="relative z-10" />
+                            ) : (
+                                <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
+                            )}
                         </div>
 
                         <div
-                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#2B638F] cursor-pointer transition-all duration-300 ${an === 'Chử Đồng Tử' ? 'scale-105' : ''
+                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#2B638F] transition-all duration-300 ${isCharacterClickable('Chử Đồng Tử')
+                                ? `cursor-pointer ${an === 'Chử Đồng Tử' ? 'scale-105' : ''}`
+                                : 'cursor-not-allowed opacity-50'
                                 }`}
                             onClick={() => handleSetAn('Chử Đồng Tử')}
                         >
-                            {an === 'Chử Đồng Tử' && (
+                            {an === 'Chử Đồng Tử' && isCharacterClickable('Chử Đồng Tử') && (
                                 <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-400 animate-led-border -z-10" />
                             )}
-                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10"></div>
+                            {isCharacterClickable('Chử Đồng Tử') ? (
+                                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg' alt="Chử Đồng Tử - Chương 2" fill className="relative z-10" />
+                            ) : (
+                                <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10"></div>
+                            )}
                         </div>
                         <div
-                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#EF493D] cursor-pointer transition-all duration-300 ${an === 'Thánh Gióng' ? 'scale-105' : ''
+                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#EF493D] transition-all duration-300 ${isCharacterClickable('Thánh Gióng')
+                                ? `cursor-pointer ${an === 'Thánh Gióng' ? 'scale-105' : ''}`
+                                : 'cursor-not-allowed opacity-50'
                                 }`}
                             onClick={() => handleSetAn('Thánh Gióng')}
                         >
-                            {an === 'Thánh Gióng' && (
+                            {an === 'Thánh Gióng' && isCharacterClickable('Thánh Gióng') && (
                                 <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-red-400 via-pink-500 to-red-400 animate-led-border -z-10" />
                             )}
-                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
+                            {isCharacterClickable('Thánh Gióng') ? (
+                                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760714074/Logo_TG_ybvbuo.svg' alt="Thánh Gióng - Chương 3" fill className="relative z-10" />
+                            ) : (
+                                <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
+                            )}
                         </div>
                         <div
-                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#8D3BBB] cursor-pointer transition-all duration-300 ${an === 'Liễu Hạnh' ? 'scale-105' : ''
+                            className={`relative flex items-center justify-center lg:w-[200px] lg:h-[248px] w-[150px] h-[200px] bg-[#6E6B63] rounded-xl border-2 border-[#8D3BBB] transition-all duration-300 ${isCharacterClickable('Liễu Hạnh')
+                                ? `cursor-pointer ${an === 'Liễu Hạnh' ? 'scale-105' : ''}`
+                                : 'cursor-not-allowed opacity-50'
                                 }`}
                             onClick={() => handleSetAn('Liễu Hạnh')}
                         >
-                            {an === 'Liễu Hạnh' && (
+                            {an === 'Liễu Hạnh' && isCharacterClickable('Liễu Hạnh') && (
                                 <div className="absolute -inset-1 rounded-2xl border border-transparent bg-gradient-to-r from-purple-400 via-violet-500 to-purple-400 animate-led-border -z-10" />
                             )}
-                            <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
+                            {isCharacterClickable('Liễu Hạnh') ? (
+                                <Image src='https://res.cloudinary.com/dznt9yias/image/upload/v1760714053/Logo_LH_owmwjj.svg' alt="Liễu Hạnh - Chương 4" fill className="relative z-10" />
+                            ) : (
+                                <div className="absolute inset-0.5 bg-[#6E6B63] rounded-xl z-10" />
+                            )}
                         </div>
                     </div>
 
                     {/* --- Main Content --- */}
-                    <ContentKhaiNhanMoAn isHidden={isHidden} an={an} />
+                    <ContentKhaiNhanMoAn isHidden={isHidden || !isCharacterClickable(an)} an={an} />
                 </div>
             </div>
         </ModalBackdrop >
