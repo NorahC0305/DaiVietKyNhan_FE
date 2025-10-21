@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ROUTES } from '@routes';
-import { IUser } from '@models/user/entity';
-import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response';
-import { IUserRankData } from '@models/user/response';
-import RadialGradial from '@components/Atoms/RadialGradient';
-import { useUserRank } from '@hooks/useUser';
-import ModalLayout from '@components/Molecules/DailyCheckin/Layouts/ModalLayout';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ROUTES } from "@routes";
+import { IUser } from "@models/user/entity";
+import { IGetSystemConfigWithAmountUserResponse } from "@models/system/response";
+import { IUserRankData } from "@models/user/response";
+import RadialGradial from "@components/Atoms/RadialGradient";
+import { useUserRank } from "@hooks/useUser";
+import ModalLayout from "@components/Molecules/DailyCheckin/Layouts/ModalLayout";
+import { Dialog, DialogContent } from "@components/Atoms/ui/dialog";
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
@@ -22,36 +23,46 @@ const testimonialsData = [
     id: 1,
     name: "TS. Phạm Thanh Hải",
     title: "",
-    quote: "Đây là cuốn sách rất xứng đáng để có một trên gia sách của các gia đình Việt Nam?",
-    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811389/PhanThanhHai_dtbb2b.svg",
+    quote:
+      "Đây là cuốn sách rất xứng đáng để có một trên gia sách của các gia đình Việt Nam?",
+    avatar:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760811389/PhanThanhHai_dtbb2b.svg",
     isMain: false,
   },
   {
     id: 2,
     name: "NSƯT Thành Lộc",
     title: "",
-    quote: "Tôi tin đây là một cuốn sách ai cũng nên có cho chính mình, người thân và gia đình!",
-    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811335/NSUTThanhLoc_o9xoa6.svg",
+    quote:
+      "Tôi tin đây là một cuốn sách ai cũng nên có cho chính mình, người thân và gia đình!",
+    avatar:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760811335/NSUTThanhLoc_o9xoa6.svg",
     isMain: true,
   },
   {
     id: 3,
     name: "Charlie Nguyễn",
     title: "Đạo diễn",
-    quote: "Đây là 1 dự án hiếm hoi xứng đáng được lan truyền rộng rãi trong cộng đồng.",
-    avatar: "https://res.cloudinary.com/dznt9yias/image/upload/v1760811440/CharlieNguyen_oxuqka.svg",
+    quote:
+      "Đây là 1 dự án hiếm hoi xứng đáng được lan truyền rộng rãi trong cộng đồng.",
+    avatar:
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1760811440/CharlieNguyen_oxuqka.svg",
     isMain: false,
   },
 ];
 
-
-const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
+const HomePageClient = ({
+  user,
+  activeWithAmountUser,
+  accessToken,
+}: HomePageClientProps) => {
   const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
-  
+
   // Memoize params để tránh re-creation mỗi lần render
   const rankParams = useMemo(() => ({ currentPage: 1, pageSize: 15 }), []);
-  
-  const { data: userRankData, isLoading: isLoadingRank } = useUserRank(rankParams);
+
+  const { data: userRankData, isLoading: isLoadingRank } =
+    useUserRank(rankParams);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,37 +99,43 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
     return { leftColumn, rightColumn, thirdColumn };
   }, [userRankData?.data?.results]);
 
-  const renderRankItem = useCallback((item: IUserRankData | undefined, rank: number) => (
-    <div key={item?.id || rank} className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded">
-      <div className="text-lg md:text-xl font-bold text-primary opacity-70">
-        {rank}.
-      </div>
-      <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
-        {item?.avatar ? (
-          <Image
-            src={item.avatar}
-            alt={item.name || 'User'}
-            width={24}
-            height={24}
-            className="rounded-full w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-xs text-gray-600">?</span>
-          </div>
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="font-bold text-primary text-xs md:text-sm truncate">
-          {item?.name || 'Chưa có dữ liệu'}
+  const renderRankItem = useCallback(
+    (item: IUserRankData | undefined, rank: number) => (
+      <div
+        key={item?.id || rank}
+        className="flex items-center space-x-1 md:space-x-2 p-1 md:p-2 rounded"
+      >
+        <div className="text-lg md:text-xl font-bold text-primary opacity-70">
+          {rank}.
         </div>
-        <div className="text-primary text-xs">{item?.point || 0}</div>
+        <div className="w-6 h-6 md:w-8 md:h-8 rounded flex items-center justify-center flex-shrink-0">
+          {item?.avatar ? (
+            <Image
+              src={item.avatar}
+              alt={item.name || "User"}
+              width={24}
+              height={24}
+              className="rounded-full w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center">
+              <span className="text-xs text-gray-600">?</span>
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-primary text-xs md:text-sm truncate">
+            {item?.name || "Chưa có dữ liệu"}
+          </div>
+          <div className="text-primary text-xs">{item?.point || 0}</div>
+        </div>
       </div>
-    </div>
-  ), []);
-
+    ),
+    []
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <div className='min-h-screen bg-black'>
+    <div className="min-h-screen bg-black">
       {/* Banner 1 - Main Hero Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -132,8 +149,20 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
           />
         </div>
       </section>
-{/* <DesktopLayout/> */}
-<ModalLayout/>
+      {/* <DesktopLayout/> */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="px-8 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+      >
+        Mở cửa sổ điểm danh
+      </button>
+
+      {/* Check-in Modal Dialog */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="!max-w-6xl !w-[95vw] lg:!w-[1200px] max-h-[90vh] overflow-hidden p-0 border-0 !bg-transparent shadow-none">
+          <ModalLayout onClose={() => setIsModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
       {/* Banner 2 - Khí Chất Section */}
       <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -164,11 +193,13 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
           <div className="absolute top-3 left-0 right-0 bottom-0 z-10  mx-auto h-[100%] flex flex-col justify-center">
             {/* Content Container - Giới hạn kích thước */}
             <div className="w-full overflow-hidden">
-              <div className='flex items-center justify-center'>
-                <RadialGradial className='text-center lg:text-6xl py-3 text-5xl font-bd-street-sign'>BẢNG XẾP HẠNG</RadialGradial>
+              <div className="flex items-center justify-center">
+                <RadialGradial className="text-center lg:text-6xl py-3 text-5xl font-bd-street-sign">
+                  BẢNG XẾP HẠNG
+                </RadialGradial>
               </div>
               <div className="w-full flex justify-center items-center gap-3 md:gap-4">
-                <div className='w-[80%] flex justify-around items-center'>
+                <div className="w-[80%] flex justify-around items-center">
                   {isLoadingRank ? (
                     <div className="flex justify-center items-center w-full py-8">
                       <div className="text-primary">Đang tải dữ liệu...</div>
@@ -219,11 +250,11 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
         <div className="w-full max-w-7xl mx-auto px-4">
           {/* Headline */}
           <div className="w-full mb-10 lg:mb-16 flex items-center justify-center gap-4">
-            <div className='line' />
+            <div className="line" />
             <h3 className="text-3xl lg:text-4xl text-white font-bd-street-sign text-center">
               NHỮNG NHẬN XÉT VỀ ĐẠI VIỆT KỲ NHÂN
             </h3>
-            <div className='line' />
+            <div className="line" />
           </div>
 
           {/* Testimonials Carousel Container */}
@@ -231,13 +262,15 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
             {/* Để lướt, chúng ta sẽ render 3 phần tử: trước, hiện tại, sau */}
 
             {/* === Left Testimonial (Faded) === */}
-            <div className={`
+            <div
+              className={`
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-5 pt-12 opacity-60
               w-full max-w-xs
               left-1/3 lg:left-1/4 transform -translate-x-full -ml-40 md:-ml-0
               md:flex
-              `}>
+              `}
+            >
               <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
                 {getTestimonialDisplay(-1).quote}
               </p>
@@ -250,19 +283,27 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
                   className="rounded-full object-cover w-full h-full"
                 />
               </div>
-              <div className='text-center'>
-                <p className="text-white font-semibold">{getTestimonialDisplay(-1).name}</p>
-                {getTestimonialDisplay(-1).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(-1).title}</p>}
+              <div className="text-center">
+                <p className="text-white font-semibold">
+                  {getTestimonialDisplay(-1).name}
+                </p>
+                {getTestimonialDisplay(-1).title && (
+                  <p className="text-gray-400 text-sm">
+                    {getTestimonialDisplay(-1).title}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* === Center Testimonial (Prominent) === */}
-            <div className={`
+            <div
+              className={`
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-6
               w-full md:w-1/2 max-w-md
               left-1/2 transform -translate-x-1/2
-              `}>
+              `}
+            >
               {/* Speech Bubble */}
               <div className="bg-secondary p-6 rounded-lg shadow-lg relative z-10">
                 <p className="text-white font-medium text-center text-lg lg:text-xl italic">
@@ -282,19 +323,27 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
                 />
               </div>
               {/* Name */}
-              <div className='text-center'>
-                <p className="text-white font-semibold text-lg">{getTestimonialDisplay(0).name}</p>
-                {getTestimonialDisplay(0).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(0).title}</p>}
+              <div className="text-center">
+                <p className="text-white font-semibold text-lg">
+                  {getTestimonialDisplay(0).name}
+                </p>
+                {getTestimonialDisplay(0).title && (
+                  <p className="text-gray-400 text-sm">
+                    {getTestimonialDisplay(0).title}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className={`
+            <div
+              className={`
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-5 pt-12 opacity-60
               w-full max-w-xs
               right-0 transform translate-x-0 ml-40 md:ml-0
               md:flex
-              `}>
+              `}
+            >
               <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
                 {getTestimonialDisplay(1).quote}
               </p>
@@ -307,9 +356,15 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
                   className="rounded-full object-cover w-full h-full"
                 />
               </div>
-              <div className='text-center'>
-                <p className="text-white font-semibold">{getTestimonialDisplay(1).name}</p>
-                {getTestimonialDisplay(1).title && <p className="text-gray-400 text-sm">{getTestimonialDisplay(1).title}</p>}
+              <div className="text-center">
+                <p className="text-white font-semibold">
+                  {getTestimonialDisplay(1).name}
+                </p>
+                {getTestimonialDisplay(1).title && (
+                  <p className="text-gray-400 text-sm">
+                    {getTestimonialDisplay(1).title}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -327,11 +382,10 @@ const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageCli
         </div>
       </section>
     </div>
-  )
-}
+  );
+};
 
 export default HomePageClient;
-
 
 // "use client";
 
