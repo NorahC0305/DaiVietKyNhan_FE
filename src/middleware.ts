@@ -42,7 +42,7 @@ export async function middleware(req: NextRequest) {
       "/contact",
       "/about",
       "/",
-      "/map",
+      "/ky-gioi",
       "/library",
     ];
 
