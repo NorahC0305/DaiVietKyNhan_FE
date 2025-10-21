@@ -117,8 +117,10 @@ const regionToLandIdMap: Record<string, number | null> = {
 
 export default function MapPageClient({
   userLand: initialUserLand,
+  slug,
 }: {
   userLand: IUserLandWithLandResponseModel[];
+  slug: string;
 }) {
   const router = useRouter();
   const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] =

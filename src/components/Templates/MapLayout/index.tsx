@@ -9,6 +9,7 @@ interface MapsLayoutProps {
   children: React.ReactNode;
   className?: string;
   user: IMeResponse["data"] | null;
+  slug: string;
 }
 
 // Inner component that has access to context
@@ -16,12 +17,13 @@ const MapsLayoutInner: React.FC<{
   children: React.ReactNode;
   className?: string;
   initialUser: IMeResponse["data"] | null;
-}> = ({ children, className = "", initialUser }) => {
+  slug: string;
+}> = ({ children, className = "", initialUser, slug }) => {
   const { userData } = useUserDataContext();
   const user = userData || initialUser;
 
   return (
-    <GameFrame className="" user={user}>
+    <GameFrame className="" user={user} slug={slug}>
       <div
         className={`absolute w-full top-0 left-0 overflow-hidden -z-1 ${className}`}
       >
@@ -36,10 +38,11 @@ const MapsLayoutClient: React.FC<MapsLayoutProps> = ({
   children,
   className = "",
   user,
+  slug,
 }) => {
   return (
     <UserDataProvider initialUser={user}>
-      <MapsLayoutInner className={className} initialUser={user}>
+      <MapsLayoutInner className={className} initialUser={user} slug={slug}>
         {children}
       </MapsLayoutInner>
     </UserDataProvider>
