@@ -60,7 +60,6 @@ export default function RedeemModal({
     isExchanging,
     handleExchange,
   } = useRewards(isOpen);
-  console.log("Rewards:", rewards);
   // console.log('User Reward Exchanges:', userRewardExchanges);
   // Get user data from context for synchronization with GameFrame
   const context = useUserDataContextSafe();
