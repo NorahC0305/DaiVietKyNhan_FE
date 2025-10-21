@@ -9,6 +9,7 @@ import { IGetSystemConfigWithAmountUserResponse } from "@models/system/response"
 import { IUserRankData } from "@models/user/response";
 import RadialGradial from "@components/Atoms/RadialGradient";
 import { useUserRank } from "@hooks/useUser";
+import { useAttendance } from "@hooks/useAttendance";
 import ModalLayout from "@components/Molecules/DailyCheckin/Layouts/ModalLayout";
 import { Dialog, DialogContent } from "@components/Atoms/ui/dialog";
 import { useRouter } from "next/navigation";
@@ -65,6 +66,9 @@ const HomePageClient = ({
 
   const { data: userRankData, isLoading: isLoadingRank } =
     useUserRank(rankParams);
+
+  // Hook để kiểm tra trạng thái điểm danh
+  const { isTodayCheckedIn, isLoading: isAttendanceLoading } = useAttendance();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -136,6 +140,14 @@ const HomePageClient = ({
     []
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Tự động mở modal nếu chưa điểm danh hôm nay
+  useEffect(() => {
+    if (!isAttendanceLoading && !isTodayCheckedIn()) {
+      setIsModalOpen(true);
+    }
+  }, [isAttendanceLoading, isTodayCheckedIn]);
+
   return (
     <div className="min-h-screen bg-black">
       {/* Banner 1 - Main Hero Section */}
@@ -152,18 +164,17 @@ const HomePageClient = ({
           />
         </div>
       </section>
-      {/* <DesktopLayout/> */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="px-8 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
-      >
-        Mở cửa sổ điểm danh
-      </button>
 
       {/* Check-in Modal Dialog */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="!max-w-6xl !w-[95vw] lg:!w-[1200px] max-h-[90vh] overflow-hidden p-0 border-0 !bg-transparent shadow-none">
-          <ModalLayout onClose={() => setIsModalOpen(false)} />
+          <ModalLayout 
+            onClose={() => setIsModalOpen(false)} 
+            onCheckinSuccess={() => {
+              // Đóng modal sau khi điểm danh thành công
+              setIsModalOpen(false);
+            }}
+          />
         </DialogContent>
       </Dialog>
       {/* Banner 2 - Khí Chất Section */}
