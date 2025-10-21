@@ -20,6 +20,8 @@ const PUBLIC = {
   ABOUT: "/about-us",
   PRODUCTS: "/products", //TODO: Change to '/products'
   CONTACT: "/contact",
+  PLAY_GROUND: "/starter/test-playground",
+  TEST_PLAYGROUND_RESULT: "/starter/test-playground-result",
 } as const;
 
 // Auth routes
