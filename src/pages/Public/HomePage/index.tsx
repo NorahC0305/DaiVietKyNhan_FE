@@ -209,6 +209,9 @@ const HomePageClient = ({
             onClick={() => router.push(ROUTES.STARTER.TEST_PLAYGROUND)}
             priority
           />
+
+
+          <></>
         </div>
       </section>
 
