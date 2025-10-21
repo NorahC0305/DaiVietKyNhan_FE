@@ -53,8 +53,8 @@ export default function RedeemModal({
   tiers,
 }: RedeemModalProps) {
   const { rewards, userRewardExchanges, userData: rewardsUserData, isLoading, isExchanging, handleExchange } = useRewards(isOpen);
-  console.log('Rewards:', rewards);
-  console.log('User Reward Exchanges:', userRewardExchanges);
+  // console.log('Rewards:', rewards);
+  // console.log('User Reward Exchanges:', userRewardExchanges);
   // Get user data from context for synchronization with GameFrame
   const context = useUserDataContextSafe();
   const contextUserData = context?.userData || null;
