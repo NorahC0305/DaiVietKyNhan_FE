@@ -56,7 +56,7 @@ export const useAchievements = (isOpen: boolean) => {
     setError(null);
     try {
       const response = await userAchievementService.getMyAchievements();
-
+console.log('response', response);
       if (response.statusCode === 200 && response.data && Array.isArray(response.data)) {
         const mappedAchievements = mapApiResponseToAchievements(response.data as IUserAchievement[]);
         setAchievements(mappedAchievements);

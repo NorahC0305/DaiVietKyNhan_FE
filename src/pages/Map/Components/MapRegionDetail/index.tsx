@@ -192,7 +192,7 @@ export default function FixedScrollsPageResponsive({
 
   const transformKyNhanSummaries = useCallback((summaries: IQuestion['kynhanSummaries']): KyNhan[] => {
     return summaries?.map(summary => ({
-      id: summary.id,
+      id: summary.kyNhanId, // Use kyNhanId instead of summary.id
       src: summary.imgUrl,
       alt: `Kỳ nhân ${summary.kyNhanId}`,
       name: `Kỳ nhân ${summary.kyNhanId}`,
