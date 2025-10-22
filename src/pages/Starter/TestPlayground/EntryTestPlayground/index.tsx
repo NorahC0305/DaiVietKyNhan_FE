@@ -61,7 +61,7 @@ const IntroComponent = React.memo(
   rounded-2xl p-6 text-center shadow-lg animate-fade-in"
     >
       <p className="text-[#835D26] text-lg font-bold mb-6 leading-relaxed">
-        Đây là khu vực test chơi thoải mái! Bạn có thể làm bài kiểm tra tìm Thần
+        Đây là khu vực kiểm tra khí chất! Bạn có thể làm bài kiểm tra tìm Thần
         Bảo Hộ mà không cần đăng nhập hay lưu kết quả. Hãy thử nghiệm và khám
         phá khí chất của mình!
       </p>
