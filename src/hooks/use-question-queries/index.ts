@@ -147,6 +147,7 @@ export const useCreateQuestion = () => {
 
       try {
         const response = await questionService.createQuestion(data);
+        console.log("response create question", response);
         toast.success("Tạo câu hỏi thành công");
         options?.onSuccess?.();
         return response.data;

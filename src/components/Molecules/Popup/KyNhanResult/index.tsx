@@ -116,7 +116,12 @@ export default function KyNhanResult({
                     >
                       <div className="max-h-80 overflow-y-auto overflow-x-hidden custom-scrollbar">
                         <p className="text-[#835D26] text-base leading-relaxed break-words">
-                          {content}
+                          <div
+                            className="leading-relaxed text-lg preview-content"
+                            dangerouslySetInnerHTML={{
+                              __html: content,
+                            }}
+                          />
                         </p>
                       </div>
                     </motion.div>
@@ -162,7 +167,7 @@ export default function KyNhanResult({
                   transition={{ delay: 0.2 }}
                   className="flex justify-center items-center"
                 >
-                  <div className="flex gap-3 justify-center items-center flex-wrap">
+                  <div className={`flex gap-3 justify-center items-center ${kyNhan.length === 2 ? 'flex-row' : 'flex-wrap'}`}>
                     {kyNhan.map((item, index) => (
                       <motion.div
                         key={item.id}
@@ -171,7 +176,7 @@ export default function KyNhanResult({
                         transition={{ delay: 0.1 * (index + 1) }}
                         className="relative"
                       >
-                        <div className="relative w-[250px] h-96 bg-[#F7E6BB] rounded-lg border border-[#835D26] overflow-hidden">
+                        <div className={`relative bg-[#F7E6BB] rounded-lg border border-[#835D26] overflow-hidden ${kyNhan.length === 2 ? 'w-[200px] h-80' : 'w-[250px] h-96'}`}>
                           <Image
                             src={item.src || "/placeholder.svg"}
                             alt={item.alt}

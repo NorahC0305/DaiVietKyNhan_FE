@@ -9,7 +9,7 @@ import {
 } from "@/components/Atoms/ui/card";
 import { Button } from "@/components/Atoms/ui/button";
 import { Label } from "@/components/Atoms/ui/label";
-import { Textarea } from "@/components/Atoms/ui/textarea";
+import TipTapEditor from "@/components/Organisms/Tiptap";
 import { Input } from "@/components/Atoms/ui/input";
 import {
   Select,
@@ -899,18 +899,13 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                       <span>{formValidationErrors.summary}</span>
                     </div>
                   )}
-                  <Textarea
-                    id="summary"
+                  <TipTapEditor
                     value={formData.summary}
-                    onChange={(e) =>
-                      handleInputChange("summary", e.target.value)
-                    }
+                    onChange={(value) => handleInputChange("summary", value)}
                     placeholder="Nhập tóm tắt kỳ nhân..."
-                    rows={6}
-                    maxLength={1000}
-                    className={`resize-none ${
+                    className={`${
                       formValidationErrors.summary
-                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        ? "border-red-300 focus-within:border-red-500 focus-within:ring-red-500"
                         : ""
                     }`}
                   />

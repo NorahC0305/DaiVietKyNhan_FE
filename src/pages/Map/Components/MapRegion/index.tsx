@@ -72,8 +72,8 @@ export default function MapRegion({
 
   return (
     <div className="absolute group" style={containerStyle}>
-      {/* Glow effect khi hover - chỉ hiện khi không bị khóa */}
-      {isHovered && !isLocked && (
+      {/* Glow effect khi hover - chỉ hiện cho unlocked regions và đám mây ky-linh-viet-hoa */}
+      {isHovered && (!isLocked || id === "ky-linh-viet-hoa") && (
         <motion.div
           className="absolute inset-0 rounded-lg pointer-events-none"
           initial={{ opacity: 0 }}
@@ -134,16 +134,23 @@ export default function MapRegion({
         <div className="absolute inset-0 pointer-events-none">
           {id === "ky-linh-viet-hoa" ? (
             // Cloud overlay for Kỳ Linh Việt Hỏa - smaller size
-            <div className="absolute inset-16 flex items-center justify-center">
+            <motion.div 
+              className="absolute inset-16 flex items-center justify-center"
+              animate={{ 
+                scale: isHovered ? 1.05 : 1,
+                filter: isHovered ? "brightness(1.2) drop-shadow(0 0 20px rgba(255,215,0,0.6))" : "none"
+              }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
               <Image
                 src="https://res.cloudinary.com/dznt9yias/image/upload/v1761067244/cloud_ybkv9q.svg"
                 alt="Cloud overlay"
                 width={610}
                 height={200}
-                className="object-cover"
+                className="object-cover transition-all duration-300"
                 style={{ zIndex: 1 }}
               />
-            </div>
+            </motion.div>
           ) : (
             // Default lock icon for other regions
             <div className="absolute inset-0 flex items-center justify-center">
@@ -191,7 +198,7 @@ export default function MapRegion({
                 // backgroundColor: "rgba(255, 0, 0, 0.3)",
               }
         }
-        onMouseEnter={() => !isLocked && setIsHovered(true)}
+        onMouseEnter={() => (!isLocked || id === "ky-linh-viet-hoa") && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => onClick?.()}
       />

@@ -52,8 +52,8 @@ export default function QuestionModal({
       );
 
       // Tìm log có text là array với nhiều phần tử (mới)
-      const answerWithArray = correctAnswers.find((log: any) =>
-        Array.isArray(log.text) && log.text.length > 1
+      const answerWithArray = correctAnswers.find(
+        (log: any) => Array.isArray(log.text) && log.text.length > 1
       );
 
       if (answerWithArray && Array.isArray(answerWithArray.text)) {
@@ -95,7 +95,7 @@ export default function QuestionModal({
 
   // Helper function to ensure string value
   const ensureString = (value: any): string => {
-    if (typeof value === 'string') return value;
+    if (typeof value === "string") return value;
     if (Array.isArray(value)) return value[0] || "";
     return String(value || "");
   };
@@ -282,7 +282,17 @@ export default function QuestionModal({
                     CÂU HỎI
                   </h2>
                   <p className="text-gray-700 text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mx-auto max-w-full sm:max-w-2xl md:max-w-3xl px-1">
-                    {question.text || question.content}
+                    {/* {question.text || question.content} */}
+                    <div
+                      className="leading-relaxed text-lg preview-content"
+                      style={{
+                        // fontFamily: "Georgia, serif",
+                        lineHeight: "1.8",
+                      }}
+                      dangerouslySetInnerHTML={{
+                        __html: question.text || question.content || "",
+                      }}
+                    />
                   </p>
                 </div>
 
@@ -330,7 +340,8 @@ export default function QuestionModal({
                         disabled={
                           !ensureString(answerText).trim() ||
                           isSubmitting ||
-                          (isTwoAnswerType && !ensureString(secondAnswerText).trim())
+                          (isTwoAnswerType &&
+                            !ensureString(secondAnswerText).trim())
                         }
                         className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-2 cursor-pointer bg-[#835D26] text-white rounded-lg font-medium hover:bg-[#835D26]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
                       >
