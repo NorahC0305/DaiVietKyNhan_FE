@@ -348,7 +348,7 @@ export const GameFrame: React.FC<GameFrameProps> = ({
           </div>
           <div
             className="relative w-[110px] h-[49px] lg:w-[200px] lg:h-[100px] -left-2 lg:-left-1 hover:opacity-80 transition-all duration-300 cursor-pointer"
-            onClick={onRedeemClick}
+            onClick={()=>{toast.info("Chức năng đang phát triển")}}
           >
             <Image
               src="https://res.cloudinary.com/dznt9yias/image/upload/v1760726864/gift_ubfyga.svg"
