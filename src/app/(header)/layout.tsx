@@ -1,4 +1,7 @@
 
+export const dynamic = 'force-dynamic';
+
+
 import ForceLandscape from "@components/Atoms/ForceLandscape";
 import { Footer } from "@components/Molecules/Footer";
 import HeaderSSR from "@components/Molecules/HeaderSSR";

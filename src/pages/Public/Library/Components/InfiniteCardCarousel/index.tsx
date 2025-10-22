@@ -261,8 +261,8 @@ const EmblaCarouselWithCards: React.FC<PropType> = (props) => {
         0,
         cards?.length - 1
       );
-      // Use scrollTo with align: "center" to ensure the result is centered
-      emblaApi.scrollTo(boundedIndex, true);
+      // Use scrollTo with smooth animation
+      emblaApi.scrollTo(boundedIndex, false);
     }
   }, [emblaApi, scrollToIndex, cards?.length]);
 

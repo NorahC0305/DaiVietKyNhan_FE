@@ -15,7 +15,7 @@ export default function IncompleteRegion({
   const router = useRouter();
 
   const handleGoBack = useCallback(() => {
-    router.back();
+    // router.back();
     onClose();
   }, [router, onClose]);
   // Use React Portal to render modal at root level

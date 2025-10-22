@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import CardDetailsPage from "@pages/Public/CardDetails";
 
 // type PageProps = {

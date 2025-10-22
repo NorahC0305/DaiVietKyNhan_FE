@@ -9,7 +9,7 @@ import {
   CardDescription,
 } from "@/components/Atoms/ui/card";
 import { Input } from "@/components/Atoms/ui/input";
-import { Textarea } from "@/components/Atoms/ui/textarea";
+import TipTapEditor from "@/components/Organisms/Tiptap";
 import {
   Select,
   SelectContent,
@@ -98,6 +98,13 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
   const [options, setOptions] =
     useState<Record<string, string>>(INITIAL_OPTIONS);
   const [optionCount, setOptionCount] = useState(INITIAL_OPTION_COUNT);
+  const [pairAnswers, setPairAnswers] = useState<{
+    answer1: string[];
+    answer2: string[];
+  }>({
+    answer1: [""],
+    answer2: [""],
+  });
   const [isKyNhanModalOpen, setIsKyNhanModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
@@ -129,6 +136,11 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
         setOptions({
           answer1: answers[0] || "",
           answer2: answers[1] || "",
+        });
+        // Initialize pair answers for editing
+        setPairAnswers({
+          answer1: answers.filter((_, index) => index % 2 === 0) || [""],
+          answer2: answers.filter((_, index) => index % 2 === 1) || [""],
         });
       } else if (editQuestion.allowSimilarAnswers && answers.length > 0) {
         // Initialize multiple options
@@ -270,6 +282,10 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
           answer1: prev.answer || prev.A || "",
           answer2: prev.B || "",
         }));
+        setPairAnswers((prev) => ({
+          answer1: [prev.answer1[0] || ""],
+          answer2: [prev.answer2[0] || ""],
+        }));
       }
     },
     [handleInputChange, formData.kynhanSummaries.length]
@@ -331,6 +347,40 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
     [options]
   );
 
+  // Functions for handling pair answers
+  const handlePairAnswerChange = useCallback(
+    (answerType: "answer1" | "answer2", index: number, value: string) => {
+      setPairAnswers((prev) => ({
+        ...prev,
+        [answerType]: prev[answerType].map((answer, i) =>
+          i === index ? value : answer
+        ),
+      }));
+    },
+    []
+  );
+
+  const addPairAnswer = useCallback(
+    (answerType: "answer1" | "answer2") => {
+      setPairAnswers((prev) => ({
+        ...prev,
+        [answerType]: [...prev[answerType], ""],
+      }));
+    },
+    []
+  );
+
+  const removePairAnswer = useCallback(
+    (answerType: "answer1" | "answer2", index: number) => {
+      if (pairAnswers[answerType].length <= 1) return;
+      setPairAnswers((prev) => ({
+        ...prev,
+        [answerType]: prev[answerType].filter((_, i) => i !== index),
+      }));
+    },
+    [pairAnswers]
+  );
+
   const handleToggleKyNhanSummary = useCallback((kyNhanId: number) => {
     setFormData((prev) => {
       const newKynhanSummaries = prev.kynhanSummaries.includes(kyNhanId)
@@ -370,6 +420,10 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
     });
     setOptions(INITIAL_OPTIONS);
     setOptionCount(INITIAL_OPTION_COUNT);
+    setPairAnswers({
+      answer1: [""],
+      answer2: [""],
+    });
     setValidationErrors({});
     setKyNhanSummary([]);
   }, [defaultLandId]);
@@ -415,15 +469,25 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
           errors.answers = "Đáp án không được để trống";
         }
 
-        // For TWO option type, require exactly 2 answers
-        if (formData.answerOptionType === "TWO" && answers.length !== 2) {
-          errors.answers = "Loại đáp án cặp đôi yêu cầu chính xác 2 đáp án";
+        // For TWO option type, require at least 2 answers (one for each character)
+        if (formData.answerOptionType === "TWO") {
+          if (answers.length < 2) {
+            errors.answers = "Loại đáp án cặp đôi yêu cầu ít nhất 2 đáp án (mỗi kỳ nhân ít nhất 1 đáp án)";
+          } else {
+            // Check if both characters have at least one answer
+            const answer1Count = pairAnswers.answer1.filter(answer => answer.trim() !== "").length;
+            const answer2Count = pairAnswers.answer2.filter(answer => answer.trim() !== "").length;
+            
+            if (answer1Count === 0 || answer2Count === 0) {
+              errors.answers = "Mỗi kỳ nhân phải có ít nhất 1 đáp án";
+            }
+          }
         }
       }
 
       return errors;
     },
-    [formData]
+    [formData, pairAnswers]
   );
 
   const handleSubmit = useCallback(
@@ -437,10 +501,21 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
         // Convert options to answers array
         let answers: string[];
         if (formData.answerOptionType === "TWO") {
-          // For TWO type, get the two specific answers
-          answers = [options.answer1 || "", options.answer2 || ""].filter(
+          // For TWO type, combine all answers from both answer types
+          const answer1List = pairAnswers.answer1.filter(
             (answer) => answer.trim() !== ""
           );
+          const answer2List = pairAnswers.answer2.filter(
+            (answer) => answer.trim() !== ""
+          );
+          // Combine all answers into one array without distinction
+          answers = [...answer1List, ...answer2List];
+          
+          // Debug log
+          console.log("Debug - pairAnswers:", pairAnswers);
+          console.log("Debug - answer1List:", answer1List);
+          console.log("Debug - answer2List:", answer2List);
+          console.log("Debug - final answers:", answers);
         } else {
           // For other types, use the existing logic
           answers = Object.values(options).filter(
@@ -773,11 +848,11 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Câu hỏi
             </label>
-            <Textarea
-              placeholder="Nhập nội dung câu hỏi..."
+            <TipTapEditor
               value={formData.text}
-              onChange={(e) => handleQuestionChange(e.target.value)}
-              className="w-full min-h-[120px] border-gray-300 rounded-md resize-none text-black"
+              onChange={handleQuestionChange}
+              placeholder="Nhập nội dung câu hỏi..."
+              className="w-full min-h-[120px] border-gray-300 rounded-md"
             />
             {validationErrors.text && (
               <p className="text-sm text-red-600 mt-1">
@@ -835,35 +910,96 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
             )}
             <div className="space-y-4">
               {formData.answerOptionType === "TWO" ? (
-                // Hiển thị 2 ô đáp án cho cặp đôi
-                <div className="space-y-4">
+                // Hiển thị nhiều ô đáp án cho cặp đôi
+                <div className="space-y-6">
+                  {/* Đáp án cho kỳ nhân đầu tiên */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Đáp án 1
-                    </label>
-                    <Input
-                      placeholder="Nhập đáp án cho kỳ nhân đầu tiên..."
-                      value={options.answer1 || ""}
-                      onChange={(e) =>
-                        handleOptionChange("answer1", e.target.value)
-                      }
-                      className="w-full border-gray-300 border-1 rounded-md"
-                      color="black"
-                    />
+                    <div className="flex items-center justify-between mb-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Đáp án cho kỳ nhân đầu tiên
+                      </label>
+                      <Button
+                        type="button"
+                        onClick={() => addPairAnswer("answer1")}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1"
+                        size="sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Thêm đáp án
+                      </Button>
+                    </div>
+                    <div className="space-y-3">
+                      {pairAnswers.answer1.map((answer, index) => (
+                        <div key={index} className="flex items-end gap-3">
+                          <div className="flex-1">
+                            <Input
+                              placeholder={`Nhập đáp án ${index + 1} cho kỳ nhân đầu tiên...`}
+                              value={answer}
+                              onChange={(e) =>
+                                handlePairAnswerChange("answer1", index, e.target.value)
+                              }
+                              className="w-full border-gray-300 border-1 rounded-md"
+                              color="black"
+                            />
+                          </div>
+                          {pairAnswers.answer1.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removePairAnswer("answer1", index)}
+                              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md"
+                              size="sm"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Đáp án cho kỳ nhân thứ hai */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Đáp án 2
-                    </label>
-                    <Input
-                      placeholder="Nhập đáp án cho kỳ nhân thứ hai..."
-                      value={options.answer2 || ""}
-                      onChange={(e) =>
-                        handleOptionChange("answer2", e.target.value)
-                      }
-                      className="w-full border-gray-300 border-1 rounded-md"
-                      color="black"
-                    />
+                    <div className="flex items-center justify-between mb-4">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Đáp án cho kỳ nhân thứ hai
+                      </label>
+                      <Button
+                        type="button"
+                        onClick={() => addPairAnswer("answer2")}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1"
+                        size="sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                        Thêm đáp án
+                      </Button>
+                    </div>
+                    <div className="space-y-3">
+                      {pairAnswers.answer2.map((answer, index) => (
+                        <div key={index} className="flex items-end gap-3">
+                          <div className="flex-1">
+                            <Input
+                              placeholder={`Nhập đáp án ${index + 1} cho kỳ nhân thứ hai...`}
+                              value={answer}
+                              onChange={(e) =>
+                                handlePairAnswerChange("answer2", index, e.target.value)
+                              }
+                              className="w-full border-gray-300 border-1 rounded-md"
+                              color="black"
+                            />
+                          </div>
+                          {pairAnswers.answer2.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removePairAnswer("answer2", index)}
+                              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md"
+                              size="sm"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : formData.allowSimilarAnswers ? (

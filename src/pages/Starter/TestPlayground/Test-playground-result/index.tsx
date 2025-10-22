@@ -371,13 +371,13 @@ const TestPlaygroundResultPage = React.memo(() => {
         {/* Left Side - Personality Options */}
         <div
           className={`${isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
-            } flex flex-col justify-center items-center ${isMobileLandscape ? "space-y-2" : "space-y-5"
+            } flex flex-col justify-center items-center ${isMobileLandscape ? "space-y-1" : "space-y-3"
             }`}
         >
           {/* Title */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-2">
             <h1
-              className={`${isMobileLandscape ? "text-lg" : "text-3xl lg:text-4xl"
+              className={`${isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
                 } font-extrabold uppercase`}
               style={{
                 color:
@@ -390,7 +390,7 @@ const TestPlaygroundResultPage = React.memo(() => {
             </h1>
           </div>
           <div
-            className={`flex flex-col lg:flex-col ${isMobileLandscape ? "gap-2" : "gap-4"
+            className={`flex flex-col lg:flex-col ${isMobileLandscape ? "gap-1" : "gap-2"
               }`}
           >
             {personalityOptions.map((option) => {
@@ -423,13 +423,13 @@ const TestPlaygroundResultPage = React.memo(() => {
                         }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
-                        fontSize: isMobile ? "22px" : "36px",
+                        fontSize: isMobile ? "18px" : "28px",
                         fontFamily: "var(--font-bd-street-sign)",
                         color:
                           getProfileById(option.id)?.text_color || option.color,
                       }}
-                      width={isMobile ? 220 : 320}
-                      height={isMobile ? 50 : 70}
+                      width={isMobile ? 180 : 280}
+                      height={isMobile ? 40 : 60}
                     />
 
                     {/* Right Frame - Number */}
@@ -439,13 +439,13 @@ const TestPlaygroundResultPage = React.memo(() => {
                         }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
-                        fontSize: isMobile ? "20px" : "30px",
+                        fontSize: isMobile ? "16px" : "24px",
                         fontFamily: "var(--font-bd-street-sign)",
                         color:
                           getProfileById(option.id)?.text_color || option.color,
                       }}
-                      width={isMobile ? 70 : 120}
-                      height={isMobile ? 60 : 80}
+                      width={isMobile ? 60 : 100}
+                      height={isMobile ? 50 : 70}
                     />
                   </div>
                 </div>
@@ -454,7 +454,7 @@ const TestPlaygroundResultPage = React.memo(() => {
           </div>
           {/* Footer */}
           <div
-            className={`${isMobileLandscape ? "mt-2" : "mt-6"
+            className={`${isMobileLandscape ? "mt-1" : "mt-3"
               } text-left self-start w-full max-w-[460px]`}
           >
             <span
@@ -468,20 +468,24 @@ const TestPlaygroundResultPage = React.memo(() => {
 
         {/* Right Side - Description */}
         <div
-          className={`${isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
-            } flex justify-center items-center`}
+          className={`${
+            isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
+          } flex justify-center items-center`}
         >
           {selectedOption && (
             <div
-              className={`bg-gray-400/40 rounded-xl ${isMobileLandscape ? "p-3" : "p-8 lg:p-10"
-                } border border-gray-300 ${isMobileLandscape
-                  ? "max-h-[]"
+              className={`bg-gray-400/40 rounded-xl ${
+                isMobileLandscape ? "p-3" : "p-8 lg:p-10"
+              } border border-gray-300 ${
+                isMobileLandscape
+                  ? "max-h-[15rem]"
                   : "max-h-[24rem] lg:max-h-[30rem]"
-                } w-full flex flex-col`}
+              } w-full flex flex-col`}
             >
               <div
-                className={`${isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
-                  } leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2`}
+                className={`${
+                  isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
+                } leading-relaxed whitespace-pre-line italic overflow-y-auto custom-scrollbar flex-1 pr-2`}
                 style={{
                   color:
                     getProfileById(selectedPersonality || "")?.text_color ||
@@ -537,8 +541,8 @@ const TestPlaygroundResultPage = React.memo(() => {
             {/* This container hides overflow */}
             <div
               className={`relative overflow-hidden ${isMobile && window.innerWidth > window.innerHeight
-                ? "min-h-[20rem] max-h-[25rem]"
-                : "min-h-[30rem] lg:min-h-[38rem]"
+                ? "min-h-[18rem] max-h-[22rem]"
+                : "min-h-[24rem] lg:min-h-[30rem]"
                 }`}
             >
               {/* Personality slides in from left */}

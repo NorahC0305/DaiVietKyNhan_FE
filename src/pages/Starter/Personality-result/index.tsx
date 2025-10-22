@@ -407,14 +407,14 @@ const PersonalityResultPage = React.memo(() => {
           className={`${
             isMobileLandscape ? "w-1/2" : "w-full lg:w-1/2"
           } flex flex-col justify-center items-center ${
-            isMobileLandscape ? "space-y-2" : "space-y-5"
+            isMobileLandscape ? "space-y-1" : "space-y-3"
           }`}
         >
           {/* Title */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-2">
             <h1
               className={`${
-                isMobileLandscape ? "text-lg" : "text-3xl lg:text-4xl"
+                isMobileLandscape ? "text-sm" : "text-xl lg:text-2xl"
               } font-extrabold uppercase`}
               style={{
                 color:
@@ -428,7 +428,7 @@ const PersonalityResultPage = React.memo(() => {
           </div>
           <div
             className={`flex flex-col lg:flex-col ${
-              isMobileLandscape ? "gap-2" : "gap-4"
+              isMobileLandscape ? "gap-1" : "gap-2"
             }`}
           >
             {personalityOptions.map((option) => {
@@ -463,13 +463,13 @@ const PersonalityResultPage = React.memo(() => {
                       }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
-                        fontSize: isMobile ? "22px" : "36px",
+                        fontSize: isMobile ? "18px" : "28px",
                         fontFamily: "var(--font-bd-street-sign)",
                         color:
                           getProfileById(option.id)?.text_color || option.color,
                       }}
-                      width={isMobile ? 220 : 320}
-                      height={isMobile ? 50 : 70}
+                      width={isMobile ? 180 : 280}
+                      height={isMobile ? 40 : 60}
                     />
 
                     {/* Right Frame - Number */}
@@ -480,13 +480,13 @@ const PersonalityResultPage = React.memo(() => {
                       }`}
                       textClassName={`transition-all duration-300`}
                       textStyle={{
-                        fontSize: isMobile ? "20px" : "30px",
+                        fontSize: isMobile ? "16px" : "24px",
                         fontFamily: "var(--font-bd-street-sign)",
                         color:
                           getProfileById(option.id)?.text_color || option.color,
                       }}
-                      width={isMobile ? 70 : 120}
-                      height={isMobile ? 60 : 80}
+                      width={isMobile ? 60 : 100}
+                      height={isMobile ? 50 : 70}
                     />
                   </div>
                 </div>
@@ -496,7 +496,7 @@ const PersonalityResultPage = React.memo(() => {
           {/* Footer */}
           <div
             className={`${
-              isMobileLandscape ? "mt-2" : "mt-6"
+              isMobileLandscape ? "mt-1" : "mt-3"
             } text-left self-start w-full max-w-[460px]`}
           >
             <span
@@ -584,8 +584,8 @@ const PersonalityResultPage = React.memo(() => {
             <div
               className={`relative overflow-hidden ${
                 isMobile && window.innerWidth > window.innerHeight
-                  ? "min-h-[20rem] max-h-[25rem]"
-                  : "min-h-[30rem] md:min-h-[38rem] lg:min-h-[44rem]"
+                  ? "min-h-[18rem] max-h-[22rem]"
+                  : "min-h-[24rem] lg:min-h-[30rem]"
               }`}
             >
               {/* Personality slides in from left */}
