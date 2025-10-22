@@ -84,7 +84,7 @@ export const useQuestions = (filters?: {
       setError(null);
 
       const response = await questionService.getAllQuestionsAdmin();
-      console.log();
+      console.log(response);
       // Handle different possible response structures
       let questionsData = null;
 
