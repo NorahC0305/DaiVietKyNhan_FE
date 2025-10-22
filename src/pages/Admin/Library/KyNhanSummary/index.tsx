@@ -908,6 +908,7 @@ const KyNhanSummaryPage: React.FC<KyNhanSummaryPageProps> = ({
                         ? "border-red-300 focus-within:border-red-500 focus-within:ring-red-500"
                         : ""
                     }`}
+                    textColor="black"
                   />
                 </div>
 

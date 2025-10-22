@@ -35,6 +35,7 @@ interface TipTapEditorProps {
   placeholder?: string
   className?: string
   disabled?: boolean
+  textColor?: 'white' | 'black'
 }
 
 export default function TipTapEditor({
@@ -43,6 +44,7 @@ export default function TipTapEditor({
   placeholder = 'Nhập nội dung...',
   className,
   disabled = false,
+  textColor = 'white',
 }: TipTapEditorProps) {
   // Theo dõi nội dung của editor
   const [content, setContent] = useState(value || '<p></p>')
@@ -341,7 +343,7 @@ export default function TipTapEditor({
       <style jsx global>{`
         .ProseMirror {
           font-family: var(--font-dfvn-graphit);
-          color: black;
+          color: ${textColor === 'white' ? 'white' : 'black'};
         }
         .ProseMirror h1 {
           font-size: 1.5rem;
@@ -378,7 +380,7 @@ export default function TipTapEditor({
           border-radius: 0.25rem;
           font-family: monospace;
           overflow-x: auto;
-          color: black;
+          color: ${textColor === 'white' ? 'black' : 'black'};
         }
         .ProseMirror p {
           margin: 0.5rem 0;
