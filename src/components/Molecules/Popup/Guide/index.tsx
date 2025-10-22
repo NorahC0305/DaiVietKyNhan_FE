@@ -139,7 +139,7 @@ const Guide = ({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void
                                                     <span className='ml-5 lg:ml-7 font-extrabold text-secondary lg:text-xl text-sm'>Phủ Tây Hồ - Công chúa Liễu Hạnh</span>
                                                     <br />
                                                 </li>
-                                                <li className='text-secondary lg:text-xl text-sm'>Mỗi vùng có 12–15 Kỳ Nhân, đại diện cho tinh thần của vị Tứ Bất Tử tương ứng.</li>
+                                                <li className='text-secondary lg:text-xl text-sm'>Mỗi vùng có 9-14 Kỳ Nhân, đại diện cho tinh thần của vị Tứ Bất Tử tương ứng.</li>
                                                 <li className='text-secondary lg:text-xl text-sm'>Mỗi cuộn giấy tương ứng với một Kỳ Nhân đang bị phong ấn.</li>
                                                 <li className='text-secondary lg:text-xl text-sm'>Ngoài ra còn có vùng đất thứ năm, chỉ mở khóa sau khi hoàn thành giải phong ấn cho các Kỳ Nhân thuộc bốn vùng đất trước đó.</li>
                                             </ul>

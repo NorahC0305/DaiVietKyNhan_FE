@@ -53,9 +53,9 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                                     </PLibDetail>
                                 </div>
 
-                                {/* Khởi nghĩa */}
+                                {/* Sự nghiệp */}
                                 <div className="ml-24">
-                                    <H3LibDetail className="text-2xl lg:text-4xl">KHỞI NGHĨA</H3LibDetail>
+                                    <H3LibDetail className="text-2xl lg:text-4xl">SỰ NGHIỆP</H3LibDetail>
                                     <PLibDetail>
                                         {moTaKyNhan?.khoiNghia}
                                     </PLibDetail>
@@ -89,9 +89,9 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                                     </PLibDetail>
                                 </div>
 
-                                {/* Phu quân */}
+                                {/* Phu quân/phu nhân */}
                                 <div className="text-end w-full mr-12">
-                                    <H3LibDetail className="text-2xl lg:text-4xl">PHU QUÂN</H3LibDetail>
+                                    <H3LibDetail className="text-2xl lg:text-4xl">PHU QUÂN/PHU NHÂN</H3LibDetail>
                                     <PLibDetail>
                                         {moTaKyNhan?.phuQuan}
                                     </PLibDetail>
@@ -105,9 +105,9 @@ const KyNhanSummary = ({ moTaKyNhan }: { moTaKyNhan: any }) => {
                                     </PLibDetail>
                                 </div>
 
-                                {/* Đỉnh cao */}
+                                {/* Vai trò */}
                                 <div className="text-end w-full mr-32">
-                                    <H3LibDetail className="text-2xl lg:text-4xl">ĐỈNH CAO</H3LibDetail>
+                                    <H3LibDetail className="text-2xl lg:text-4xl">VAI TRÒ</H3LibDetail>
                                     <PLibDetail>
                                         {moTaKyNhan?.dinhCao}
                                     </PLibDetail>
