@@ -27,6 +27,7 @@ export const KyNhanUserListResponseModel = z.object({
   statusCode: z.number(),
   data: z.array(KyNhanUserSchema),
   message: z.string(),
+  owned: z.number(),
 });
 export type IKyNhanUserListResponseModel = z.infer<
   typeof KyNhanUserListResponseModel
