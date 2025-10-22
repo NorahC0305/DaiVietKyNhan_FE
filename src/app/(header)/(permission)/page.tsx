@@ -14,7 +14,6 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "@lib/authOptions";
 import { getAttendanceListSSR } from "@lib/attendance";
-import { AttendanceProvider } from "@contexts/AttendanceContext";
 
 async function userMe() {
   try {
@@ -34,14 +33,13 @@ export default async function Home() {
   const initialAttendanceList = await getAttendanceListSSR();
 
   return (
-    <AttendanceProvider initialAttendanceList={initialAttendanceList}>
-      <HomePageClient
-        user={user.data as IUser}
-        activeWithAmountUser={
-          activeWithAmountUser.data as IGetSystemConfigWithAmountUserResponse
-        }
-        accessToken={session?.accessToken}
-      />
-    </AttendanceProvider>
+    <HomePageClient
+      user={user.data as IUser}
+      activeWithAmountUser={
+        activeWithAmountUser.data as IGetSystemConfigWithAmountUserResponse
+      }
+      accessToken={session?.accessToken}
+      initialAttendanceList={initialAttendanceList}
+    />
   );
 }

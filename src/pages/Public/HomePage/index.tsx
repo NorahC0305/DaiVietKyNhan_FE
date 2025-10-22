@@ -13,10 +13,19 @@ import { useAttendance } from "@hooks/useAttendance";
 import ModalLayout from "@components/Molecules/DailyCheckin/Layouts/ModalLayout";
 import { Dialog, DialogContent } from "@components/Atoms/ui/dialog";
 import { useRouter } from "next/navigation";
+import { AttendanceProvider } from "@contexts/AttendanceContext";
+import { IAttendanceItem } from "@models/attendance/response";
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
   accessToken: string;
+}
+
+interface HomePageWrapperProps {
+  user: IUser;
+  activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
+  accessToken: string;
+  initialAttendanceList?: IAttendanceItem[];
 }
 
 // Dữ liệu mock cho phần nhận xét
@@ -422,7 +431,25 @@ const HomePageClient = ({
   );
 };
 
-export default HomePageClient;
+// Wrapper component với AttendanceProvider
+const HomePageWrapper = ({
+  user,
+  activeWithAmountUser,
+  accessToken,
+  initialAttendanceList = [],
+}: HomePageWrapperProps) => {
+  return (
+    <AttendanceProvider initialAttendanceList={initialAttendanceList}>
+      <HomePageClient
+        user={user}
+        activeWithAmountUser={activeWithAmountUser}
+        accessToken={accessToken}
+      />
+    </AttendanceProvider>
+  );
+};
+
+export default HomePageWrapper;
 
 // "use client";
 
