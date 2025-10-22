@@ -48,7 +48,7 @@ const FrameNumber: React.FC<FrameNumberProps> = React.memo(
             style={{
               left: "10%",
               right: "10%",
-              top: "15%",
+              top: "20%",
               bottom: "15%",
             }}
           >
