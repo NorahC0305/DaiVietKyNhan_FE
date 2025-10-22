@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import TipTapEditor from "@components/Organisms/Tiptap";
 import ImageModal from "@components/Atoms/ImageModal";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { IChiTietKyNhanResponse } from "@models/chi-tiet-ky-nhan/entity";
 
 interface ChiTietKyNhanProps {
@@ -19,6 +20,17 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
+  // Kiểm tra an toàn để tránh lỗi build
+  if (!chiTietKyNhan) {
+    return (
+      <div className="flex flex-col mx-6 lg:mx-52">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-[#CBA247]" />
+          <span className="ml-3 text-gray-300">Đang tải dữ liệu...</span>
+        </div>
+      </div>
+    );
+  }
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
@@ -59,7 +71,6 @@ const ChiTietKyNhan: React.FC<ChiTietKyNhanProps> = ({ chiTietKyNhan }) => {
       );
     }
   };
-  console.log(chiTietKyNhan.suSachVietGi);
   // Tạo grid layout 3-2-3-2 lặp lại
   const createGridLayout = (
     images: Array<{ id: number; url: string; alt?: string | null }>
