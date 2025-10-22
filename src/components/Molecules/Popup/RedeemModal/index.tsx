@@ -92,10 +92,21 @@ export default function RedeemModal({
       amount: reward.requireValue,
     };
 
-    const right: RightDisplay = {
-      type: "text",
-      label: reward.gift,
-    };
+    // Check if reward.gift contains coin information
+    const giftText = reward.gift?.toLowerCase() || "";
+    const coinMatch = giftText.match(/(\d+)\s*(xu|coin)/);
+    
+    console.log('Reward gift:', reward.gift, 'Gift text:', giftText, 'Coin match:', coinMatch);
+    
+    const right: RightDisplay = coinMatch 
+      ? {
+          type: "coins",
+          amount: parseInt(coinMatch[1])
+        }
+      : {
+          type: "text",
+          label: reward.gift,
+        };
 
     // Check if user can afford this reward
     const canAfford = user
@@ -282,9 +293,9 @@ export default function RedeemModal({
                                   <Image
                                     src="/DVKN coin.svg"
                                     alt="coin"
-                                    width={28}
-                                    height={20}
-                                    className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
+                                    width={32}
+                                    height={24}
+                                    className="hidden sm:block w-6 h-5 sm:w-8 sm:h-6 lg:w-10 lg:h-8"
                                   />
                                 </div>
                               )}
@@ -297,9 +308,9 @@ export default function RedeemModal({
                                   <Image
                                     src="/DVKN coin.svg"
                                     alt="coin"
-                                    width={28}
-                                    height={20}
-                                    className="hidden sm:block w-5 h-4 sm:w-7 sm:h-5 lg:w-8 lg:h-6"
+                                    width={32}
+                                    height={24}
+                                    className="hidden sm:block w-6 h-5 sm:w-8 sm:h-6 lg:w-10 lg:h-8"
                                   />
                                 </div>
                               ) : (

@@ -496,7 +496,7 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
   const avatarRef = useRef<HTMLDivElement>(null);
   // Default avatar URL
   const defaultAvatarUrl =
-    "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSL6QUqKxXrttERd_g8g1dNcuIwydqok49E6tlwEJWU7TBVSphW3EYy4lJb-bGerm7D2Shzl-KKOPqtu9md2zjHYdIHdmJYWbJRSbipK74";
+    "https://res.cloudinary.com/dznt9yias/image/upload/v1760727092/logo_dvkn_poop6f.svg";
 
   // Click outside to close dropdown
   useEffect(() => {
