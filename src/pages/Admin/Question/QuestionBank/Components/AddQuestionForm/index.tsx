@@ -852,6 +852,7 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({
               value={formData.text}
               onChange={handleQuestionChange}
               placeholder="Nhập nội dung câu hỏi..."
+              textColor="black"
               className="w-full min-h-[120px] border-gray-300 rounded-md"
             />
             {validationErrors.text && (

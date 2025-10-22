@@ -54,9 +54,16 @@ const QuestionBankPage = ({
   const updateQuestionMutation = useUpdateQuestion();
 
   // Fetch questions data using the hook
-  const { data: allQuestions = [], isLoading, error, refetch } = useQuestions();
+  const { data: allQuestions = [], rawData: rawQuestions = [], isLoading, error, refetch } = useQuestions();
   // Fetch editing question data
   const { data: editingQuestion, isLoading: isLoadingEditQuestion } = useGetQuestionById(editingQuestionId);
+
+  // Prefer using already-fetched full question (with answers) to avoid extra request
+  const editingQuestionFromList = useMemo(() => {
+    if (!editingQuestionId) return null;
+    const found = rawQuestions.find((q: any) => q?.id === editingQuestionId);
+    return found || null;
+  }, [editingQuestionId, rawQuestions]);
   // Fetch questions statistics from BE
   const { data: questionStats, isLoading: isLoadingStats, error: statsError, refetch: refetchStats } = useQuestionStats();
 
@@ -198,7 +205,11 @@ const QuestionBankPage = ({
             <AddQuestionForm
               onSubmit={handleAddQuestion}
               lands={lands || []}
-              editQuestion={editingQuestion}
+              editQuestion={
+                editingQuestion
+                  ? { ...(editingQuestionFromList || {}), ...editingQuestion }
+                  : editingQuestionFromList || null
+              }
               onCancel={handleCancelEdit}
             />
           )}
