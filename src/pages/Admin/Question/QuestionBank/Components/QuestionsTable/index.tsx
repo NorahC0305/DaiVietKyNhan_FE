@@ -13,9 +13,20 @@ import { Badge } from "@/components/Atoms/ui/badge";
 import { Progress } from "@/components/Atoms/ui/progress";
 import { Button } from "@/components/Atoms/ui/button";
 import { Skeleton } from "@/components/Atoms/ui/skeleton";
-import { Eye, Edit, Trash2, MoreHorizontal } from "lucide-react";
+import { EnhancedPagination } from "@/components/Atoms/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Atoms/ui/select";
+import { Eye, Edit, Trash2, MoreHorizontal, Rows } from "lucide-react";
 import { UIQuestion } from "@hooks/use-question-queries";
 import { ILandEntity } from "@models/land/entity";
+
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+}
 
 interface QuestionsTableProps {
   lands: ILandEntity[];
@@ -25,6 +36,7 @@ interface QuestionsTableProps {
   onDelete: (id: string) => void;
   isLoading?: boolean;
   error?: any;
+  pagination?: PaginationProps;
 }
 
 const QuestionsTable: React.FC<QuestionsTableProps> = ({
@@ -35,6 +47,7 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
   onDelete,
   isLoading = false,
   error,
+  pagination,
 }) => {
   const getAnswerOptionTypeBadgeStyle = (answerOptionType: string) => {
     switch (answerOptionType) {
@@ -224,6 +237,42 @@ const QuestionsTable: React.FC<QuestionsTableProps> = ({
             </TableBody>
           </Table>
         </div>
+        
+        {/* Pagination */}
+        {pagination && (
+          <div className="mt-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+            {/* Items per page selector */}
+            <div className="flex items-center gap-2">
+              <Select 
+                value={String(pagination.pageSize)} 
+                onValueChange={(value) => {
+                  console.log('Select onValueChange called with:', value);
+                  pagination.onPageSizeChange(Number(value));
+                }}
+              >
+                <SelectTrigger className="w-[100px] bg-background border-border text-foreground h-9">
+                  <Rows className="h-4 w-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-border">
+                  {[10, 20, 50, 100].map(size => (
+                    <SelectItem key={size} value={String(size)}>{size} / trang</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Pagination component */}
+            <EnhancedPagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              itemsPerPage={pagination.pageSize}
+              onPageChange={pagination.onPageChange}
+              showItemCount={true}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

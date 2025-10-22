@@ -247,22 +247,13 @@ export const GameFrame: React.FC<GameFrameProps> = ({
       {/* Avatar */}
       <div className="absolute ml-4 lg:top-6 top-3 left-0 flex items-center justify-center">
         <Avartar>
-          {user?.avatar ? (
-            <div className="relative lg:w-12 lg:h-12 w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                src={user.avatar}
-                alt="User Avatar"
-                fill
-                className="object-cover"
-              />
-            </div>
-          ) : (user as any)?.figure?.imageUrl ? (
+          {(user as any)?.figure?.imageUrl ? (
             <div className="relative lg:w-12 lg:h-12 w-10 h-10 rounded-full overflow-hidden">
               <Image
                 src={(user as any).figure.imageUrl}
                 alt="User Figure"
                 fill
-                className="object-cover"
+                className="object-cover object-top scale-400 mt-7"
               />
             </div>
           ) : (

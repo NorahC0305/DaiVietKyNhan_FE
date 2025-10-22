@@ -34,7 +34,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
     imageSrc:
       "https://res.cloudinary.com/dznt9yias/image/upload/v1760722470/Nu%CC%81i_Ta%CC%89n_Vie%CC%82n_1_yaa5yf.svg",
     position: { top: "-8.5%", left: "-8.7%" },
-    size: { width: 1270, height: 760},
+    size: { width: 1270, height: 760 },
     zIndex: 15,
     hitboxScale: 0.6,
     hitboxOffset: { x: -0.08, y: 0 },
@@ -100,7 +100,8 @@ const mobileRegionsConfig = {
   },
 };
 
-const mainMapImage = "https://res.cloudinary.com/dznt9yias/image/upload/v1761121694/Trang_map_Ky%CC%80_Gio%CC%9B%CC%81i_e6kyap.svg";
+const mainMapImage =
+  "https://res.cloudinary.com/dznt9yias/image/upload/v1761121694/Trang_map_Ky%CC%80_Gio%CC%9B%CC%81i_e6kyap.svg";
 
 // Mapping từ region ID đến land ID dựa trên userLand data
 // Dựa trên userLand response:
@@ -127,6 +128,8 @@ export default function MapPageClient({
   const router = useRouter();
   const [isIncompleteRegionModalOpen, setIsIncompleteRegionModalOpen] =
     useState(false);
+  const [incompleteRegionMessage, setIncompleteRegionMessage] =
+    useState<string>("");
   const [isWaitingOthersModalOpen, setIsWaitingOthersModalOpen] =
     useState(false);
   const [userLand, setUserLand] =
@@ -227,6 +230,19 @@ export default function MapPageClient({
     setUserLand(initialUserLand);
   }, [initialUserLand]);
 
+  // Function to check if current date is after a specific date
+  const isAfterDate = (
+    startDate: string | Date | null | undefined
+  ): boolean => {
+    if (!startDate) return true; // If no start date, consider it unlocked
+
+    const currentDate = new Date();
+    const targetDate =
+      startDate instanceof Date ? startDate : new Date(startDate);
+
+    return currentDate >= targetDate;
+  };
+
   // Function to check if all previous 4 lands are completed
   const areAllPreviousLandsCompleted = (): boolean => {
     // Check if lands 1, 2, 3, 4 are all completed
@@ -258,8 +274,35 @@ export default function MapPageClient({
     // If no userLand data found, consider it locked
     if (!userLandData) return false;
 
-    // Region is unlocked if status is NOT LOCKED (allows PENDING, UNLOCKED, COMPLETED, etc.)
-    return userLandData.status !== LAND.LAND_STATUS.LOCKED;
+    // Check if current date is after the land's start date
+    const isDateUnlocked = isAfterDate(userLandData.land?.startDate);
+
+    // Region is unlocked if both status is NOT LOCKED and date requirement is met
+    return userLandData.status !== LAND.LAND_STATUS.LOCKED && isDateUnlocked;
+  };
+
+  // Function to check if a region should show lock icon
+  const shouldShowLock = (regionId: string): boolean => {
+    const landId = regionToLandIdMap[regionId];
+
+    // Special case for "Kỳ Linh Việt Hỏa" - show lock if not all previous lands completed
+    if (regionId === "ky-linh-viet-hoa") {
+      return !areAllPreviousLandsCompleted();
+    }
+
+    // If region doesn't have a corresponding landId, show lock
+    if (landId === null || landId === undefined) return true;
+
+    const userLandData = userLand?.find((item) => item.landId === landId);
+
+    // If no userLand data found, show lock
+    if (!userLandData) return true;
+
+    // Check if current date is after the land's start date
+    const isDateUnlocked = isAfterDate(userLandData.land?.startDate);
+
+    // Show lock if either status is LOCKED or date requirement is not met
+    return userLandData.status === LAND.LAND_STATUS.LOCKED || !isDateUnlocked;
   };
 
   const handleRegionClick = (regionId: string) => {
@@ -271,11 +314,31 @@ export default function MapPageClient({
       sessionStorage.setItem("navigationTimestamp", Date.now().toString());
       router.push(`${ROUTES.PUBLIC.MAP}/${regionId}`);
     } else {
+      const landId = regionToLandIdMap[regionId];
+      const userLandData = userLand?.find((item) => item.landId === landId);
+
       // Special case for "ky-linh-viet-hoa" - show WaitingOthers popup
       if (regionId === "ky-linh-viet-hoa") {
         setIsWaitingOthersModalOpen(true);
+      } else if (userLandData && userLandData.land?.startDate) {
+        // Check if region is locked due to date restriction
+        const isDateUnlocked = isAfterDate(userLandData.land.startDate);
+        if (!isDateUnlocked) {
+          // Show date restriction message
+          setIncompleteRegionMessage("Vùng này chưa đến ngày mở");
+          setIsIncompleteRegionModalOpen(true);
+        } else {
+          // Show general incomplete region message
+          setIncompleteRegionMessage(
+            "Kỳ Chủ phải hoàn thành vùng đất hiện tại mới có thể tiếp tục được hành trình sang vùng đất kế tiếp."
+          );
+          setIsIncompleteRegionModalOpen(true);
+        }
       } else {
         // For other locked regions, show the incomplete region popup
+        setIncompleteRegionMessage(
+          "Kỳ Chủ phải hoàn thành vùng đất hiện tại mới có thể tiếp tục được hành trình sang vùng đất kế tiếp."
+        );
         setIsIncompleteRegionModalOpen(true);
       }
     }
@@ -306,7 +369,7 @@ export default function MapPageClient({
                 onClick={() => handleRegionClick(region.id)}
                 zIndex={region.zIndex || 10 + index}
                 isFullscreen={true}
-                isLocked={!isRegionUnlocked(region.id)}
+                isLocked={shouldShowLock(region.id)}
               />
             ))}
           </div>
@@ -341,7 +404,7 @@ export default function MapPageClient({
                   mobileSize={mobileConfig?.size}
                   onClick={() => handleRegionClick(region.id)}
                   zIndex={region.zIndex || 10}
-                  isLocked={!isRegionUnlocked(region.id)}
+                  isLocked={shouldShowLock(region.id)}
                 />
               );
             })}
@@ -353,6 +416,7 @@ export default function MapPageClient({
       <IncompleteRegion
         isOpen={isIncompleteRegionModalOpen}
         onClose={() => setIsIncompleteRegionModalOpen(false)}
+        message={incompleteRegionMessage}
       />
 
       {/* Popup for ky-linh-viet-hoa region */}

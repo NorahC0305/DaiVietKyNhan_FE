@@ -50,6 +50,12 @@ const QuestionBankPage = ({
   const [editingQuestionId, setEditingQuestionId] = useState<number | null>(null);
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const createQuestionMutation = useCreateQuestion();
   const updateQuestionMutation = useUpdateQuestion();
 
@@ -69,7 +75,7 @@ const QuestionBankPage = ({
 
   // Filter questions based on search and category using query data directly
   const filteredQuestions = useMemo(() => {
-    return allQuestions.filter((question) => {
+    const filtered = allQuestions.filter((question) => {
       const matchesSearch =
         !searchTerm ||
         question.question.toLowerCase().includes(searchTerm.toLowerCase());
@@ -77,7 +83,53 @@ const QuestionBankPage = ({
         selectedLandId === null || question.landId === selectedLandId.toString();
       return matchesSearch && matchesCategory;
     });
+    
+    // Debug logging
+    console.log('Filtered questions:', {
+      totalAll: allQuestions.length,
+      totalFiltered: filtered.length,
+      searchTerm,
+      selectedLandId,
+      filters: {
+        hasSearch: !!searchTerm,
+        hasLandFilter: selectedLandId !== null
+      }
+    });
+    
+    return filtered;
   }, [allQuestions, searchTerm, selectedLandId]);
+
+  // Paginate filtered questions
+  const paginatedQuestions = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginated = filteredQuestions.slice(startIndex, endIndex);
+  
+    return paginated;
+  }, [filteredQuestions, currentPage, pageSize]);
+
+  // Update pagination info when filtered questions change
+  useEffect(() => {
+    const total = filteredQuestions.length;
+    setTotalItems(total);
+    setTotalPages(Math.ceil(total / pageSize));
+    
+    // Debug logging
+    console.log('Pagination info updated:', {
+      totalFiltered: total,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize)
+    });
+  }, [filteredQuestions, pageSize]);
+
+  // Reset to first page if current page is beyond total pages
+  useEffect(() => {
+    const total = filteredQuestions.length;
+    const maxPage = Math.ceil(total / pageSize);
+    if (currentPage > maxPage && total > 0) {
+      setCurrentPage(1);
+    }
+  }, [filteredQuestions, pageSize]);
 
   // Use statistics from BE instead of calculating
   const totalQuestions = questionStats?.countQuestion || 0;
@@ -166,6 +218,17 @@ const QuestionBankPage = ({
     setDeleteQuestionId(null);
   };
 
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    console.log('Page size changing from', pageSize, 'to', size);
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when changing page size
+  };
+
   return (
     <div className="space-y-6">
       <Card className="border-gray-300 bg-admin-primary">
@@ -216,13 +279,22 @@ const QuestionBankPage = ({
 
           {/* Questions Table */}
           <QuestionsTable
+            key={`questions-table-${currentPage}-${pageSize}`}
             lands={lands}
-            questions={filteredQuestions}
+            questions={paginatedQuestions}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDeleteClick}
             isLoading={isLoading}
             error={error}
+            pagination={{
+              currentPage,
+              totalPages,
+              totalItems,
+              pageSize,
+              onPageChange: handlePageChange,
+              onPageSizeChange: handlePageSizeChange,
+            }}
           />
         </CardContent>
       </Card>

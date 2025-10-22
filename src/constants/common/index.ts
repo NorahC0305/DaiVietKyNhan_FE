@@ -32,12 +32,12 @@ const LAND_CONFIG_KEY = {
         color: '#41821E'
     },
     'lang-phu-dong': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg',
+        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760862212/Th%C3%A1nh_Gi%C3%B3ng_-_Ch%C6%B0%C6%A1ng_3_wlwpux.pnghttps://res.cloudinary.com/dznt9yias/image/upload/v1760714074/Logo_TG_ybvbuo.svg',
         tenNui: 'Đền Phù Đổng',
         color: '#EF493D'
     },
     'dam-da-trach': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714074/Logo_TG_ybvbuo.svg',
+        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg',
         tenNui: 'Đầm Dạ Trạch',
         color: '#2B638F'
     },
