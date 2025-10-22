@@ -33,8 +33,8 @@ const baseRegions: ICOMPONENTS.Region[] = [
     name: "Núi Tản Viên",
     imageSrc:
       "https://res.cloudinary.com/dznt9yias/image/upload/v1760722470/Nu%CC%81i_Ta%CC%89n_Vie%CC%82n_1_yaa5yf.svg",
-    position: { top: "-9%", left: "-9.5%" },
-    size: { width: 1300, height: 760 },
+    position: { top: "-8.5%", left: "-8.7%" },
+    size: { width: 1270, height: 760},
     zIndex: 15,
     hitboxScale: 0.6,
     hitboxOffset: { x: -0.08, y: 0 },
@@ -57,7 +57,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
     name: "Đầm Dạ Trạch",
     imageSrc:
       "https://res.cloudinary.com/dznt9yias/image/upload/v1760722555/%C4%90a%CC%82%CC%80m_Da%CC%A3_Tra%CC%A3ch_1_bbfigz.svg",
-    position: { bottom: "-8%", left: "0%" },
+    position: { bottom: "-8%", left: "-0.1%" },
     size: { width: 1120, height: 620 },
     hitboxScale: 0.8,
     hitboxOffset: { x: -0.1, y: 0.2 },
@@ -68,7 +68,7 @@ const baseRegions: ICOMPONENTS.Region[] = [
     name: "Làng Phù Đổng",
     imageSrc:
       "https://res.cloudinary.com/dznt9yias/image/upload/v1760722422/La%CC%80ng_Phu%CC%80_%C4%90o%CC%82%CC%89ng_1_e7tht5.svg",
-    position: { bottom: "-8%", right: "-12%" },
+    position: { bottom: "-10%", right: "-12%" },
     size: { width: 1320, height: 740 },
     hitboxScale: 0.6,
     hitboxOffset: { x: 0.1, y: 0.1 },

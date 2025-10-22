@@ -91,7 +91,7 @@ export default function MapRegion({
       {/* Image vùng đất */}
       <motion.div
         className="relative pointer-events-none w-full h-full"
-        animate={{ scale: isHovered && !isLocked ? 1.05 : 1 }}
+        animate={{ scale: isHovered && !isLocked ? 1.01 : 1 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         {isFullscreen ? (
