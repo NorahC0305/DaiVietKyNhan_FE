@@ -170,16 +170,14 @@ const HomePageClient = ({
     }
   }, [isAttendanceLoading, isTodayCheckedIn]);
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen">
       {/* Banner 1 - Main Hero Section */}
-      <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 cursor-pointer">
+      <section className="relative w-full lg:h-[750px] h-[510px] flex items-center justify-center overflow-hidden">
+        <div className="absolute z-0 cursor-pointer flex justify-center w-full h-full">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803766/HomePageBanner_iyp4lc.svg"
             alt="HomePage Banner"
-            width={1730}
-            height={3000}
-            // className="object-cover"
+            fill
             onClick={() => router.push(ROUTES.PUBLIC.MAP)}
             priority
           />
@@ -206,13 +204,12 @@ const HomePageClient = ({
       />
 
       {/* Banner 2 - Khí Chất Section */}
-      <section className="relative w-full sm:h-[600px] lg:h-[1100px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 cursor-pointer">
+      <section className="relative mt-12 lg:mt-32 w-full lg:h-[870px] h-[591px] flex items-center justify-center overflow-hidden">
+        <div className="absolute z-0 cursor-pointer flex justify-center w-full h-full">
           <Image
             src="https://res.cloudinary.com/dznt9yias/image/upload/v1760803844/KhiChatCuaBanLa_wmxfip.svg"
             alt="Khí Chất Của Bạn Là"
-            width={1730}
-            height={1000}
+            fill
             onClick={() => router.push(ROUTES.STARTER.TEST_PLAYGROUND)}
             priority
           />
@@ -458,7 +455,6 @@ export default HomePageWrapper;
 // import CountDown from './CountDown'
 // import { IUser } from '@models/user/entity'
 // import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
-// import DailyCheckin from '@components/Molecules/DailyCheckin';
 
 // interface HomePageClientProps {
 //   user: IUser
@@ -472,7 +468,6 @@ export default HomePageWrapper;
 //       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
 //         <CountDown activeWithAmountUser={activeWithAmountUser} accessToken={accessToken} />
 //       }
-// <DailyCheckin />
 //     </div>
 //   )
 // }
