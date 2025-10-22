@@ -493,19 +493,6 @@ const PersonalityResultPage = React.memo(() => {
               );
             })}
           </div>
-          {/* Footer */}
-          <div
-            className={`${
-              isMobileLandscape ? "mt-1" : "mt-3"
-            } text-left self-start w-full max-w-[460px]`}
-          >
-            <span
-              className={`${isMobileLandscape ? "text-xs" : "text-xs"}`}
-              style={{ color: selectedOption?.color || "#6B7280" }}
-            >
-              *Kết quả mang tính chất tham khảo
-            </span>
-          </div>
         </div>
 
         {/* Right Side - Description */}
@@ -599,6 +586,18 @@ const PersonalityResultPage = React.memo(() => {
             </div>
           </div>
 
+          {/* Footer */}
+          <div className="absolute bottom-0 left-0 right-0 pb-8 pl-5 md:pl-8 lg:pl-10 pr-5 md:pr-8 lg:pr-10">
+            <div className="text-left w-full max-w-[460px]">
+              <span
+                className="text-xs"
+                style={{ color: selectedOption?.color || "#6B7280" }}
+              >
+                *Kết quả mang tính chất tham khảo
+              </span>
+            </div>
+          </div>
+
           {/* Edge-aligned navigation button */}
           <button
             onClick={handleNext}
@@ -611,7 +610,7 @@ const PersonalityResultPage = React.memo(() => {
             aria-label="Next"
           >
             <Image
-              src="/Next.svg"
+              src="https://res.cloudinary.com/dznt9yias/image/upload/v1760725883/next_xshxeb.svg"
               alt="Next"
               width={50}
               height={50}

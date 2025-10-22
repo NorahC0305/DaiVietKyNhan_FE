@@ -8,6 +8,7 @@ import kynhanService from "@/services/kynhan";
 import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
+import NoKyNhan from "@/components/Molecules/Popup/NoKyNhan";
 
 interface CardData {
   id: number;
@@ -35,6 +36,7 @@ const LibraryPage = () => {
   const [highlightQuery, setHighlightQuery] = useState<string>("");
   const [cards, setCards] = useState<CardData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showNoKyNhanModal, setShowNoKyNhanModal] = useState(false);
   const isLandscapeMobile = useLandscapeMobile();
 
   // Handle CTA button click - navigate to library detail page
@@ -60,7 +62,7 @@ const LibraryPage = () => {
   // Handle URL search parameter - check if it's an ID to auto scroll
   useEffect(() => {
     const searchParam = searchParams?.get("search");
-    console.log('searchParam', searchParam);
+    console.log("searchParam", searchParam);
     if (searchParam) {
       setHiddenSearchId(searchParam);
       // Clear URL parameter after reading it and prevent back navigation to map
@@ -100,16 +102,35 @@ const LibraryPage = () => {
         if (response.data) {
           const cardData = response.data.map(convertToCardData);
           setCards(cardData);
+
+          // Check if user owns any kỳ nhân using owned field or fallback to unlocked check
+          const hasOwnedKyNhan = response.owned > 0;
+          const hasUnlockedKyNhan = response.data.some(
+            (kynhan) => kynhan.unlocked === true
+          );
+
+          // Show modal if user owns 0 kỳ nhân (using owned field or unlocked check as fallback)
+          if (!hasOwnedKyNhan && !hasUnlockedKyNhan) {
+            setShowNoKyNhanModal(true);
+          }
+        } else {
+          // Show modal if no data received
+          setShowNoKyNhanModal(true);
         }
       } catch (error) {
         console.error("Error fetching kynhan list:", error);
+        // Even on error, check if we have any unlocked kỳ nhân in the cards array
+        const hasUnlockedKyNhan = cards.some((card) => card.unlocked === true);
+        if (!hasUnlockedKyNhan) {
+          setShowNoKyNhanModal(true);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchKynhanList();
-  }, []);
+  }, [searchQuery]);
 
   const normalizeText = (text?: string) =>
     (text || "")
@@ -255,6 +276,12 @@ const LibraryPage = () => {
           />
         )}
       </div>
+
+      {/* NoKyNhan Modal */}
+      <NoKyNhan 
+        isOpen={showNoKyNhanModal} 
+        onClose={() => setShowNoKyNhanModal(false)}
+      />
     </div>
   );
 };

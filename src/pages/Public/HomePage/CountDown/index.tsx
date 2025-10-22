@@ -36,7 +36,11 @@ const CountDown = ({ activeWithAmountUser, accessToken }: CountDownProps) => {
     });
 
     const launchDateString = launchDate
-        ? new Date(launchDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        ? (() => {
+            const date = new Date(launchDate);
+            date.setDate(date.getDate() - 1);
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          })()
         : '';
 
     useEffect(() => {

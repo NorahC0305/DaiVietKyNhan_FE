@@ -66,8 +66,8 @@ const FrameText: React.FC<FrameTextProps> = React.memo(
               // These percentages approximate the red-bounded area from the frame
               left: "10%",
               right: "10%",
-              top: "18%",
-              bottom: "18%",
+              top: "24%",
+              bottom: "16%",
             }}
           >
             <span

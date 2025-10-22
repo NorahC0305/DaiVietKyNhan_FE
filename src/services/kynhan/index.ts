@@ -23,7 +23,17 @@ const kynhanService = {
     });
   },
   getUserKyNhanList: async (searchQuery?: string) => {
-    const queryString = searchQuery ? `name:like=${encodeURIComponent(searchQuery)}` : "";
+    const qsParts: string[] = [];
+    
+    // Add default sorting
+    qsParts.push("sort:-updatedAt");
+    
+    // Add search query if provided
+    if (searchQuery) {
+      qsParts.push(`name:like=${encodeURIComponent(searchQuery)}`);
+    }
+    
+    const queryString = qsParts.join(",");
     return await http.get<IKyNhanUserListResponseModel>(`/kynhan/list/user?qs=${queryString}`, {
       cache: "no-store",
     });
