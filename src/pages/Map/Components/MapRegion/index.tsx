@@ -7,6 +7,7 @@ import { useState } from "react";
 interface MapRegionProps {
   id: string;
   name: string;
+  // imageSrc is no longer used but kept in props for interface consistency
   imageSrc: string;
   position: {
     top?: string;
@@ -21,35 +22,33 @@ interface MapRegionProps {
   };
   onClick?: () => void;
   zIndex?: number;
-  hitboxScale?: number; // Tỷ lệ phạm vi hover so với kích thước ảnh (0.5 = 50% kích thước)
+  hitboxScale?: number;
   hitboxOffset?: {
-    x?: number; // Offset theo chiều ngang (âm = trái, dương = phải), tính theo % của width
-    y?: number; // Offset theo chiều dọc (âm = lên, dương = xuống), tính theo % của height
+    x?: number;
+    y?: number;
   };
-  isFullscreen?: boolean; // Mode fullscreen - sử dụng percentage positioning
-  isLocked?: boolean; // Whether the region is locked
+  isFullscreen?: boolean;
+  isLocked?: boolean;
 }
 
 export default function MapRegion({
   id,
   name,
-  imageSrc,
+  imageSrc, // Giữ lại prop nhưng không dùng
   position,
   size = { width: 200, height: 200 },
   onClick,
   zIndex = 10,
-  hitboxScale = 0.6, // Mặc định 60% kích thước ảnh
-  hitboxOffset = { x: 0, y: 0 }, // Mặc định không offset
-  isFullscreen = false, // Mặc định không fullscreen
-  isLocked = false, // Mặc định không bị khóa
+  hitboxScale = 0.6,
+  hitboxOffset = { x: 0, y: 0 },
+  isFullscreen = false,
+  isLocked = false,
 }: MapRegionProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Tính toán kích thước và vị trí của vùng hover
   const hitboxWidth = size.width * hitboxScale;
   const hitboxHeight = size.height * hitboxScale;
-
-  // Vị trí căn giữa + offset tùy chỉnh
   const hitboxOffsetX =
     (size.width - hitboxWidth) / 2 + size.width * (hitboxOffset.x || 0);
   const hitboxOffsetY =
@@ -60,8 +59,8 @@ export default function MapRegion({
     ? {
         ...position,
         zIndex,
-        width: `${(size.width / 1920) * 100}vw`, // Convert to viewport width percentage
-        height: `${(size.height / 1080) * 100}vh`, // Convert to viewport height percentage
+        width: `${(size.width / 1920) * 100}vw`,
+        height: `${(size.height / 1080) * 100}vh`,
       }
     : {
         ...position,
@@ -72,73 +71,18 @@ export default function MapRegion({
 
   return (
     <div className="absolute group" style={containerStyle}>
-      {/* Glow effect khi hover - chỉ hiện cho unlocked regions và đám mây ky-linh-viet-hoa */}
-      {isHovered && (!isLocked || id === "ky-linh-viet-hoa") && (
-        <motion.div
-          className="absolute inset-0 rounded-lg pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          style={{
-            filter: "blur(20px)",
-            background:
-              "radial-gradient(circle, rgba(255,215,0,0.4) 0%, transparent 70%)",
-            transform: "scale(1.2)",
-          }}
-        />
-      )}
-
-      {/* Image vùng đất */}
-      <motion.div
-        className="relative pointer-events-none w-full h-full"
-        animate={{ scale: isHovered && !isLocked ? 1.01 : 1 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        {isFullscreen ? (
-          <div className="w-full h-full flex items-center justify-center">
-            <Image
-              src={imageSrc}
-              alt={name}
-              width={size.width}
-              height={size.height}
-              className="transition-all duration-300 max-w-full max-h-full object-contain"
-              style={{
-                filter: isLocked 
-                  ? "grayscale(0.8) brightness(0.6)"
-                  : isHovered
-                  ? "brightness(1.2) drop-shadow(0 0 20px rgba(255,215,0,0.6))"
-                  : "none",
-              }}
-            />
-          </div>
-        ) : (
-          <Image
-            src={imageSrc}
-            alt={name}
-            width={size.width}
-            height={size.height}
-            className="transition-all duration-300"
-            style={{
-              filter: isLocked 
-                ? "grayscale(0.8) brightness(0.6)"
-                : isHovered
-                ? "brightness(1.2) drop-shadow(0 0 20px rgba(255,215,0,0.6))"
-                : "none",
-            }}
-          />
-        )}
-      </motion.div>
-
       {/* Lock overlay khi region bị khóa */}
       {isLocked && (
         <div className="absolute inset-0 pointer-events-none">
           {id === "ky-linh-viet-hoa" ? (
-            // Cloud overlay for Kỳ Linh Việt Hỏa - smaller size
-            <motion.div 
+            // Cloud overlay for Kỳ Linh Việt Hỏa
+            <motion.div
               className="absolute inset-16 flex items-center justify-center"
-              animate={{ 
+              animate={{
                 scale: isHovered ? 1.05 : 1,
-                filter: isHovered ? "brightness(1.2) drop-shadow(0 0 20px rgba(255,215,0,0.6))" : "none"
+                filter: isHovered
+                  ? "brightness(1.2) drop-shadow(0 0 20px rgba(255,215,0,0.6))"
+                  : "none",
               }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
@@ -156,7 +100,7 @@ export default function MapRegion({
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-black bg-opacity-50 rounded-full p-3">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-12 h-12 text-white"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -173,9 +117,11 @@ export default function MapRegion({
         </div>
       )}
 
-      {/* Vùng tương tác hover (hitbox) - nhỏ hơn ảnh */}
+      {/* Vùng tương tác hover (hitbox) - Vẫn giữ lại để có thể tương tác */}
       <div
-        className={`absolute ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        className={`absolute ${
+          isLocked ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
         style={
           isFullscreen
             ? {
@@ -186,19 +132,17 @@ export default function MapRegion({
                 transform: `translate(-50%, -50%) translate(${
                   (hitboxOffset.x || 0) * 100
                 }%, ${(hitboxOffset.y || 0) * 100}%)`,
-                // Debug: uncomment để xem vùng hover
-                // backgroundColor: "rgba(255, 0, 0, 0.3)",
               }
             : {
                 top: hitboxOffsetY,
                 left: hitboxOffsetX,
                 width: hitboxWidth,
                 height: hitboxHeight,
-                // Debug: uncomment để xem vùng hover
-                // backgroundColor: "rgba(255, 0, 0, 0.3)",
               }
         }
-        onMouseEnter={() => (!isLocked || id === "ky-linh-viet-hoa") && setIsHovered(true)}
+        onMouseEnter={() =>
+          (!isLocked || id === "ky-linh-viet-hoa") && setIsHovered(true)
+        }
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => onClick?.()}
       />
