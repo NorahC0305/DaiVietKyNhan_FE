@@ -4,6 +4,7 @@ import { IUserAchievement, IMyAchievementsResponse } from "@models/user-achievem
 
 export type Achievement = {
   id: string;
+  achievementId: number;
   title: string;
   description?: string;
   canClaim: boolean;
@@ -33,6 +34,7 @@ function mapApiResponseToAchievements(apiData: IUserAchievement[]): Achievement[
 
     return {
       id: userAchievement.id.toString(),
+      achievementId: userAchievement.achievementId,
       title: userAchievement.achievement.name,
       description: userAchievement.achievement.description,
       canClaim: canClaim,
@@ -56,7 +58,6 @@ export const useAchievements = (isOpen: boolean) => {
     setError(null);
     try {
       const response = await userAchievementService.getMyAchievements();
-
       if (response.statusCode === 200 && response.data && Array.isArray(response.data)) {
         const mappedAchievements = mapApiResponseToAchievements(response.data as IUserAchievement[]);
         setAchievements(mappedAchievements);

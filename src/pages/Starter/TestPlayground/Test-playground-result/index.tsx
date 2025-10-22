@@ -109,7 +109,7 @@ const TestPlaygroundResultPage = React.memo(() => {
       id: "tan-vien-son-thanh",
       title: "TẢN VIÊN SƠN THÁNH",
       name: "SƠN TINH",
-      image: "/Sơn Tinh 1.svg",
+      image: "https://res.cloudinary.com/dznt9yias/image/upload/v1760882410/god-profiles/images/file_hubadj.png",
       borderColor: "border-green-500",
       bgColor: "bg-green-50",
       textColor: "#10B981",
@@ -118,7 +118,7 @@ const TestPlaygroundResultPage = React.memo(() => {
       id: "chu-dao-to",
       title: "CHỬ ĐẠO TỔ",
       name: "CHỬ ĐỒNG TỬ",
-      image: "/Chử đồng tử 1.svg",
+      image: "https://res.cloudinary.com/dznt9yias/image/upload/v1760882435/god-profiles/images/file_rogijq.png",
       borderColor: "border-blue-500",
       bgColor: "bg-blue-50",
       textColor: "#3B82F6",
@@ -127,7 +127,7 @@ const TestPlaygroundResultPage = React.memo(() => {
       id: "phu-dong-thien-vuong",
       title: "PHÙ ĐỔNG THIÊN VƯƠNG",
       name: "THÁNH GIÓNG",
-      image: "/Thánh Gióng 1.svg",
+      image: "https://res.cloudinary.com/dznt9yias/image/upload/v1760882465/god-profiles/images/file_umblfc.png",
       borderColor: "border-red-500",
       bgColor: "bg-red-50",
       textColor: "#EF4444",
@@ -136,7 +136,7 @@ const TestPlaygroundResultPage = React.memo(() => {
       id: "mau-thuong-thien",
       title: "MẪU THƯỢNG THIÊN",
       name: "CÔNG CHÚA LIỄU HẠNH",
-      image: "/Liễu Hạnh 1.svg",
+      image: "https://res.cloudinary.com/dznt9yias/image/upload/v1760882511/god-profiles/images/file_jqsu8f.png",
       borderColor: "border-purple-500",
       bgColor: "bg-purple-50",
       textColor: "#8B5CF6",
@@ -566,7 +566,7 @@ const TestPlaygroundResultPage = React.memo(() => {
             aria-label="Next"
           >
             <Image
-              src="/Next.svg"
+              src="https://res.cloudinary.com/dznt9yias/image/upload/v1760725883/next_xshxeb.svg"
               alt="Next"
               width={50}
               height={50}
