@@ -455,14 +455,16 @@ import DetailInfo from './DetailInfo'
 import CountDown from './CountDown'
 import { IUser } from '@models/user/entity'
 import { IGetSystemConfigWithAmountUserResponse } from '@models/system/response'
+import { IAttendanceItem } from '@models/attendance/response';
 
 interface HomePageClientProps {
   user: IUser
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse
   accessToken: string
+  initialAttendanceList?: IAttendanceItem[]
 }
 
-const HomePageClient = ({ user, activeWithAmountUser, accessToken }: HomePageClientProps) => {
+const HomePageClient = ({ user, activeWithAmountUser, accessToken, initialAttendanceList }: HomePageClientProps) => {
   return (
     <div className='mt-7 min-h-screen'>
       {!user?.gender && !user?.birthDate ? <DetailInfo /> :
