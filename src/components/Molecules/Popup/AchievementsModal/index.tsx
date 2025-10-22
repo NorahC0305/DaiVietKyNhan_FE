@@ -43,13 +43,13 @@ function normalizeRewardDisplay(ach: Achievement): RewardDisplay {
 function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
   switch (status) {
     case "PENDING":
-      return "/Property 1=Chưa đủ để nhận.svg"; // PENDING means chưa đủ để nhận
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1760725953/Property_1_Chu%CC%9Ba_%C4%91u%CC%89_%C4%91e%CC%82%CC%89_nha%CC%A3%CC%82n_cgzj1r.svg"; // PENDING means chưa đủ để nhận
     case "COMPLETED":
-      return "/Property 1=Đủ để nhận.svg"; // COMPLETED means đủ để nhận
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1760725920/Property_1_%C4%90u%CC%89_%C4%91e%CC%82%CC%89_nha%CC%A3%CC%82n_g8qs7s.svg"; // COMPLETED means đủ để nhận
     case "CLAIMED":
       return "https://res.cloudinary.com/dznt9yias/image/upload/v1761018191/%C4%90a%CC%83_nha%CC%A3%CC%82n_1_ocfc7m.svg";
     default:
-      return "/Property 1=Chưa đủ để nhận.svg"; // CLAIMED shows chưa đủ để nhận
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1760725953/Property_1_Chu%CC%9Ba_%C4%91u%CC%89_%C4%91e%CC%82%CC%89_nha%CC%A3%CC%82n_cgzj1r.svg"; // CLAIMED shows chưa đủ để nhận
   }
 }
 
@@ -61,7 +61,6 @@ export default function AchievementsModal({
 }: AchievementsModalProps) {
   const { achievements, loading, error, fetchAchievements } =
     useAchievements(isOpen);
-
   const handleClaim = async (achievementId: string) => {
     await onClaim(achievementId);
     // Refresh achievements data after successful claim
@@ -196,7 +195,7 @@ export default function AchievementsModal({
                             <button
                               onClick={() =>
                                 achievement.status === "COMPLETED" &&
-                                handleClaim(achievement.id)
+                                handleClaim(achievement.achievementId.toString())
                               }
                               disabled={
                                 achievement.status !== "COMPLETED" || isClaiming

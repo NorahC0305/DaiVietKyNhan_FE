@@ -566,7 +566,7 @@ const TestPlaygroundResultPage = React.memo(() => {
             aria-label="Next"
           >
             <Image
-              src="/Next.svg"
+              src="https://res.cloudinary.com/dznt9yias/image/upload/v1760725883/next_xshxeb.svg"
               alt="Next"
               width={50}
               height={50}
