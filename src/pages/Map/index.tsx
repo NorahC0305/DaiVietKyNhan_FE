@@ -100,7 +100,7 @@ const mobileRegionsConfig = {
   },
 };
 
-const mainMapImage = "/Trang map Kỳ Giới.svg";
+const mainMapImage = "https://res.cloudinary.com/dznt9yias/image/upload/v1761121694/Trang_map_Ky%CC%80_Gio%CC%9B%CC%81i_e6kyap.svg";
 
 // Mapping từ region ID đến land ID dựa trên userLand data
 // Dựa trên userLand response:

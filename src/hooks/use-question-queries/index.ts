@@ -74,6 +74,7 @@ export const useQuestions = (filters?: {
   type?: string;
 }) => {
   const [data, setData] = useState<UIQuestion[]>([]);
+  const [rawData, setRawData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -83,7 +84,7 @@ export const useQuestions = (filters?: {
       setError(null);
 
       const response = await questionService.getAllQuestionsAdmin();
-
+      console.log();
       // Handle different possible response structures
       let questionsData = null;
 
@@ -101,8 +102,10 @@ export const useQuestions = (filters?: {
       }
 
       if (questionsData && Array.isArray(questionsData)) {
+        setRawData(questionsData);
         setData(questionsData.map(transformQuestionToUI));
       } else {
+        setRawData([]);
         setData([]);
       }
     } catch (error) {
@@ -123,6 +126,7 @@ export const useQuestions = (filters?: {
 
   return {
     data,
+    rawData,
     isLoading,
     error,
     refetch,
@@ -264,11 +268,13 @@ export const useQuestionStats = () => {
       setError(null);
 
       const response = await questionService.getQuestionStats();
-      
+
       if (response.statusCode === 200 && response.data) {
         setData(response.data);
       } else {
-        setError(new Error(response.message || "Failed to fetch question stats"));
+        setError(
+          new Error(response.message || "Failed to fetch question stats")
+        );
       }
     } catch (err) {
       const error = err as Error;

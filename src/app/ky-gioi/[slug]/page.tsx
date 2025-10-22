@@ -28,7 +28,7 @@ const regionSlugs: Record<string, RegionData> = {
     slug: "phu-tay-ho",
     id: 4,
     backgroundImage:
-      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722781/Map_Tha%CC%81nh_Gio%CC%81ng_1_x9yqi3.svg",
+      "https://res.cloudinary.com/dznt9yias/image/upload/v1761121411/Trang_vu%CC%80ng_%C4%91a%CC%82%CC%81t_Lie%CC%82%CC%83u_Ha%CC%A3nh_odoktx.svg",
   },
   "dam-da-trach": {
     slug: "dam-da-trach",
@@ -39,7 +39,7 @@ const regionSlugs: Record<string, RegionData> = {
   "lang-phu-dong": {
     slug: "lang-phu-dong",
     id: 3,
-    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1761067376/Tha%CC%81nh_Gio%CC%81ng_1_fnbunu.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
+    backgroundImage: "https://res.cloudinary.com/dznt9yias/image/upload/v1760722781/Map_Tha%CC%81nh_Gio%CC%81ng_1_x9yqi3.svg", // Sử dụng ảnh Sơn Tinh cho Làng Phù Đổng
   },
 
   "ky-linh-viet-hoa": {
