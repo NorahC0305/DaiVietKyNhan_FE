@@ -9,6 +9,7 @@ import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
 import NoKyNhan from "@/components/Molecules/Popup/NoKyNhan";
+import { Loader2 } from "lucide-react";
 
 interface CardData {
   id: number;
@@ -99,18 +100,14 @@ const LibraryPage = () => {
         setIsLoading(true);
         const response =
           (await kynhanService.getUserKyNhanList()) as IKyNhanUserListResponseModel;
-        if (response.data) {
-          const cardData = response.data.map(convertToCardData);
+        if (response.data && response.data.results) {
+          const cardData = response.data.results.map(convertToCardData);
           setCards(cardData);
+          // Check if user owns any kỳ nhân using totalKyNhanClaim field
+          const hasOwnedKyNhan = response.data.totalKyNhanClaim > 0;
 
-          // Check if user owns any kỳ nhân using owned field or fallback to unlocked check
-          const hasOwnedKyNhan = response.owned > 0;
-          const hasUnlockedKyNhan = response.data.some(
-            (kynhan) => kynhan.unlocked === true
-          );
-
-          // Show modal if user owns 0 kỳ nhân (using owned field or unlocked check as fallback)
-          if (!hasOwnedKyNhan && !hasUnlockedKyNhan) {
+          // Show modal if user owns 0 kỳ nhân
+          if (!hasOwnedKyNhan) {
             setShowNoKyNhanModal(true);
           }
         } else {
@@ -119,11 +116,8 @@ const LibraryPage = () => {
         }
       } catch (error) {
         console.error("Error fetching kynhan list:", error);
-        // Even on error, check if we have any unlocked kỳ nhân in the cards array
-        const hasUnlockedKyNhan = cards.some((card) => card.unlocked === true);
-        if (!hasUnlockedKyNhan) {
-          setShowNoKyNhanModal(true);
-        }
+        // Show modal on error since we can't determine ownership
+        setShowNoKyNhanModal(true);
       } finally {
         setIsLoading(false);
       }
@@ -263,8 +257,11 @@ const LibraryPage = () => {
       {/* Main Content */}
       <div className="min-h-screen w-full flex items-center justify-center py-4 lg:py-10 mt-10 lg:mt-0">
         {isLoading ? (
-          <div className="flex items-center justify-center">
-            <div className="text-white text-lg">Đang tải...</div>
+          <div className="col-span-full flex flex-col items-center justify-center py-8 gap-3">
+            <Loader2 className="h-8 w-8 text-[#835D26] animate-spin" />
+            <div className="text-[#835D26] font-medium">
+              Đang tải dữ liệu...
+            </div>
           </div>
         ) : (
           <EmblaCarouselWithCards
@@ -278,8 +275,8 @@ const LibraryPage = () => {
       </div>
 
       {/* NoKyNhan Modal */}
-      <NoKyNhan 
-        isOpen={showNoKyNhanModal} 
+      <NoKyNhan
+        isOpen={showNoKyNhanModal}
         onClose={() => setShowNoKyNhanModal(false)}
       />
     </div>
