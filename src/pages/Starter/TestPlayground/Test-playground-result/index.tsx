@@ -154,12 +154,12 @@ const TestPlaygroundResultPage = React.memo(() => {
         ...guardianMetaByTrait[traitType],
         personalityId:
           traitType === "SANGUINE"
-            ? "diem-tinh"
+            ? "vui-tuoi"
             : traitType === "CHOLERIC"
-              ? "manh-me"
-              : traitType === "MELANCHOLIC"
-                ? "vui-tuoi"
-                : "uu-tu",
+            ? "manh-me"
+            : traitType === "MELANCHOLIC"
+            ? "uu-tu"
+            : "diem-tinh",
         // Include profile data if available
         ...(profile && { profileData: profile }),
       };
@@ -172,14 +172,19 @@ const TestPlaygroundResultPage = React.memo(() => {
 
   // Auto-select guardian when personality is selected
   useEffect(() => {
-    if (selectedPersonality && !selectedGuardian) {
+    if (selectedPersonality) {
       const guardian = guardianDeities?.find(
         (g) => g.personalityId === selectedPersonality
       );
       const profile = getProfileById(selectedPersonality);
-      if (guardian && profile?.isAchieved) setSelectedGuardian(guardian);
+      if (guardian && profile?.isAchieved) {
+        setSelectedGuardian(guardian);
+      } else {
+        // Clear guardian if no valid match found
+        setSelectedGuardian(null);
+      }
     }
-  }, [selectedPersonality, guardianDeities]);
+  }, [selectedPersonality, guardianDeities, getProfileById]);
 
   const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedPersonality(optionId);

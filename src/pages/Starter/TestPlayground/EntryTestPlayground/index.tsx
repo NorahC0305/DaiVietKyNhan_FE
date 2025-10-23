@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useAnswersSelector,
   useSetAnswer,
+  useClearStorage,
 } from "@/stores/entry-test/selectors";
 import { Progress } from "@/components/Atoms/ui/progress";
 import { ROUTES } from "@routes";
@@ -238,6 +239,7 @@ export default function EntryTestPlaygroundPage({
   const [currentStep, setCurrentStep] = useState(0); // 0 = intro, 1-TOTAL_QUESTIONS = questions
   const answers = useAnswersSelector();
   const setAnswer = useSetAnswer();
+  const clearStorage = useClearStorage();
   const [showSaved, setShowSaved] = useState(false);
 
   const handleStartTest = useCallback(() => {
@@ -275,13 +277,15 @@ export default function EntryTestPlaygroundPage({
         // small delay to allow flash/tick feedback
         setTimeout(() => setCurrentStep(currentStep + 1), 1000);
       } else {
+        // Clear localStorage when test is completed
+        clearStorage();
         // Navigate to test playground result page
         if (typeof window !== "undefined") {
           window.location.href = ROUTES.STARTER.TEST_PLAYGROUND_RESULT;
         }
       }
     },
-    [currentStep, questions, setAnswer, TOTAL_QUESTIONS]
+    [currentStep, questions, setAnswer, TOTAL_QUESTIONS, clearStorage]
   );
 
   useEffect(() => {

@@ -9,6 +9,14 @@ export const createEntryTestSlice = (
   reset: () => set({ answers: {} }),
   houseScores: undefined,
   setHouseScores: (scores) => set({ houseScores: scores }),
+  clearStorage: () => {
+    // Clear localStorage for entry test answers
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('entryTestAnswers');
+    }
+    // Reset store state
+    set({ answers: {}, houseScores: undefined });
+  },
 });
 
 let set: any;

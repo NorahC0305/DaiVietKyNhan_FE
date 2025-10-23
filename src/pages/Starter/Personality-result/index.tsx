@@ -157,12 +157,12 @@ const PersonalityResultPage = React.memo(() => {
         ...guardianMetaByTrait[traitType],
         personalityId:
           traitType === "SANGUINE"
-            ? "diem-tinh"
+            ? "vui-tuoi"
             : traitType === "CHOLERIC"
             ? "manh-me"
             : traitType === "MELANCHOLIC"
-            ? "vui-tuoi"
-            : "uu-tu",
+            ? "uu-tu"
+            : "diem-tinh",
         // Include profile data if available
         ...(profile && { profileData: profile }),
       };
@@ -175,14 +175,19 @@ const PersonalityResultPage = React.memo(() => {
 
   // Auto-select guardian when personality is selected
   useEffect(() => {
-    if (selectedPersonality && !selectedGuardian) {
+    if (selectedPersonality) {
       const guardian = guardianDeities?.find(
         (g) => g.personalityId === selectedPersonality
       );
       const profile = getProfileById(selectedPersonality);
-      if (guardian && profile?.isAchieved) setSelectedGuardian(guardian);
+      if (guardian && profile?.isAchieved) {
+        setSelectedGuardian(guardian);
+      } else {
+        // Clear guardian if no valid match found
+        setSelectedGuardian(null);
+      }
     }
-  }, [selectedPersonality, guardianDeities]);
+  }, [selectedPersonality, guardianDeities, getProfileById]);
 
   const handleOptionSelect = useCallback((optionId: string) => {
     setSelectedPersonality(optionId);
@@ -285,24 +290,13 @@ const PersonalityResultPage = React.memo(() => {
                 >
                   {/* Guardian Card */}
                   <div
-                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-primary-light rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+                    className={`relative w-full h-80 md:h-96 lg:h-[28rem] border-4 ${guardian.borderColor} bg-primary-light rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex`}
                   >
-                    {/* Large Image aligned left */}
-                    <div className="absolute inset-y-0 right-0 w-[68%] md:w-[72%] lg:w-[74%]">
-                      <Image
-                        src={guardian.image}
-                        alt={guardian.name}
-                        fill
-                        sizes="(max-width: 768px) 68vw, (max-width: 1024px) 72vw, 74vw"
-                        className="object-contain object-right"
-                      />
-                    </div>
-
-                    {/* Overlay Text */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-3 text-left">
+                    {/* Text Section - Fixed width */}
+                    <div className="w-[40%] md:w-[38%] lg:w-[35%] flex flex-col justify-center items-center p-2 md:p-3 relative z-10">
+                      <div className="text-center">
                         <div
-                          className="text-sm md:text-base font-extrabold uppercase tracking-wide mb-2 leading-tight text-center"
+                          className="text-base md:text-lg lg:text-xl font-extrabold uppercase tracking-wide mb-2 leading-tight"
                           style={{ color: guardian.textColor }}
                         >
                           {titleLines.map((line, idx) => (
@@ -314,13 +308,13 @@ const PersonalityResultPage = React.memo(() => {
                         <div
                           className="mx-auto rounded-sm"
                           style={{
-                            height: "6px",
-                            width: "120px",
+                            height: "4px",
+                            width: "80px",
                             backgroundColor: guardian.textColor,
                           }}
                         />
                         <div
-                          className="mt-2 text-2xl md:text-3xl font-bd-street-sign leading-tight text-center"
+                          className="mt-2 text-2xl md:text-3xl lg:text-4xl font-bd-street-sign leading-tight"
                           style={{ color: guardian.textColor }}
                         >
                           {nameLines.map((line, idx) => (
@@ -328,6 +322,17 @@ const PersonalityResultPage = React.memo(() => {
                           ))}
                         </div>
                       </div>
+                    </div>
+
+                    {/* Image Section - Remaining width */}
+                    <div className="flex-1 relative">
+                      <Image
+                        src={guardian.image}
+                        alt={guardian.name}
+                        fill
+                        sizes="(max-width: 768px) 65vw, (max-width: 1024px) 68vw, 70vw"
+                        className="object-contain object-center"
+                      />
                     </div>
                   </div>
                 </div>
