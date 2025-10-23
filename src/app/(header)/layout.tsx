@@ -20,7 +20,7 @@ export default async function HeaderPublicLayout({
         <div className="w-full min-h-screen">
             <HeaderSSR />
             <ForceLandscape>
-                <AttendanceProvider initialAttendanceList={initialAttendanceList}>
+                <AttendanceProvider initialAttendanceList={initialAttendanceList || []}>
                     {children}
                 </AttendanceProvider>
             </ForceLandscape>

@@ -38,19 +38,16 @@ import { ICreateQuestionRequest } from "@models/question/request";
 import { IQuestion } from "@models/question/entity";
 import { ILandEntity } from "@models/land/entity";
 
-
-const QuestionBankPage = ({
-  lands,
-}: {
-  lands: ILandEntity[];
-}) => {
+const QuestionBankPage = ({ lands }: { lands: ILandEntity[] }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLandId, setSelectedLandId] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingQuestionId, setEditingQuestionId] = useState<number | null>(null);
+  const [editingQuestionId, setEditingQuestionId] = useState<number | null>(
+    null
+  );
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -60,9 +57,16 @@ const QuestionBankPage = ({
   const updateQuestionMutation = useUpdateQuestion();
 
   // Fetch questions data using the hook
-  const { data: allQuestions = [], rawData: rawQuestions = [], isLoading, error, refetch } = useQuestions();
+  const {
+    data: allQuestions = [],
+    rawData: rawQuestions = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuestions();
   // Fetch editing question data
-  const { data: editingQuestion, isLoading: isLoadingEditQuestion } = useGetQuestionById(editingQuestionId);
+  const { data: editingQuestion, isLoading: isLoadingEditQuestion } =
+    useGetQuestionById(editingQuestionId);
 
   // Prefer using already-fetched full question (with answers) to avoid extra request
   const editingQuestionFromList = useMemo(() => {
@@ -71,7 +75,12 @@ const QuestionBankPage = ({
     return found || null;
   }, [editingQuestionId, rawQuestions]);
   // Fetch questions statistics from BE
-  const { data: questionStats, isLoading: isLoadingStats, error: statsError, refetch: refetchStats } = useQuestionStats();
+  const {
+    data: questionStats,
+    isLoading: isLoadingStats,
+    error: statsError,
+    refetch: refetchStats,
+  } = useQuestionStats();
 
   // Filter questions based on search and category using query data directly
   const filteredQuestions = useMemo(() => {
@@ -80,22 +89,11 @@ const QuestionBankPage = ({
         !searchTerm ||
         question.question.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
-        selectedLandId === null || question.landId === selectedLandId.toString();
+        selectedLandId === null ||
+        question.landId === selectedLandId.toString();
       return matchesSearch && matchesCategory;
     });
-    
-    // Debug logging
-    console.log('Filtered questions:', {
-      totalAll: allQuestions.length,
-      totalFiltered: filtered.length,
-      searchTerm,
-      selectedLandId,
-      filters: {
-        hasSearch: !!searchTerm,
-        hasLandFilter: selectedLandId !== null
-      }
-    });
-    
+
     return filtered;
   }, [allQuestions, searchTerm, selectedLandId]);
 
@@ -104,7 +102,7 @@ const QuestionBankPage = ({
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginated = filteredQuestions.slice(startIndex, endIndex);
-  
+
     return paginated;
   }, [filteredQuestions, currentPage, pageSize]);
 
@@ -113,12 +111,12 @@ const QuestionBankPage = ({
     const total = filteredQuestions.length;
     setTotalItems(total);
     setTotalPages(Math.ceil(total / pageSize));
-    
+
     // Debug logging
-    console.log('Pagination info updated:', {
+    console.log("Pagination info updated:", {
       totalFiltered: total,
       pageSize,
-      totalPages: Math.ceil(total / pageSize)
+      totalPages: Math.ceil(total / pageSize),
     });
   }, [filteredQuestions, pageSize]);
 
@@ -224,7 +222,7 @@ const QuestionBankPage = ({
   };
 
   const handlePageSizeChange = (size: number) => {
-    console.log('Page size changing from', pageSize, 'to', size);
+    console.log("Page size changing from", pageSize, "to", size);
     setPageSize(size);
     setCurrentPage(1); // Reset to first page when changing page size
   };

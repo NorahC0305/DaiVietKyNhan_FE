@@ -15,6 +15,8 @@ import { Dialog, DialogContent } from "@components/Atoms/ui/dialog";
 import { useRouter } from "next/navigation";
 import { AttendanceProvider } from "@contexts/AttendanceContext";
 import { IAttendanceItem } from "@models/attendance/response";
+import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
@@ -25,7 +27,7 @@ interface HomePageWrapperProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
   accessToken: string;
-  initialAttendanceList?: IAttendanceItem[];
+  initialAttendanceList?: IAttendanceItem[] | null;
 }
 
 // Dữ liệu mock cho phần nhận xét
@@ -62,6 +64,68 @@ const testimonialsData = [
   },
 ];
 
+// Component for authenticated features
+const AuthenticatedFeatures = () => {
+  const { data: session, status } = useSession();
+  const [showModal, setShowModal] = useState(false);
+  
+  // Hook để kiểm tra trạng thái điểm danh
+  const {
+    attendanceList,
+    isLoading: isAttendanceLoading,
+    isCheckingIn,
+    checkIn,
+    refetch,
+    isTodayCheckedIn,
+    getCheckedDates,
+  } = useAttendance();
+
+  const isAuthenticated = status === "authenticated" && session?.user;
+
+  // Tự động mở modal nếu chưa điểm danh hôm nay - chỉ khi đã đăng nhập
+  useEffect(() => {
+    if (isAuthenticated && !isAttendanceLoading) {
+      if (!isTodayCheckedIn()) {
+        setShowModal(true);
+      } else {
+        // Nếu đã điểm danh rồi mà modal đang mở thì đóng nó đi
+        setShowModal(false);
+      }
+    } else if (!isAuthenticated) {
+      // Nếu chưa đăng nhập thì đóng modal
+      setShowModal(false);
+    }
+  }, [isAuthenticated, isAttendanceLoading, isTodayCheckedIn]);
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <ModalLayout
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+      onCheckinSuccess={() => {
+        // Đóng modal sau khi điểm danh thành công
+        setShowModal(false);
+      }}
+      attendanceData={{
+        attendanceList,
+        isLoading: isAttendanceLoading,
+        isCheckingIn,
+        checkIn,
+        refetch,
+        isTodayCheckedIn,
+        getCheckedDates,
+      }}
+    />
+  );
+};
+
+// Dynamically import the authenticated features to avoid SSR issues
+const DynamicAuthenticatedFeatures = dynamic(() => Promise.resolve(AuthenticatedFeatures), {
+  ssr: false,
+  loading: () => null,
+});
+
 const HomePageClient = ({
   user,
   activeWithAmountUser,
@@ -75,17 +139,6 @@ const HomePageClient = ({
 
   const { data: userRankData, isLoading: isLoadingRank } =
     useUserRank(rankParams);
-
-  // Hook để kiểm tra trạng thái điểm danh
-  const {
-    attendanceList,
-    isLoading: isAttendanceLoading,
-    isCheckingIn,
-    checkIn,
-    refetch,
-    isTodayCheckedIn,
-    getCheckedDates,
-  } = useAttendance();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -156,19 +209,6 @@ const HomePageClient = ({
     ),
     []
   );
-  const [showModal, setShowModal] = useState(false);
-
-  // Tự động mở modal nếu chưa điểm danh hôm nay
-  useEffect(() => {
-    if (!isAttendanceLoading) {
-      if (!isTodayCheckedIn()) {
-        setShowModal(true);
-      } else {
-        // Nếu đã điểm danh rồi mà modal đang mở thì đóng nó đi
-        setShowModal(false);
-      }
-    }
-  }, [isAttendanceLoading, isTodayCheckedIn]);
   return (
     <div className="min-h-screen">
       {/* Banner 1 - Main Hero Section */}
@@ -184,24 +224,8 @@ const HomePageClient = ({
         </div>
       </section>
 
-      {/* Check-in Modal Dialog */}
-      <ModalLayout
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onCheckinSuccess={() => {
-          // Đóng modal sau khi điểm danh thành công
-          setShowModal(false);
-        }}
-        attendanceData={{
-          attendanceList,
-          isLoading: isAttendanceLoading,
-          isCheckingIn,
-          checkIn,
-          refetch,
-          isTodayCheckedIn,
-          getCheckedDates,
-        }}
-      />
+      {/* Check-in Modal Dialog - dynamically loaded to avoid SSR issues */}
+      <DynamicAuthenticatedFeatures />
 
       {/* Banner 2 - Khí Chất Section */}
       <section className="relative mt-12 lg:mt-32 w-full lg:h-[870px] h-[591px] flex items-center justify-center overflow-hidden">
@@ -433,10 +457,10 @@ const HomePageWrapper = ({
   user,
   activeWithAmountUser,
   accessToken,
-  initialAttendanceList = [],
+  initialAttendanceList,
 }: HomePageWrapperProps) => {
   return (
-    <AttendanceProvider initialAttendanceList={initialAttendanceList}>
+    <AttendanceProvider initialAttendanceList={initialAttendanceList || []}>
       <HomePageClient
         user={user}
         activeWithAmountUser={activeWithAmountUser}
