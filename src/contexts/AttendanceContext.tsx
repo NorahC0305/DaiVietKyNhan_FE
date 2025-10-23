@@ -21,14 +21,14 @@ const AttendanceContext = createContext<AttendanceContextType | undefined>(undef
 
 interface AttendanceProviderProps {
     children: React.ReactNode;
-    initialAttendanceList: IAttendanceItem[];
+    initialAttendanceList?: IAttendanceItem[] | null;
 }
 
 export const AttendanceProvider: React.FC<AttendanceProviderProps> = ({
     children,
     initialAttendanceList,
 }) => {
-    const [attendanceList, setAttendanceList] = useState<IAttendanceItem[]>(initialAttendanceList);
+    const [attendanceList, setAttendanceList] = useState<IAttendanceItem[]>(initialAttendanceList || []);
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingIn, setIsCheckingIn] = useState(false);
     const [error, setError] = useState<Error | null>(null);
