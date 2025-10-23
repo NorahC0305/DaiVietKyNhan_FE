@@ -47,7 +47,7 @@ function getButtonImage(status: "PENDING" | "COMPLETED" | "CLAIMED"): string {
     case "COMPLETED":
       return "https://res.cloudinary.com/dznt9yias/image/upload/v1760725920/Property_1_%C4%90u%CC%89_%C4%91e%CC%82%CC%89_nha%CC%A3%CC%82n_g8qs7s.svg"; // COMPLETED means đủ để nhận
     case "CLAIMED":
-      return "https://res.cloudinary.com/dznt9yias/image/upload/v1761018191/%C4%90a%CC%83_nha%CC%A3%CC%82n_1_ocfc7m.svg";
+      return "https://res.cloudinary.com/dznt9yias/image/upload/v1761207091/%C4%90a%CC%83_nha%CC%A3%CC%82n_uzr9rm.png";
     default:
       return "https://res.cloudinary.com/dznt9yias/image/upload/v1760725953/Property_1_Chu%CC%9Ba_%C4%91u%CC%89_%C4%91e%CC%82%CC%89_nha%CC%A3%CC%82n_cgzj1r.svg"; // CLAIMED shows chưa đủ để nhận
   }
