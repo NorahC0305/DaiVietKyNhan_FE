@@ -19,11 +19,18 @@ export default function FutureEvent({
       {/* Content */}
       <div className="text-center">
         <p className="mt-3 text-secondary text-base sm:text-lg md:text-xl leading-relaxed font-extrabold">
-          Chưa kỳ nhân nào được mở hãy vào KỲ GIỚI để mở khóa nhé
+          Chưa kỳ nhân nào được mở. Hãy vào Kỳ Giới để mở khóa nhé!
         </p>
       </div>
       <div className="flex justify-center mt-4 sm:mt-6">
-        <ButtonImage width={190} height={48} classNameText="text-base" onClick={handleGoToKyGioi}>Vào <span className="font-extrabold">KỲ GIỚI</span></ButtonImage>
+        <ButtonImage
+          width={190}
+          height={48}
+          classNameText="text-base"
+          onClick={handleGoToKyGioi}
+        >
+          Vào <span className="font-extrabold">KỲ GIỚI</span>
+        </ButtonImage>
       </div>
     </ModalBackdrop>
   );
