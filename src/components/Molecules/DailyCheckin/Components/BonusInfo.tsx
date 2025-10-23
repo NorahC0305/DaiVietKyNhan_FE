@@ -18,8 +18,7 @@ const BonusInfo: React.FC<ICOMPONENTS.BonusInfoProps> = memo(
               <span className="font-extrabold text-[#A40000]">🎁 Bonus:</span>{" "}
             </>
           )}
-          Điểm danh 7 ngày liên tiếp nhận thưởng {bonusReward} xu vào ngày Chủ
-          Nhật
+          Điểm danh 7 ngày liên tiếp nhận thưởng {bonusReward} xu vào ngày cuối cùng
         </div>
       </div>
     );
