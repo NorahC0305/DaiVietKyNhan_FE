@@ -167,7 +167,6 @@ export const GameFrame: React.FC<GameFrameProps> = ({
 
   /**
    * Input Gift Code Modal
-   * TODO: Logic input gift code
    */
   const [isInputGiftCodeModalOpen, setIsInputGiftCodeModalOpen] =
     useState<boolean>(false);
