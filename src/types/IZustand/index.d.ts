@@ -20,5 +20,6 @@ declare namespace ZUSTAND {
             manhMe?: string;
             uuTu?: string;
         }) => void;
+        clearStorage: () => void;
     }
 }

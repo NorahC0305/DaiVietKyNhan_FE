@@ -15,4 +15,7 @@ export const useHouseScoresSelector = () =>
 export const useSetHouseScores = () =>
   useEntryTestStore((state: ZUSTAND.IEntryTestState) => state.setHouseScores)
 
+export const useClearStorage = () =>
+  useEntryTestStore((state: ZUSTAND.IEntryTestState) => state.clearStorage)
+
 
