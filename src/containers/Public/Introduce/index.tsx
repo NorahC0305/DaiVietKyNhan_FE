@@ -40,7 +40,7 @@ const SuKienTuongTac = ({ onClose }: { onClose: () => void }) => {
 
                 <div className="flex flex-col items-center justify-center lg:mx-16 mx-10">
                     <div className="relative w-[300px] lg:w-[400px] h-[400px] lg:h-[500px] mb-5">
-                        <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762751940/unnamed_3_1_ypcajn.png" alt="poster" fill />
+                        <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391275/unnamed_3_1_qjk5nf.png" alt="poster" fill />
                     </div>
 
                     <div className="">
@@ -61,22 +61,22 @@ const SuKienTuongTac = ({ onClose }: { onClose: () => void }) => {
                         <div className="flex flex-col items-center justify-center">
                             <div className="flex items-center justify-center">
                                 <div className="relative w-[100px] lg:w-[120px] h-[120px] lg:h-[150px] mb-5 mr-4">
-                                    <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762752489/565814567_122269906166021250_7007171700066709869_n_c7sowt.png" alt="poster" fill />
+                                    <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391278/565814567_122269906166021250_7007171700066709869_n_xuwznn.png" alt="poster" fill />
                                 </div>
                                 <div className="relative w-[100px] lg:w-[120px] h-[120px] lg:h-[150px] mb-5">
-                                    <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762752468/576482492_122269906106021250_6495097013342839511_n_h9lymm.png" alt="poster" fill />
+                                    <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391281/576482492_122269906106021250_6495097013342839511_n_z3ehmm.png" alt="poster" fill />
                                 </div>
                             </div>
 
                             <div className="flex items-center justify-center">
                                 <div className="relative w-[220px] lg:w-[260px] h-[140px] lg:h-[170px] mb-5">
-                                    <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762753246/481976061_968016582110018_4828967741859625264_n_o2h9tr.png" alt="poster" fill />
+                                    <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391286/481976061_968016582110018_4828967741859625264_n_tudm0h.png" alt="poster" fill />
                                 </div>
                             </div>
 
                             <div className="flex items-center justify-center">
                                 <div className="relative w-[220px] lg:w-[260px] h-[140px] lg:h-[170px] mb-5">
-                                    <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762753248/Tha%CC%81nh_1_nmsfe3.png" alt="poster" fill />
+                                    <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391289/Th%C3%A1nh_1_oeuy8y.png" alt="poster" fill />
                                 </div>
                             </div>
                         </div>
@@ -116,10 +116,10 @@ const SuKienTuongTac = ({ onClose }: { onClose: () => void }) => {
                                 <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391411/LOGO-%C4%90%E1%BA%A0I-VI%E1%BB%86T-K%E1%BB%B2-NH%C3%82N_1_jyv7su.png" alt="poster" fill />
                             </div>
                             <div className="relative w-[90px] lg:w-[130px] h-[90px] lg:h-[130px] mb-5">
-                                <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762754351/image_7_ro9hrx.png" alt="poster" fill />
+                                <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391414/image_7_ejh7oy.png" alt="poster" fill />
                             </div>
                             <div className="relative w-[90px] lg:w-[130px] h-[90px] lg:h-[130px] mb-5">
-                                <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762754353/image_8_aawwqw.png" alt="poster" fill />
+                                <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391481/image_8_vtwmpo.png" alt="poster" fill />
                             </div>
                         </div>
                         <div className="flex flex-col items-start justify-center ml-5 lg:ml-10">
@@ -374,7 +374,7 @@ const ChuoiHoatDongSanThuong = ({ onClose, onOpenKyAnDocBao }: { onClose: () => 
                 {/* Mở Ấn Tích Xu, Thưởng Quà KỲ CHỦ */}
                 <div className="flex flex-col items-center justify-center">
                     <div className="relative w-[400px] lg:w-[600px] h-[200px] lg:h-[350px] mx-auto mb-10">
-                        <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1763359163/qua%CC%80_mo%CC%9B%CC%81i_2_tyhrcj.png" alt="frame" fill />
+                        <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763568468/qua%CC%80_mo%CC%9B%CC%81i_1_z3mtv8.png" alt="frame" fill />
                     </div>
 
                     <ul className="list-disc list-inside mx-10 w-[400px] lg:w-[600px] text-secondary lg:text-lg text-base text-justify leading-relaxed">
@@ -389,7 +389,7 @@ const ChuoiHoatDongSanThuong = ({ onClose, onOpenKyAnDocBao }: { onClose: () => 
                         <h3 className="text-center lg:text-2xl text-lg font-bold text-secondary mt-16 mb-8">Có những cơ hội nào để tích xu?</h3>
                         <div className="flex justify-between items-start">
                             <div className="relative w-[250px] lg:w-[300px] h-[250px] lg:h-[300px] mb-10">
-                                <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762077238/mapcl_11_v7pij0.png" alt="frame" fill className="w-full h-full" />
+                                <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390989/mapcl_11_qupad5.png" alt="frame" fill className="w-full h-full" />
                             </div>
 
                             <div className="flex flex-col items-start justify-start text-secondary w-[50%] gap-10">
@@ -426,12 +426,11 @@ const ChuoiHoatDongSanThuong = ({ onClose, onOpenKyAnDocBao }: { onClose: () => 
                 </div>
 
                 {/* ĐỔI ĐIỂM TÍCH XU */}
-                <div className="flex flex-col items-center justify-center mx-10">
+                <div className="flex flex-col items-center justify-center mx-10 mt-10">
                     <div className="flex flex-col items-center justify-center">
-                        <h3 className="text-center lg:text-2xl text-lg font-bold text-secondary mt-16 mb-8">Có những cơ hội nào để tích xu?</h3>
                         <div className="flex justify-between items-center">
                             <div className="relative w-[250px] lg:w-[300px] h-[250px] lg:h-[300px] mb-10">
-                                <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762096793/mapcl_12_g9x1nf.png" alt="frame" fill className="w-full h-full" />
+                                <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390993/mapcl_12_qjuvke.png" alt="frame" fill className="w-full h-full" />
                             </div>
 
                             <div className="flex flex-col items-start justify-start text-secondary w-[50%] gap-10">
@@ -465,7 +464,7 @@ const ChuoiHoatDongSanThuong = ({ onClose, onOpenKyAnDocBao }: { onClose: () => 
                     <div className="flex flex-col items-center justify-center">
                         <div className="flex justify-between items-center">
                             <div className="relative w-[250px] lg:w-[300px] h-[250px] lg:h-[300px] mb-10">
-                                <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762097341/mapcl_13_zuuwvq.png" alt="frame" fill className="w-full h-full" />
+                                <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390996/mapcl_13_ygd9p3.png" alt="frame" fill className="w-full h-full" />
                             </div>
 
                             <div className="flex flex-col items-start justify-start text-secondary w-[50%] gap-10">
@@ -495,8 +494,8 @@ const ChuoiHoatDongSanThuong = ({ onClose, onOpenKyAnDocBao }: { onClose: () => 
                 </div>
 
                 <div className="flex flex-col items-center justify-center mx-10 mt-10">
-                    <div className="relative w-[120px] lg:w-[220px] h-[140px] lg:h-[240px]">
-                        <Image src="https://res.cloudinary.com/dznt9yias/image/upload/v1762097672/Gemini_Generated_Image_mnkmapmnkmapmnkm_2_v9zc3l.png" alt="gift" fill className="w-full h-full" />
+                    <div className="relative w-[150px] lg:w-[280px] h-[140px] lg:h-[240px]">
+                        <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390999/Gemini_Generated_Image_mnkmapmnkmapmnkm_2_ccom8y.png" alt="gift" fill className="w-full h-full" />
                     </div>
                     <div className="relative w-[40px] lg:w-[50px] h-[40px] lg:h-[50px] cursor-pointer mt-5" onClick={onOpenKyAnDocBao}>
                         <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763391077/Next_ek6cme.png" alt="next" fill className="w-full h-full" />
