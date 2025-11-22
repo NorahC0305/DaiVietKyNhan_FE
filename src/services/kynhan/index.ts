@@ -23,7 +23,7 @@ const kynhanService = {
     const queryString = parts.length ? `?${parts.join("&")}` : "";
     const url = `/kynhan${queryString}`;
 
-    return await http.get<IKyNhanResponseModel>(url, {
+    return await http.getPublic<IKyNhanResponseModel>(url, {
       cache: "no-store",
     });
   },
