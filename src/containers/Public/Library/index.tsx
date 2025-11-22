@@ -106,12 +106,11 @@ const LibraryPage = () => {
         setIsLoading(true);
         const response =
           (await kynhanService.getKyNhan(undefined, 1, 100)) as any;
-        console.log("response", response.data.results);
-        if (response.data && response.data.results) {
-          const cardData = response.data.results.map(convertToCardData);
+        if (response?.data && response?.data?.results) {
+          const cardData = response?.data?.results?.map(convertToCardData);
           setCards(cardData);
           // Check if user owns any kỳ nhân using totalKyNhanClaim field
-          const hasOwnedKyNhan = response.data.totalKyNhanClaim > 0;
+          const hasOwnedKyNhan = response?.data?.totalKyNhanClaim > 0;
 
           // Show modal if user owns 0 kỳ nhân
           if (!hasOwnedKyNhan) {

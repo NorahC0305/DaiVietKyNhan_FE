@@ -42,6 +42,8 @@ export async function middleware(req: NextRequest) {
       "/introduce",
       "/auth",
       "/contact",
+      "/library",
+      "/library/:kyNhanId",
       "/about",
     ];
 
