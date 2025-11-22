@@ -742,6 +742,9 @@ const HomePageClient = ({
                         <div className="relative w-20 h-20 lg:w-32 md:h-26 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390311/MR.BROWN_2_lyc30v.png" alt="mr_brown" fill />
                         </div>
+                        <div className="relative w-40 h-16 lg:w-56 md:h-20 rounded-[10px] overflow-hidden shadow-lg">
+                          <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763807526/hor-vexere_transparent___if_on_blue_1_rvd3r0.png" alt="mr_brown" fill />
+                        </div>
                       </div>
                     </div>
 
@@ -750,7 +753,7 @@ const HomePageClient = ({
                       <p className="text-base lg:text-xl text-white font-bold text-center mb-4">
                         NHÀ TÀI CÔNG NGHỆ
                       </p>
-                      <div className="relative w-50 h-20 lg:w-60 md:h-20 rounded-[10px] overflow-hidden shadow-lg">
+                      <div className="relative w-36 h-12 lg:w-60 md:h-20 rounded-[10px] overflow-hidden shadow-lg">
                         <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390330/b%E1%BB%99_logo_PARC_MALL.pdf_4_1_mcpbh7.png" alt="dimo" fill />
                       </div>
                     </div>
@@ -780,7 +783,7 @@ const HomePageClient = ({
                         BẢO TRỢ TRUYỀN THÔNG
                       </p>
                       <div className="flex items-center justify-center gap-4">
-                        <div className="relative w-20 h-11 lg:w-32 lg:h-11 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-30 h-11 lg:w-32 lg:h-11 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390391/ybox_1_tt5a4h.png" alt="ybox" fill />
                         </div>
                         <div className="relative w-20 h-11 lg:w-14 lg:h-14 overflow-hidden shadow-lg">
@@ -795,7 +798,7 @@ const HomePageClient = ({
                         <div className="relative w-30 h-11 lg:w-36 lg:h-11 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390433/golive_1_nqvvnu.png" alt="golive" fill />
                         </div>
-                        <div className="relative w-30 h-11 lg:w-44 lg:h-7 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-36 h-11 lg:w-44 lg:h-7 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390546/Th%E1%BA%BF_Gi%E1%BB%9Bi_Gi%E1%BA%A3i_Tr%C3%AD_1_kbejez.png" alt="thegioigiaitri" fill />
                         </div>
                       </div>
