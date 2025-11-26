@@ -5,7 +5,7 @@ const chiTietKyNhanService = {
         return await http.post(`/chi-tiet-kynhan/upsert`, formData);
     },
     getChiTietKyNhanByKyNhanId: async (kyNhanId: number) => {
-        return await http.get(`/chi-tiet-kynhan/ky-nhan/${kyNhanId}`);
+        return await http.getPublic(`/chi-tiet-kynhan/ky-nhan/${kyNhanId}`);
     },
 };
 

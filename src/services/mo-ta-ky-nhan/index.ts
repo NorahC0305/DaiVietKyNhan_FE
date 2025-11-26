@@ -42,7 +42,7 @@ const libcardService = {
   },
 
   getMoTaKyNhanByKyNhanId: async (kyNhanId: number) => {
-    return await http.get(`/mo-ta-ky-nhan/kynhan/${kyNhanId}`);
+    return await http.getPublic(`/mo-ta-ky-nhan/kynhan/${kyNhanId}`);
   },
 
   updateMoTaKyNhan: async (id: number, formData: FormData) => {

@@ -37,17 +37,14 @@ export async function middleware(req: NextRequest) {
 
   // Redirect unauthenticated users to login for protected routes
   if (!token) {
-    const publicPaths = [
-      "/",
-      "/introduce",
-      "/auth",
-      "/contact",
-      "/about",
-    ];
+    const publicStaticPaths = ["/", "/introduce", "/contact", "/about"];
+    const publicPrefixPaths = ["/auth"];
+    const publicDynamicMatchers = [/^\/library\/[^/]+$/];
 
-    const isPublicPath = publicPaths.some(
-      (path) => pathname === path || (path !== "/" && pathname.startsWith(path))
-    );
+    const isPublicPath =
+      publicStaticPaths.includes(pathname) ||
+      publicPrefixPaths.some((prefix) => pathname.startsWith(prefix)) ||
+      publicDynamicMatchers.some((regex) => regex.test(pathname));
 
     if (!isPublicPath) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
