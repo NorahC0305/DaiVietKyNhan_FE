@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ROUTES } from "@routes";
 import { IUser } from "@models/user/entity";
 import { IGetSystemConfigWithAmountUserResponse } from "@models/system/response";
@@ -19,6 +18,11 @@ import { AttendanceProvider } from "@contexts/AttendanceContext";
 import { IAttendanceItem } from "@models/attendance/response";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
+import LetterGuide from "@components/Molecules/Popup/LetterGuide";
+import DanhSachVietThu from "@components/Molecules/Popup/DanhSachVietThu";
+import ChiTietThu from "@components/Molecules/Popup/ChiTietThu";
+import VietThuGuiHauThe from "@components/Molecules/Popup/VietThuGuiHauThe";
+import { ILetterEntity } from "@models/letter/entity";
 interface HomePageClientProps {
   user: IUser;
   activeWithAmountUser: IGetSystemConfigWithAmountUserResponse;
@@ -138,6 +142,12 @@ const HomePageClient = ({
   const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentRankPage, setCurrentRankPage] = useState(1); // Trang hiện tại của bảng xếp hạng (1-5)
+  const [isLetterGuideModalOpen, setIsLetterGuideModalOpen] = useState(false);
+  const [isDanhSachVietThuModalOpen, setIsDanhSachVietThuModalOpen] = useState(false);
+  const [isChiTietThuModalOpen, setIsChiTietThuModalOpen] = useState(false);
+  const [selectedLetterId, setSelectedLetterId] = useState<number | null>(null);
+  const [lettersList, setLettersList] = useState<ILetterEntity[]>([]);
+  const [isVietThuGuiHauTheModalOpen, setIsVietThuGuiHauTheModalOpen] = useState(false);
 
   // Luôn fetch theo trang hiện tại (bỏ cache để tránh trùng dữ liệu)
   const rankParams = useMemo(() => ({ currentPage: currentRankPage, pageSize: 15 }), [currentRankPage]);
@@ -220,6 +230,51 @@ const HomePageClient = ({
       setCurrentRankPage(prev => prev - 1);
     }
   }, [currentRankPage]);
+
+  const handleOpenLetterGuideModal = useCallback(() => {
+    setIsLetterGuideModalOpen(true);
+  }, []);
+
+  const handleLetterGuideNext = useCallback(() => {
+    setIsLetterGuideModalOpen(false);
+    setIsVietThuGuiHauTheModalOpen(true);
+  }, []);
+
+  const handleLetterGuideViewLetters = useCallback(() => {
+    setIsLetterGuideModalOpen(false);
+    setIsDanhSachVietThuModalOpen(true);
+  }, []);
+
+  const handleVietThuBack = useCallback(() => {
+    setIsVietThuGuiHauTheModalOpen(false);
+    setIsLetterGuideModalOpen(true);
+  }, []);
+
+  const handleDanhSachBack = useCallback(() => {
+    setIsDanhSachVietThuModalOpen(false);
+    setIsLetterGuideModalOpen(true);
+  }, []);
+
+  const handleDanhSachOpenDetail = useCallback((letter: ILetterEntity, letters: ILetterEntity[]) => {
+    setLettersList(letters);
+    setSelectedLetterId(letter.id);
+    setIsDanhSachVietThuModalOpen(false);
+    setIsChiTietThuModalOpen(true);
+  }, []);
+
+  const handleLetterChange = useCallback((letterId: number) => {
+    setSelectedLetterId(letterId);
+  }, []);
+
+  const handleChiTietBack = useCallback(() => {
+    setIsChiTietThuModalOpen(false);
+    setIsDanhSachVietThuModalOpen(true);
+  }, []);
+
+  const handleChiTietParticipate = useCallback(() => {
+    setIsChiTietThuModalOpen(false);
+    setIsVietThuGuiHauTheModalOpen(true);
+  }, []);
 
   const renderRankItem = useCallback(
     (item: IUserRankData | undefined, rank: number) => (
@@ -338,7 +393,7 @@ const HomePageClient = ({
             fill
             priority
           />
-          <div className="absolute bottom-14 lg:bottom-16 left-[160px] lg:left-[300px] lg:w-[250px] lg:h-[80px] w-[150px] h-[50px] cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => router.push(`${ROUTES.PUBLIC.MAP}?openLetterGuide=true`)}>
+          <div className="absolute bottom-14 lg:bottom-16 left-[160px] lg:left-[300px] lg:w-[250px] lg:h-[80px] w-[150px] h-[50px] cursor-pointer hover:scale-105 transition-transform duration-200" onClick={handleOpenLetterGuideModal}>
             <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763397506/Tham_gia_ngay_ladofh.png" alt="Tham gia ngay" fill />
           </div>
         </div>
@@ -810,6 +865,38 @@ const HomePageClient = ({
           </div>
         </div>
       </section>
+
+      <LetterGuide
+        isOpen={isLetterGuideModalOpen}
+        onClose={() => setIsLetterGuideModalOpen(false)}
+        onNext={handleLetterGuideNext}
+        onBack={handleLetterGuideViewLetters}
+      />
+      <DanhSachVietThu
+        isOpen={isDanhSachVietThuModalOpen}
+        onClose={() => setIsDanhSachVietThuModalOpen(false)}
+        onBack={handleDanhSachBack}
+        onOpenDetail={handleDanhSachOpenDetail}
+      />
+      <ChiTietThu
+        key={selectedLetterId || "chi-tiet-thu"}
+        isOpen={isChiTietThuModalOpen}
+        letterId={selectedLetterId}
+        letters={lettersList}
+        onLetterChange={handleLetterChange}
+        onClose={() => {
+          setIsChiTietThuModalOpen(false);
+          setSelectedLetterId(null);
+          setLettersList([]);
+        }}
+        onBack={handleChiTietBack}
+        onParticipate={handleChiTietParticipate}
+      />
+      <VietThuGuiHauThe
+        isOpen={isVietThuGuiHauTheModalOpen}
+        onClose={() => setIsVietThuGuiHauTheModalOpen(false)}
+        onBack={handleVietThuBack}
+      />
     </div>
   );
 };
