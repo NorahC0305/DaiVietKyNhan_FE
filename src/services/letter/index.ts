@@ -22,10 +22,10 @@ const letterService = {
         const queryString = parts.length ? `?${parts.join("&")}` : "";
         const url = `/letter${queryString}`;
 
-        return await http.get(url, { cache: "no-store" });
+        return await http.getPublic(url, { cache: "no-store" });
     },
     getLetterById: async (letterId: number) => {
-        return await http.get(`/letter/${letterId}`, { cache: "no-store" });
+        return await http.getPublic(`/letter/${letterId}`, { cache: "no-store" });
     },
     updateLetter: async (letterId: number, data: Partial<ISendLetterRequest & { status?: string }>) => {
         return await http.put(`/letter/${letterId}`, data);

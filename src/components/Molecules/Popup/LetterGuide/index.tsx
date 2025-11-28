@@ -7,6 +7,9 @@ import ButtonImage from "../../../Atoms/ButtonImage";
 import { getCurrentVietnamTime } from "@/utils/ReleaseDateUtils";
 import { createPortal } from "react-dom";
 import TrangSuConDoiAiDua from "@components/Atoms/TrangSuConDoiAiDua";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@routes";
 
 export type LetterGuideProps = {
   isOpen: boolean;
@@ -21,6 +24,10 @@ const LetterGuide: React.FC<LetterGuideProps> = ({
   onNext,
   onBack,
 }) => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && session?.user;
+
   // Check if current date is after October 27th, 2024
   const isParticipationEnabled = () => {
     const currentDate = getCurrentVietnamTime();
@@ -29,6 +36,10 @@ const LetterGuide: React.FC<LetterGuideProps> = ({
   };
 
   const handleParticipate = () => {
+    if (!isAuthenticated) {
+      router.push(ROUTES.AUTH.LOGIN);
+      return;
+    }
     if (onNext) {
       onNext();
       return;
@@ -219,7 +230,6 @@ const LetterGuide: React.FC<LetterGuideProps> = ({
             >
               Tham gia ngay
             </ButtonImage>
-
             <ButtonImage
               width={180}
               height={48}

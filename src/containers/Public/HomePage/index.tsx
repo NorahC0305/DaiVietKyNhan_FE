@@ -139,6 +139,8 @@ const HomePageClient = ({
   accessToken,
 }: HomePageClientProps) => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && session?.user;
   const [currentIndex, setCurrentIndex] = useState(1); // Bắt đầu từ testimonial thứ 2 (index 1) làm chính
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentRankPage, setCurrentRankPage] = useState(1); // Trang hiện tại của bảng xếp hạng (1-5)
@@ -828,6 +830,9 @@ const HomePageClient = ({
                         </div>
                         <div className="relative w-20 h-20 lg:w-24 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390374/Thi%E1%BA%BFt_k%E1%BA%BF_ch%C6%B0a_c%C3%B3_t%C3%AAn_76_cysud3.png" alt="citycodes" fill />
+                        </div>
+                        <div className="relative w-20 h-20 lg:w-24 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                          <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1764295070/Logo_Y_Hoa_-_tranparent_cream_1_qzfncm.png" alt="yhoa" fill />
                         </div>
                       </div>
                     </div>

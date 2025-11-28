@@ -8,6 +8,7 @@ import kynhanService from "@/services/kynhan";
 import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
+import NoKyNhan from "@/components/Molecules/Popup/NoKyNhan";
 import { Loader2 } from "lucide-react";
 
 interface CardData {
@@ -58,9 +59,7 @@ const LibraryPage = () => {
       backgroundSrc: "https://res.cloudinary.com/dznt9yias/image/upload/v1760726112/revealedBG_gzuiid.svg",
       name: kynhanData.name,
       thoiKy: kynhanData.thoiKy,
-      chienCong: kynhanData.chienCong
-        ? kynhanData.chienCong.replace(/\r\n/g, "\n").trim()
-        : undefined,
+      chienCong: kynhanData.chienCong,
       ctaText: "Xem Thêm",
       ctaHref: undefined, // Remove href since we're using onClick handler
     },
@@ -105,12 +104,12 @@ const LibraryPage = () => {
       try {
         setIsLoading(true);
         const response =
-          (await kynhanService.getKyNhan(undefined, 1, 100)) as any;
-        if (response?.data && response?.data?.results) {
-          const cardData = response?.data?.results?.map(convertToCardData);
+          (await kynhanService.getUserKyNhanList()) as IKyNhanUserListResponseModel;
+        if (response.data && response.data.results) {
+          const cardData = response.data.results.map(convertToCardData);
           setCards(cardData);
           // Check if user owns any kỳ nhân using totalKyNhanClaim field
-          const hasOwnedKyNhan = response?.data?.totalKyNhanClaim > 0;
+          const hasOwnedKyNhan = response.data.totalKyNhanClaim > 0;
 
           // Show modal if user owns 0 kỳ nhân
           if (!hasOwnedKyNhan) {
@@ -299,6 +298,12 @@ const LibraryPage = () => {
           />
         )}
       </div>
+
+      {/* NoKyNhan Modal */}
+      <NoKyNhan
+        isOpen={showNoKyNhanModal}
+        onClose={() => setShowNoKyNhanModal(false)}
+      />
     </div>
   );
 };
