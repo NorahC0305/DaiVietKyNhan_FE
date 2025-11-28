@@ -488,7 +488,7 @@ const HomePageClient = ({
                 </div>
 
                 {/* Next Button - Cố định vị trí */}
-                <div className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
+                <div className="w-8 h-8 lg:w-10 lg:h-10 flex-shrink-0">
                   {currentRankPage < 5 && (
                     <button
                       onClick={handleNext}
@@ -497,7 +497,7 @@ const HomePageClient = ({
                       aria-label="Trang sau"
                     >
                       <svg
-                        className="w-5 h-5 md:w-6 md:h-6 text-primary"
+                        className="w-5 h-5 lg:w-6 lg:h-6 text-primary"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -560,7 +560,7 @@ const HomePageClient = ({
             {/* Content Container - Giới hạn kích thước */}
             <div className="w-full overflow-hidden">
               <div className="flex flex-col items-center justify-center">
-                <RadialGradial className="text-center lg:text-5xl lg:py-3 py-1 lg:pb-1 text-4xl font-bd-street-sign">
+                <RadialGradial className="text-center lg:text-5xl lg:py-3 py-1 lg:pb-1 text-5xl font-bd-street-sign">
                   BẢNG XẾP HẠNG NHÀ
                 </RadialGradial>
                 <p className="text-black text-xs italic">
@@ -578,21 +578,21 @@ const HomePageClient = ({
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2">
-                    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+                    <div className="flex flex-wrap justify-center gap-6 lg:gap-10">
                       {houseRanking.map((item) => (
                         <div
                           key={`${item.rank}-${item.name}`}
                           className="flex flex-col items-center gap-2 text-center"
                         >
-                          <RadialGradial className="md:text-4xl text-3xl font-bold text-primary uppercase tracking-wide">
+                          <RadialGradial className="text-4xl  font-bold text-primary uppercase tracking-wide">
                             TOP {item.rank}
                           </RadialGradial>
-                          <span className="text-sm md:text-xl font-semibold italic text-black">
+                          <span className="text-sm lg:text-xl font-semibold italic text-black">
                             {formatPoints(item.points)} điểm
                           </span>
-                          <div className="relative w-16 h-32 md:w-32 md:h-64 rounded-[10px] overflow-hidden shadow-lg  bg-white">
+                          <div className="relative w-28 h-56 lg:w-32 lg:h-64 rounded-[10px] overflow-hidden shadow-lg  bg-white">
                             {item.img ? (
-                              <div className="relative w-16 h-32 md:w-32 md:h-64 overflow-hidden">
+                              <div className="relative w-28 h-56 lg:w-32 lg:h-64 overflow-hidden">
                                 <Image
                                   src={item.img}
                                   alt={item.name}
@@ -637,8 +637,8 @@ const HomePageClient = ({
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-5 pt-12 opacity-60
               w-full max-w-xs
-              left-1/3 lg:left-1/4 transform -translate-x-full -ml-40 md:-ml-0
-              md:flex
+              left-1/3 lg:left-1/4 transform -translate-x-full -ml-0 lg:-ml-0
+              lg:flex
               `}
             >
               <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
@@ -670,7 +670,7 @@ const HomePageClient = ({
               className={`
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-6
-              w-full md:w-1/2 max-w-md
+              w-full lg:w-1/2 max-w-md
               left-1/2 transform -translate-x-1/2
               `}
             >
@@ -710,8 +710,8 @@ const HomePageClient = ({
               absolute transition-all duration-1000 ease-in-out
               flex flex-col items-center space-y-5 pt-12 opacity-60
               w-full max-w-xs
-              right-0 transform translate-x-0 ml-40 md:ml-0
-              md:flex
+              right-0 transform translate-x-0 ml-40 lg:ml-0
+              lg:flex
               `}
             >
               <p className="text-gray-300 text-base italic text-center h-24 flex items-center justify-center">
@@ -758,7 +758,7 @@ const HomePageClient = ({
             ĐỐI TÁC
           </h3>
 
-          <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+          <div className="flex flex-wrap justify-center gap-6 lg:gap-10">
             <div className="flex flex-col items-center gap-2 mt-5">
               <div className="flex flex-col items-center justify-center">
                 <div>
@@ -766,10 +766,10 @@ const HomePageClient = ({
                     ĐƠN VỊ TỔ CHỨC
                   </p>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="relative w-20 h-20 lg:w-28 md:h-28 rounded-[10px] overflow-hidden shadow-lg">
+                    <div className="relative w-20 h-20 lg:w-28 lg:h-28 rounded-[10px] overflow-hidden shadow-lg">
                       <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390239/c860d8a0-4be0-419f-9490-a98490a94d31_3_md2dyt.png" alt="logo_dvkn" fill />
                     </div>
-                    <div className="relative w-28 h-20 lg:w-32 md:h-28 rounded-[10px] overflow-hidden shadow-lg">
+                    <div className="relative w-28 h-20 lg:w-32 lg:h-28 rounded-[10px] overflow-hidden shadow-lg">
                       <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390246/Thi%E1%BA%BFt_k%E1%BA%BF_ch%C6%B0a_c%C3%B3_t%C3%AAn_23_1_q0jduj.png" alt="khainhanmoan" fill />
                     </div>
                   </div>
@@ -782,7 +782,7 @@ const HomePageClient = ({
                       <p className="text-base lg:text-xl text-white font-bold text-center mb-2">
                         NHÀ TÀI TRỢ KIM CƯƠNG
                       </p>
-                      <div className="relative w-36 h-20 lg:w-36 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                      <div className="relative w-36 h-20 lg:w-36 lg:h-24 rounded-[10px] overflow-hidden shadow-lg">
                         <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390270/b%E1%BB%99_logo_PARC_MALL.pdf_2_1_zso3iu.png" alt="parc_mall" fill />
                       </div>
                     </div>
@@ -793,13 +793,13 @@ const HomePageClient = ({
                         NHÀ TÀI TRỢ ĐỒNG
                       </p>
                       <div className="flex items-center justify-center">
-                        <div className="relative w-20 h-20 lg:w-32 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-20 h-20 lg:w-32 lg:h-24 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390289/b%E1%BB%99_logo_PARC_MALL.pdf_3_1_dpdlr4.png" alt="thuan_tien" fill />
                         </div>
-                        <div className="relative w-20 h-20 lg:w-32 md:h-26 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-20 h-20 lg:w-32 lg:h-26 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390311/MR.BROWN_2_lyc30v.png" alt="mr_brown" fill />
                         </div>
-                        <div className="relative w-40 h-16 lg:w-56 md:h-20 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-40 h-16 lg:w-56 lg:h-20 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763807526/hor-vexere_transparent___if_on_blue_1_rvd3r0.png" alt="mr_brown" fill />
                         </div>
                       </div>
@@ -810,7 +810,7 @@ const HomePageClient = ({
                       <p className="text-base lg:text-xl text-white font-bold text-center mb-4">
                         NHÀ TÀI CÔNG NGHỆ
                       </p>
-                      <div className="relative w-36 h-12 lg:w-60 md:h-20 rounded-[10px] overflow-hidden shadow-lg">
+                      <div className="relative w-36 h-12 lg:w-60 lg:h-20 rounded-[10px] overflow-hidden shadow-lg">
                         <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390330/b%E1%BB%99_logo_PARC_MALL.pdf_4_1_mcpbh7.png" alt="dimo" fill />
                       </div>
                     </div>
@@ -825,13 +825,13 @@ const HomePageClient = ({
                         ĐỐI TÁC ĐỒNG HÀNH
                       </p>
                       <div className="flex items-center justify-center gap-4">
-                        <div className="relative w-20 h-20 lg:w-24 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390368/Thi%E1%BA%BFt_k%E1%BA%BF_ch%C6%B0a_c%C3%B3_t%C3%AAn_75_dbhsa2.png" alt="vicu_vietnhan" fill />
                         </div>
-                        <div className="relative w-20 h-20 lg:w-24 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763390374/Thi%E1%BA%BFt_k%E1%BA%BF_ch%C6%B0a_c%C3%B3_t%C3%AAn_76_cysud3.png" alt="citycodes" fill />
                         </div>
-                        <div className="relative w-20 h-20 lg:w-24 md:h-24 rounded-[10px] overflow-hidden shadow-lg">
+                        <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-[10px] overflow-hidden shadow-lg">
                           <Image src="https://res.cloudinary.com/dauhpllo7/image/upload/v1764295070/Logo_Y_Hoa_-_tranparent_cream_1_qzfncm.png" alt="yhoa" fill />
                         </div>
                       </div>
