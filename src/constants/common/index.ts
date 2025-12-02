@@ -37,7 +37,7 @@ const LAND_CONFIG_KEY = {
         color: '#EF493D'
     },
     'dam-da-trach': {
-        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391983/Logo_C%C4%90T_guerj2.png`',
+        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391983/Logo_C%C4%90T_guerj2.png',
         tenNui: 'Đầm Dạ Trạch',
         color: '#2B638F'
     },

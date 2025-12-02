@@ -21,18 +21,17 @@ const CharacterCard: React.FC<CharacterCardProps> = React.memo(
         <div
           className={`
         relative w-full h-auto rounded-lg transition-all duration-300
-        ${
-          isSelected
-            ? "border-2 border-[#835D26] shadow-md"
-            : "border border-transparent"
-        }
+        ${isSelected
+              ? "border-2 border-[#835D26] shadow-md"
+              : "border border-transparent"
+            }
       `}
         >
           <Image
             src={characterImage}
             alt={alt}
-            width={400}
-            height={400}
+            width={250}
+            height={250}
             className="object-contain rounded-lg"
             priority
           />

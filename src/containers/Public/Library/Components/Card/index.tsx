@@ -120,7 +120,7 @@ export default function Card({
               {!unlocked ? (
                 <>
                   <Image
-                    src="https://res.cloudinary.com/dauhpllo7/image/upload/v1763394184/Group_99_hagucx.png"
+                    src="https://res.cloudinary.com/dauhpllo7/image/upload/v1764646970/Group_99_s77fii.svg"
                     alt="Hidden framed card"
                     fill
                     sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
