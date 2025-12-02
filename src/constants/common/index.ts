@@ -27,22 +27,22 @@ const LAND_CONFIG = {
 
 const LAND_CONFIG_KEY = {
     'nui-tan-vien': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714093/Logo_ST_w5vzqy.svg',
+        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391767/Logo_ST_wtxmde.png',
         tenNui: 'Núi Tản Viên',
         color: '#41821E'
     },
     'lang-phu-dong': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714074/Logo_TG_ybvbuo.svg',
+        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391775/Logo_TG_d5t0ax.png',
         tenNui: 'Đền Phù Đổng',
         color: '#EF493D'
     },
     'dam-da-trach': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714057/Logo_C%C4%90T_dvt4yb.svg',
+        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391983/Logo_C%C4%90T_guerj2.png`',
         tenNui: 'Đầm Dạ Trạch',
         color: '#2B638F'
     },
     'phu-tay-ho': {
-        img: 'https://res.cloudinary.com/dznt9yias/image/upload/v1760714053/Logo_LH_owmwjj.svg',
+        img: 'https://res.cloudinary.com/dauhpllo7/image/upload/v1763391980/Logo_LH_l45wvl.png',
         tenNui: 'Phủ Tây Hồ',
         color: '#8D3BBB'
     }
