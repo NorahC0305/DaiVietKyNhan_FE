@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getLetterByIdQueryOptions } from '@hooks/use-letter-queries'
 import { DateMonthYear } from '@utils/Date'
 import { ILetterEntity } from '@models/letter/entity'
+import { useSession } from 'next-auth/react'
 
 type ChiTietThuProps = {
     isOpen: boolean
@@ -18,6 +19,9 @@ type ChiTietThuProps = {
 }
 
 const ChiTietThu = ({ isOpen, letterId, onClose, onParticipate, onBack, letters = [], onLetterChange }: ChiTietThuProps) => {
+    const { data: session, status } = useSession();
+    const isAuthenticated = status === "authenticated" && session?.user;
+
     // Debug log to check letterId
     React.useEffect(() => {
         if (isOpen && letterId) {
@@ -236,16 +240,18 @@ const ChiTietThu = ({ isOpen, letterId, onClose, onParticipate, onBack, letters 
                                             </>
                                         )}
 
-                                        <div className='absolute lg:bottom-[-96px] bottom-[-55px] flex justify-center items-center w-full h-fit'>
-                                            <div className='absolute flex justify-center items-center w-[20%] h-fit'>
-                                                <button className='lg:w-[200px] w-[120px] lg:h-[50px] h-[35px] cursor-pointer flex items-center justify-center hover:opacity-80 transition-all duration-300' onClick={handleParticipate}>
-                                                    <Image src='https://res.cloudinary.com/dauhpllo7/image/upload/v1763389725/Rectangle_znlllq.png' alt='join' fill />
-                                                    <div className='absolute inset-0 flex items-center justify-center'>
-                                                        <span className='text-secondary lg:text-sm text-[10px] font-bold'>Tham gia ngay</span>
-                                                    </div>
-                                                </button>
+                                        {isAuthenticated && (
+                                            <div className='absolute lg:bottom-[-96px] bottom-[-55px] flex justify-center items-center w-full h-fit'>
+                                                <div className='absolute flex justify-center items-center w-[20%] h-fit'>
+                                                    <button className='lg:w-[200px] w-[120px] lg:h-[50px] h-[35px] cursor-pointer flex items-center justify-center hover:opacity-80 transition-all duration-300' onClick={handleParticipate}>
+                                                        <Image src='https://res.cloudinary.com/dauhpllo7/image/upload/v1763389725/Rectangle_znlllq.png' alt='join' fill />
+                                                        <div className='absolute inset-0 flex items-center justify-center'>
+                                                            <span className='text-secondary lg:text-sm text-[10px] font-bold'>Tham gia ngay</span>
+                                                        </div>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
                                     </div>
                                 </div>

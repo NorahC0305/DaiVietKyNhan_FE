@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { ILetterEntity } from "@models/letter/entity";
 import { DateMonthYear } from "@utils/Date";
 import ButtonImage from "@components/Atoms/ButtonImage";
+import { useSession } from "next-auth/react";
 
 type DanhSachVietThuProps = {
   isOpen: boolean;
@@ -20,6 +21,9 @@ const DanhSachVietThu = ({
   onBack,
   onOpenDetail,
 }: DanhSachVietThuProps) => {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && session?.user;
+
   // State for filter - default to false (show all letters)
   const [filterByUserId, setFilterByUserId] = useState<boolean>(false);
 
@@ -176,15 +180,17 @@ const DanhSachVietThu = ({
                       >
                         Toàn bộ thư
                       </ButtonImage>
-                      <ButtonImage
-                        onClick={() => setFilterByUserId(true)}
-                        className={filterByUserId === true ? "opacity-100" : "opacity-70"}
-                        width={120}
-                        height={50}
-                        classNameText="text-sm"
-                      >
-                        Của tôi
-                      </ButtonImage>
+                      {isAuthenticated && (
+                        <ButtonImage
+                          onClick={() => setFilterByUserId(true)}
+                          className={filterByUserId === true ? "opacity-100" : "opacity-70"}
+                          width={120}
+                          height={50}
+                          classNameText="text-sm"
+                        >
+                          Của tôi
+                        </ButtonImage>
+                      )}
                     </div>
 
                     {/* List */}
@@ -249,7 +255,7 @@ const DanhSachVietThu = ({
                                 GỬI ĐẾN
                               </p>
                               <h3
-                                className="text-secondary font-black lg:text-sm text-[12px] mt-1"
+                                className="text-secondary font-black lg:text-sm text-[12px] mt-1 line-clamp-1"
                                 style={{
                                   fontWeight: 700,
                                   WebkitTextStroke: "0.2px",

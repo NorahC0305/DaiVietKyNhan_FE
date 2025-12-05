@@ -110,7 +110,7 @@ const mainMapImage =
   "https://res.cloudinary.com/dauhpllo7/image/upload/v1763391742/mapcl_1_wm0hbq.png";
 
 // TODO: Tạm thời mở khóa tất cả map để review. Sau khi hoàn thành, đổi thành false
-const TEMP_UNLOCK_ALL = false;
+const TEMP_UNLOCK_ALL = true;
 
 // Mapping từ region ID đến land ID dựa trên userLand data
 // Dựa trên userLand response:
@@ -396,7 +396,8 @@ export default function MapPageClient({
 
   const handleRegionClick = (regionId: string) => {
     if (regionId === "ky-linh-viet-hoa") {
-      if (TEMP_UNLOCK_ALL || isRegionUnlocked(regionId)) {
+      // Vùng đất cuối không bị ảnh hưởng bởi TEMP_UNLOCK_ALL
+      if (isRegionUnlocked(regionId)) {
         setIsKhaiNhanMoAnModalOpen(true);
       } else {
         setIsWaitingOthersModalOpen(true);
@@ -464,7 +465,13 @@ export default function MapPageClient({
                 onClick={() => handleRegionClick(region.id)}
                 zIndex={region.zIndex || 10 + index}
                 isFullscreen={true}
-                isLocked={TEMP_UNLOCK_ALL ? false : shouldShowLock(region.id)}
+                isLocked={
+                  region.id === "ky-linh-viet-hoa"
+                    ? shouldShowLock(region.id)
+                    : TEMP_UNLOCK_ALL
+                      ? false
+                      : shouldShowLock(region.id)
+                }
               />
             ))}
           </div>
@@ -499,7 +506,13 @@ export default function MapPageClient({
                   mobileSize={mobileConfig?.size}
                   onClick={() => handleRegionClick(region.id)}
                   zIndex={region.zIndex || 10}
-                  isLocked={TEMP_UNLOCK_ALL ? false : shouldShowLock(region.id)}
+                  isLocked={
+                    region.id === "ky-linh-viet-hoa"
+                      ? shouldShowLock(region.id)
+                      : TEMP_UNLOCK_ALL
+                        ? false
+                        : shouldShowLock(region.id)
+                  }
                 />
               );
             })}

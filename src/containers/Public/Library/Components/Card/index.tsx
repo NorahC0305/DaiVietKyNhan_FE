@@ -129,50 +129,77 @@ export default function Card({
           <div
             className={cn(
               "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-              isCenter && "group-hover:[transform:rotateY(180deg)]",
+              isCenter && unlocked && "group-hover:[transform:rotateY(180deg)]",
               isFlipped && "[transform:rotateY(180deg)]"
             )}
           >
             {/* Front side */}
             <div className="absolute inset-0 [backface-visibility:hidden]">
-              <>
-                <FramedImage
-                  src={
-                    imageSrc ||
-                    "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
-                  }
-                  alt="Kỳ nhân card"
-                />
-              </>
+              {!unlocked ? (
+                <>
+                  <Image
+                    src="https://res.cloudinary.com/dauhpllo7/image/upload/v1764646970/Group_99_s77fii.svg"
+                    alt="Hidden framed card"
+                    fill
+                    sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
+                    className="object-contain"
+                    priority={isCenter}
+                  />
+                </>
+              ) : (
+                <>
+                  <FramedImage
+                    src={
+                      imageSrc ||
+                      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
+                    }
+                    alt="Kỳ nhân card"
+                  />
+                </>
+              )}
             </div>
 
             {/* Back side (shown on flip for unlocked center card) */}
-            <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
-              <Image
-                src={
-                  "https://res.cloudinary.com/dauhpllo7/image/upload/v1763393921/Chu%CC%9Ba_co%CC%81_te%CC%82n_1080_x_1740_px_4_1_mvqq0p.svg"
-                }
-                alt="Revealed background"
-                fill
-                sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                className="object-contain"
-                priority={isCenter}
-              />
-              <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
-                <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
-                  {/* Name - Section 1 */}
-                  {backContent?.name && (
-                    <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left break-words overflow-hidden">
-                      <div
-                        className="overflow-hidden"
-                        style={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {renderHighlighted(backContent.name)}
+            {unlocked && (
+              <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
+                <Image
+                  src={
+                    "https://res.cloudinary.com/dauhpllo7/image/upload/v1763393921/Chu%CC%9Ba_co%CC%81_te%CC%82n_1080_x_1740_px_4_1_mvqq0p.svg"
+
+                  }
+                  alt="Kỳ nhân card"
+                />
+                <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
+                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
+                    {/* Name - Section 1 */}
+                    {backContent?.name && (
+                      <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left break-words overflow-hidden">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {renderHighlighted(backContent.name)}
+                        </div>
+                      </div>
+                    )}
+                    {backContent?.thoiKy && (
+                      <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left break-words overflow-hidden">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
+                        >
+                          {renderHighlighted(backContent.thoiKy)}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -205,8 +232,8 @@ export default function Card({
                       >
                         {renderTextWithLineBreaks(backContent.chienCong)}
                       </div>
-                    </div>
-                  )}
+                    )}
+
                 </div>
 
                 {/* CTA Button */}
@@ -236,9 +263,6 @@ export default function Card({
           </div>
         </div>
       </div>
-      {isCenter && (
-        <div className="absolute inset-0 rounded-lg blur-xl -z-10" />
-      )}
     </div>
   );
 }

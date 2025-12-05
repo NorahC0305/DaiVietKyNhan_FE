@@ -31,10 +31,12 @@ const request = async <Response>(
         if (typeof window !== "undefined") {
           // Chỉ chuyển hướng nếu không nằm trong các trang public
           const currentPath = window.location.pathname;
-          const publicPaths = ["/", "/introduce", "/contact", "/about", "/library", "/library/:kyNhanId"]; // các trang public phía client
-          const isPublicPath = publicPaths.some(
-            (p) => currentPath === p || (p !== "/" && currentPath.startsWith(p))
-          );
+          const publicStaticPaths = ["/", "/introduce", "/contact", "/about", "/library"]; // các trang public cố định
+          const publicDynamicMatchers = [/^\/library\/[^/]+$/]; // trang chi tiết ký nhân
+
+          const isPublicPath =
+            publicStaticPaths.includes(currentPath) ||
+            publicDynamicMatchers.some((regex) => regex.test(currentPath));
 
           const isAuthPage = currentPath.includes('/auth/') || currentPath.includes('/login') || currentPath.includes('/register');
 

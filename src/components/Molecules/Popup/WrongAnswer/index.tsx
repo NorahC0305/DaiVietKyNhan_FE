@@ -75,7 +75,7 @@ export default function WrongAnswer({
           isLoading={isSubmitting}
           className="hover:scale-105 transition-all duration-300"
         >
-          <span className="relative z-10 flex items-center gap-2">
+          <span className="relative z-10 flex items-center justify-center gap-2">
             <span className="text-secondary text-xl sm:text-x2l font-semibold">
               -{coinCost}
             </span>
