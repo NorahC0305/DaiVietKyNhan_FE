@@ -169,20 +169,25 @@ export default function RedeemModal({
   const displayTiers = useMemo((): RedeemTierWithData[] => {
     // Use API data if available
     if (rewards.length > 0 && userData) {
-      return rewards.map((reward) => {
-        // Find the corresponding userRewardExchange for this reward
-        const userRewardExchange = userRewardExchanges.find(
-          (exchange) => exchange.reward.id === reward.id
-        );
+      return rewards
+        .filter(
+          (reward) =>
+            !(reward.requireValue === 5200 && reward.type === "COIN")
+        )
+        .map((reward) => {
+          // Find the corresponding userRewardExchange for this reward
+          const userRewardExchange = userRewardExchanges.find(
+            (exchange) => exchange.reward.id === reward.id
+          );
 
-        const tier = convertRewardToTier(reward, userData, userRewardExchange);
-        return {
-          tier,
-          display: tier.display || normalizeDisplay(tier),
-          rewardData: reward,
-          userRewardExchange,
-        };
-      });
+          const tier = convertRewardToTier(reward, userData, userRewardExchange);
+          return {
+            tier,
+            display: tier.display || normalizeDisplay(tier),
+            rewardData: reward,
+            userRewardExchange,
+          };
+        });
     }
 
     // Use provided tiers if available
