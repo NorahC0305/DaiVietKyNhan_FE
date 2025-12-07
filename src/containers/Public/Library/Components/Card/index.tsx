@@ -4,6 +4,7 @@ import FramedImage from "../ImageInFrame";
 import Link from "next/link";
 
 export default function Card({
+  unlocked,
   isCenter,
   cardNumber,
   imageSrc,
@@ -12,6 +13,7 @@ export default function Card({
   highlightQuery,
   onCtaClick,
 }: {
+  unlocked: boolean;
   isCenter: boolean;
   cardNumber: number;
   imageSrc?: string;
@@ -98,31 +100,12 @@ export default function Card({
     );
   };
 
-  const renderTextWithLineBreaks = (text?: string) => {
-    if (!text) return null;
-
-    // Split by newlines and render each line with highlighting
-    const lines = text.split("\n").filter((line) => line.trim() !== "");
-
-    if (lines.length === 0) return null;
-
-    return (
-      <>
-        {lines.map((line, index) => (
-          <span key={index}>
-            {renderHighlighted(line)}
-            {index < lines.length - 1 && <br />}
-          </span>
-        ))}
-      </>
-    );
-  };
   return (
     <div className="relative">
       <div
         className={cn(
           "relative p-1 shadow-2xl",
-          isCenter && "group"
+          isCenter && unlocked && "group"
         )}
       >
         <div className="relative aspect-[3/5] w-48 sm:w-56 md:w-64 lg:w-80 xl:w-96 [perspective:1200px]">
@@ -167,7 +150,11 @@ export default function Card({
                     "https://res.cloudinary.com/dauhpllo7/image/upload/v1763393921/Chu%CC%9Ba_co%CC%81_te%CC%82n_1080_x_1740_px_4_1_mvqq0p.svg"
 
                   }
-                  alt="Kỳ nhân card"
+                  alt="Revealed background"
+                  fill
+                  sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
+                  className="object-contain"
+                  priority={isCenter}
                 />
                 <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
                   <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
@@ -201,65 +188,51 @@ export default function Card({
                           {renderHighlighted(backContent.thoiKy)}
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Thoi Ky - Section 2 */}
-                  {backContent?.thoiKy && (
-                    <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left break-words overflow-hidden">
-                      <div
-                        className="overflow-hidden"
-                        style={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {renderHighlighted(backContent.thoiKy)}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Chien Cong - Section 3 */}
-                  {backContent?.chienCong && (
-                    <div className="text-xs lg:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-y-auto custom-scrollbar-thin">
-                      <div
-                        className="overflow-hidden"
-                        style={{
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {renderTextWithLineBreaks(backContent.chienCong)}
-                      </div>
                     )}
 
-                </div>
 
-                {/* CTA Button */}
-                {(backContent?.ctaText ||
-                  backContent?.ctaHref ||
-                  onCtaClick) && (
-                    <div className="w-full flex justify-center mt-3 sm:mt-4">
-                      {backContent?.ctaHref && !onCtaClick ? (
-                        <Link
-                          href={backContent.ctaHref}
-                          className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                    {/* Chien Cong - Section 3 */}
+                    {backContent?.chienCong && (
+                      <div className="text-xs lg:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-y-auto custom-scrollbar-thin">
+                        <div
+                          className="overflow-hidden"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitBoxOrient: "vertical",
+                            wordBreak: "break-word",
+                          }}
                         >
-                          {backContent?.ctaText || "Xem Thêm"}
-                        </Link>
-                      ) : (
-                        <button
-                          onClick={onCtaClick}
-                          className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
-                        >
-                          {backContent?.ctaText || "Xem Thêm"}
-                        </button>
-                      )}
-                    </div>
-                  )}
+                          {renderHighlighted(backContent.chienCong)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* CTA Button */}
+                  {(backContent?.ctaText ||
+                    backContent?.ctaHref ||
+                    onCtaClick) && (
+                      <div className="w-full flex justify-center mt-3 sm:mt-4">
+                        {backContent?.ctaHref && !onCtaClick ? (
+                          <Link
+                            href={backContent.ctaHref}
+                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                          >
+                            {backContent?.ctaText || "Xem Thêm"}
+                          </Link>
+                        ) : (
+                          <button
+                            onClick={onCtaClick}
+                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                          >
+                            {backContent?.ctaText || "Xem Thêm"}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
