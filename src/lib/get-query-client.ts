@@ -13,7 +13,14 @@ function makeQueryClient() {
                 staleTime: 60 * 1000, // 1 minute
                 gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
                 refetchOnWindowFocus: false,
-                retry: 1,
+                retry: (failureCount, error: any) => {
+                    // Không bao giờ retry nếu lỗi 404 (Not Found)
+                    if (error?.status === 404 || error?.response?.status === 404) {
+                        return false;
+                    }
+                    // Chỉ retry tối đa 1 lần với các lỗi khác (mạng, server 500...)
+                    return failureCount < 1;
+                },
             },
             dehydrate: {
                 // Include pending queries in dehydration

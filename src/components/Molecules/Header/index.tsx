@@ -80,9 +80,30 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
-  // Default avatar URL
-  const defaultAvatarUrl =
-    "https://res.cloudinary.com/dznt9yias/image/upload/v1760727092/logo_dvkn_poop6f.svg";
+
+  // Get first letter of user's name for avatar
+  const getInitialLetter = (name?: string | null): string => {
+    if (!name || name.trim().length === 0) return "U";
+    return name.trim().charAt(0).toUpperCase();
+  };
+
+  // Generate background color based on letter (for consistency)
+  const getAvatarColor = (letter: string): string => {
+    const colors = [
+      "bg-blue-500",
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-red-500",
+      "bg-orange-500",
+      "bg-yellow-500",
+      "bg-green-500",
+      "bg-teal-500",
+      "bg-cyan-500",
+      "bg-indigo-500",
+    ];
+    const index = letter.charCodeAt(0) % colors.length;
+    return colors[index];
+  };
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -176,25 +197,41 @@ const Header: React.FC<HeaderProps> = ({ className, user }) => {
 
   // Avatar Component with Dropdown
   const AvatarDropdown = () => {
+    const [avatarError, setAvatarError] = useState(false);
+    const shouldShowLetter = !user?.avatar || avatarError;
+    const initialLetter = getInitialLetter(user?.name);
+    const avatarColor = getAvatarColor(initialLetter);
+
+    // Reset avatar error when user or avatar changes
+    useEffect(() => {
+      setAvatarError(false);
+    }, [user?.avatar]);
+
     return (
       <div className="relative" ref={avatarRef}>
         <button
           onClick={() => setAvatarDropdownOpen(!avatarDropdownOpen)}
           className="flex cursor-pointer items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30">
-            <Image
-              src={user?.avatar || defaultAvatarUrl}
-              alt={user?.name || "User Avatar"}
-              width={40}
-              height={40}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to default avatar if user avatar fails to load
-                const target = e.target as HTMLImageElement;
-                target.src = defaultAvatarUrl;
-              }}
-            />
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30 flex items-center justify-center">
+            {shouldShowLetter ? (
+              <div
+                className={`w-full h-full flex items-center justify-center ${avatarColor} text-white font-bold text-lg`}
+              >
+                {initialLetter}
+              </div>
+            ) : (
+              <Image
+                src={user.avatar!}
+                alt={user?.name || "User Avatar"}
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+                onError={() => {
+                  setAvatarError(true);
+                }}
+              />
+            )}
           </div>
           <svg
             className={`w-4 h-4 text-white transition-transform ${avatarDropdownOpen ? "rotate-180" : ""
