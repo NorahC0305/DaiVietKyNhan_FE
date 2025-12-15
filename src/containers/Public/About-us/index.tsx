@@ -33,7 +33,7 @@ const AboutUsPage = () => {
               {/* Left Side - Text Content - Sử dụng tối đa không gian có sẵn */}
               <div className="text-gray-800 h-[90%] overflow-y-auto pr-1 lg:mt-8">
                 {/* Font size responsive - nhỏ cho mobile, lớn cho desktop */}
-                <RadialGradial className="text-4xl lg:text-6xl">
+                <RadialGradial className="text-4xl lg:text-6xl py-4">
                   ĐẠI VIỆT KỲ NHÂN
                 </RadialGradial>
                 <div className="space-y-1 md:space-y-2 lg:space-y-3">

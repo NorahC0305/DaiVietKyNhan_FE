@@ -31,7 +31,7 @@ const request = async <Response>(
         if (typeof window !== "undefined") {
           // Chỉ chuyển hướng nếu không nằm trong các trang public
           const currentPath = window.location.pathname;
-          const publicStaticPaths = ["/", "/introduce", "/contact", "/about", "/library"]; // các trang public cố định
+          const publicStaticPaths = ["/", "/introduce", "/contact", "/about-us", "/library"]; // các trang public cố định
           const publicDynamicMatchers = [/^\/library\/[^/]+$/]; // trang chi tiết ký nhân
 
           const isPublicPath =
