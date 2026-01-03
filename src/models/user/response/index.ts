@@ -31,6 +31,7 @@ const meResponseData = z.object({
     point: z.number(),
     status: z.enum([USER.USER_STATUS.ACTIVE, USER.USER_STATUS.INACTIVE]),
     roleId: z.number(),
+    figureId: z.number().nullable(),
     godProfileId: z.number().nullable(),
     createdById: z.number().nullable(),
     updatedById: z.number().nullable(),
@@ -39,6 +40,7 @@ const meResponseData = z.object({
     createdAt: z.string(),
     updatedAt: z.string(),
     role: roleModel,
+    figure: z.any().nullable(),
 })
 
 const meResponse = BackendResponseModel(meResponseData)

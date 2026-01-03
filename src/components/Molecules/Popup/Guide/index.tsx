@@ -41,11 +41,11 @@ const Guide = ({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         className='relative mx-3 w-full lg:max-w-5xl max-w-3xl'
                     >
-                        <div className='relative lg:top-[150px] lg:-left-[230px] top-[130px] -left-[100px] z-10'>
+                        {/* <div className='relative lg:top-[150px] lg:-left-[230px] top-[130px] -left-[100px] z-10'>
                             <div className='absolute lg:w-[300px] lg:h-[450px] w-[150px] h-[250px]'>
                                 <Image src={user?.godProfile?.imgUrl} alt={user?.godProfile?.id} fill />
                             </div>
-                        </div>
+                        </div> */}
 
                         <>
                             <div className='relative bg-primary-light border-4 border-secondary rounded-2xl my-4 sm:my-6 md:my-10 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8'>
@@ -67,7 +67,7 @@ const Guide = ({ isOpen, onClose, user }: { isOpen: boolean, onClose: () => void
 
                                 <div className="max-h-[80vh] overflow-y-auto custom-scrollbar-elegant">
                                     {/* --- Title --- */}
-                                    <h1 className="lg:text-6xl text-4xl pt-3 text-center font-bd-street-sign" style={{ color: user?.godProfile?.text_color }}>CHÀO MỪNG ĐẾN VỚI HÀNH TRÌNH “KHAI NHÂN MỞ ẤN”</h1>
+                                    <h1 className="lg:text-6xl text-4xl pt-3 text-center font-bd-street-sign" style={{ color: user?.godProfile?.text_color ? user?.godProfile?.text_color : '#CE7346' }}>CHÀO MỪNG ĐẾN VỚI HÀNH TRÌNH “KHAI NHÂN MỞ ẤN”</h1>
                                     <TrangSuConDoiAiDua />
 
                                     {/* --- Content --- */}

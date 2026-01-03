@@ -19,11 +19,15 @@ export default async function MapLayoutServer({
 
   const session = (await getServerSession(authOptions)) as UTILS.ISession;
   let user: IMeResponse["data"] | null = null;
+  console.log(user);
+
   if (session) {
     const response = (await userService.getMe()) as IMeResponse;
+    console.log(response);
+
     if (response.data) {
       user = response.data;
-      if (!user.godProfileId) {
+      if (!user.figureId) {
         redirect(ROUTES.STARTER.SELECT_CHARACTER);
       }
     }

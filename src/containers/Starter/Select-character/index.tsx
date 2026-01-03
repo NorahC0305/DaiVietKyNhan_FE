@@ -27,7 +27,7 @@ const SelectCharacterPage = React.memo(
       try {
         await figureService.chooseFigure(selectedCharacter);
       } finally {
-        router.push(ROUTES.STARTER.ENTRY_TEST);
+        router.push(ROUTES.PUBLIC.MAP);
       }
     }, [selectedCharacter, router]);
 

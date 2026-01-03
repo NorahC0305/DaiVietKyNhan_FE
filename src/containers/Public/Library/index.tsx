@@ -8,7 +8,6 @@ import kynhanService from "@/services/kynhan";
 import type { IKyNhanUserListResponseModel } from "@/models/ky-nhan/response";
 import type { IKyNhanUser } from "@/models/ky-nhan/entity";
 import EmblaCarouselWithCards from "./Components/InfiniteCardCarousel";
-import NoKyNhan from "@/components/Molecules/Popup/NoKyNhan";
 import { Loader2 } from "lucide-react";
 
 interface CardData {
@@ -59,9 +58,9 @@ const LibraryPage = () => {
       backgroundSrc: "https://res.cloudinary.com/dznt9yias/image/upload/v1760726112/revealedBG_gzuiid.svg",
       name: kynhanData.name,
       thoiKy: kynhanData.thoiKy,
-      chienCong: kynhanData.chienCong,
-
-
+      chienCong: kynhanData.chienCong
+        ? kynhanData.chienCong.replace(/\r\n/g, "\n").trim()
+        : undefined,
       ctaText: "Xem Thêm",
       ctaHref: undefined, // Remove href since we're using onClick handler
     },
@@ -106,7 +105,8 @@ const LibraryPage = () => {
       try {
         setIsLoading(true);
         const response =
-          (await kynhanService.getUserKyNhanList()) as IKyNhanUserListResponseModel;
+          (await kynhanService.getKyNhan(undefined, 1, 100)) as any;
+        console.log("response", response.data.results);
         if (response.data && response.data.results) {
           const cardData = response.data.results.map(convertToCardData);
           setCards(cardData);
@@ -300,12 +300,6 @@ const LibraryPage = () => {
           />
         )}
       </div>
-
-      {/* NoKyNhan Modal */}
-      <NoKyNhan
-        isOpen={showNoKyNhanModal}
-        onClose={() => setShowNoKyNhanModal(false)}
-      />
     </div>
   );
 };

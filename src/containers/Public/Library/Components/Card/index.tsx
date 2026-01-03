@@ -4,7 +4,6 @@ import FramedImage from "../ImageInFrame";
 import Link from "next/link";
 
 export default function Card({
-  unlocked,
   isCenter,
   cardNumber,
   imageSrc,
@@ -13,7 +12,6 @@ export default function Card({
   highlightQuery,
   onCtaClick,
 }: {
-  unlocked: boolean;
   isCenter: boolean;
   cardNumber: number;
   imageSrc?: string;
@@ -100,142 +98,147 @@ export default function Card({
     );
   };
 
+  const renderTextWithLineBreaks = (text?: string) => {
+    if (!text) return null;
+
+    // Split by newlines and render each line with highlighting
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+
+    if (lines.length === 0) return null;
+
+    return (
+      <>
+        {lines.map((line, index) => (
+          <span key={index}>
+            {renderHighlighted(line)}
+            {index < lines.length - 1 && <br />}
+          </span>
+        ))}
+      </>
+    );
+  };
   return (
     <div className="relative">
       <div
         className={cn(
           "relative p-1 shadow-2xl",
-          isCenter && unlocked && "group"
+          isCenter && "group"
         )}
       >
         <div className="relative aspect-[3/5] w-48 sm:w-56 md:w-64 lg:w-80 xl:w-96 [perspective:1200px]">
           <div
             className={cn(
               "relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]",
-              isCenter && unlocked && "group-hover:[transform:rotateY(180deg)]",
+              isCenter && "group-hover:[transform:rotateY(180deg)]",
               isFlipped && "[transform:rotateY(180deg)]"
             )}
           >
             {/* Front side */}
             <div className="absolute inset-0 [backface-visibility:hidden]">
-              {!unlocked ? (
-                <>
-                  <Image
-                    src="https://res.cloudinary.com/dauhpllo7/image/upload/v1764646970/Group_99_s77fii.svg"
-                    alt="Hidden framed card"
-                    fill
-                    sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                    className="object-contain"
-                    priority={isCenter}
-                  />
-                </>
-              ) : (
-                <>
-                  <FramedImage
-                    src={
-                      imageSrc ||
-                      "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
-                    }
-                    alt="Kỳ nhân card"
-                  />
-                </>
-              )}
+              <>
+                <FramedImage
+                  src={
+                    imageSrc ||
+                    "https://res.cloudinary.com/dznt9yias/image/upload/v1760722617/Group_104_otxy0s.svg"
+                  }
+                  alt="Kỳ nhân card"
+                />
+              </>
             </div>
 
             {/* Back side (shown on flip for unlocked center card) */}
-            {unlocked && (
-              <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
-                <Image
-                  src={
-                    "https://res.cloudinary.com/dauhpllo7/image/upload/v1763393921/Chu%CC%9Ba_co%CC%81_te%CC%82n_1080_x_1740_px_4_1_mvqq0p.svg"
-
-                  }
-                  alt="Revealed background"
-                  fill
-                  sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
-                  className="object-contain"
-                  priority={isCenter}
-                />
-                <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
-                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
-                    {/* Name - Section 1 */}
-                    {backContent?.name && (
-                      <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left break-words overflow-hidden">
-                        <div
-                          className="overflow-hidden"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {renderHighlighted(backContent.name)}
-                        </div>
+            <div className="absolute inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]">
+              <Image
+                src={
+                  "https://res.cloudinary.com/dauhpllo7/image/upload/v1763393921/Chu%CC%9Ba_co%CC%81_te%CC%82n_1080_x_1740_px_4_1_mvqq0p.svg"
+                }
+                alt="Revealed background"
+                fill
+                sizes="(max-width: 768px) 40vw, (max-width: 1200px) 20vw, 18vw"
+                className="object-contain"
+                priority={isCenter}
+              />
+              <div className="absolute inset-2 sm:inset-3 md:inset-4 lg:inset-6 xl:inset-8 border border-[#be9b36]/60 rounded-md px-3 sm:px-4 md:px-5 py-4 sm:py-5 md:py-6 flex flex-col justify-between overflow-hidden">
+                <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4 space-y-3 sm:space-y-4 overflow-hidden">
+                  {/* Name - Section 1 */}
+                  {backContent?.name && (
+                    <div className="text-lg sm:text-base md:text-lg font-extrabold text-black leading-tight text-left break-words overflow-hidden">
+                      <div
+                        className="overflow-hidden"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {renderHighlighted(backContent.name)}
                       </div>
-                    )}
-                    {backContent?.thoiKy && (
-                      <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left break-words overflow-hidden">
-                        <div
-                          className="overflow-hidden"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {renderHighlighted(backContent.thoiKy)}
-                        </div>
-                      </div>
-                    )}
+                    </div>
+                  )}
 
-
-                    {/* Chien Cong - Section 3 */}
-                    {backContent?.chienCong && (
-                      <div className="text-xs lg:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-y-auto custom-scrollbar-thin">
-                        <div
-                          className="overflow-hidden"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitBoxOrient: "vertical",
-                            wordBreak: "break-word",
-                          }}
-                        >
-                          {renderHighlighted(backContent.chienCong)}
-                        </div>
+                  {/* Thoi Ky - Section 2 */}
+                  {backContent?.thoiKy && (
+                    <div className="text-xs sm:text-sm md:text-base leading-relaxed text-black italic text-left break-words overflow-hidden">
+                      <div
+                        className="overflow-hidden"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {renderHighlighted(backContent.thoiKy)}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
-                  {/* CTA Button */}
-                  {(backContent?.ctaText ||
-                    backContent?.ctaHref ||
-                    onCtaClick) && (
-                      <div className="w-full flex justify-center mt-3 sm:mt-4">
-                        {backContent?.ctaHref && !onCtaClick ? (
-                          <Link
-                            href={backContent.ctaHref}
-                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
-                          >
-                            {backContent?.ctaText || "Xem Thêm"}
-                          </Link>
-                        ) : (
-                          <button
-                            onClick={onCtaClick}
-                            className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
-                          >
-                            {backContent?.ctaText || "Xem Thêm"}
-                          </button>
-                        )}
+                  {/* Chien Cong - Section 3 */}
+                  {backContent?.chienCong && (
+                    <div className="text-xs lg:text-base font-extrabold leading-relaxed text-black text-left flex-1 break-words overflow-y-auto custom-scrollbar-thin">
+                      <div
+                        className="overflow-hidden"
+                        style={{
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {renderTextWithLineBreaks(backContent.chienCong)}
                       </div>
-                    )}
+                    </div>
+                  )}
                 </div>
+
+                {/* CTA Button */}
+                {(backContent?.ctaText ||
+                  backContent?.ctaHref ||
+                  onCtaClick) && (
+                    <div className="w-full flex justify-center mt-3 sm:mt-4">
+                      {backContent?.ctaHref && !onCtaClick ? (
+                        <Link
+                          href={backContent.ctaHref}
+                          className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                        >
+                          {backContent?.ctaText || "Xem Thêm"}
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={onCtaClick}
+                          className="cursor-pointer rounded-2xl bg-[#C49B39] border-gray-300 border-2 text-black px-4 py-2 sm:px-10 sm:py-2.5 text-xl sm:text-sm md:text-base font-normal shadow-md"
+                        >
+                          {backContent?.ctaText || "Xem Thêm"}
+                        </button>
+                      )}
+                    </div>
+                  )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
+      {isCenter && (
+        <div className="absolute inset-0 rounded-lg blur-xl -z-10" />
+      )}
     </div>
   );
 }

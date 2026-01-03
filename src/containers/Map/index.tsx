@@ -110,7 +110,7 @@ const mainMapImage =
   "https://res.cloudinary.com/dauhpllo7/image/upload/v1763391742/mapcl_1_wm0hbq.png";
 
 // TODO: Tạm thời mở khóa tất cả map để review. Sau khi hoàn thành, đổi thành false
-const TEMP_UNLOCK_ALL = false;
+const TEMP_UNLOCK_ALL = true;
 
 // Mapping từ region ID đến land ID dựa trên userLand data
 // Dựa trên userLand response:
